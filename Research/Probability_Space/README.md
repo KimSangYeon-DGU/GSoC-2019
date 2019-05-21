@@ -12,3 +12,8 @@ Weights: [0.6, 0.4]
 <p align="center">
     <img src="images/ClassicalGMM.png", width="640">
 </p>
+
+
+# Probability Surface of the Quantum GMM
+
+Working now...
