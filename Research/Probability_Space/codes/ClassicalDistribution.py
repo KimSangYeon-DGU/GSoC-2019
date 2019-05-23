@@ -14,8 +14,7 @@ def pdf(x, mean, cov):
     return squeeze_output(out)
 
 def getVolume(X, Y, Z):
-  
-  v = abs(X[0] * Y[0] * Z[0])
+  v = X[0] * Y[0] * Z[0]
   dim = X.shape[0]
   for j in range(1, dim):
     for i in range(1, dim):
@@ -64,6 +63,8 @@ print("The volume of the second Gaussian: {0}".format(v2))
 
 # Gaussian Mixture
 G_mix = w[0]*G1 + w[1]*G2
+v3 = getVolume(X, Y, G_mix)
+print("The volume of the Gaussian mixture: {0}".format(v3))
 
 surf = ax.plot_surface(X, Y, G_mix, cmap=jet,linewidth=0)
 
