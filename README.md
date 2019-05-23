@@ -1,6 +1,6 @@
 # GSoC-2019
 
-<b>Description:</b> Research and development report on Quantum Gaussian Mixture Models
+<b>Description:</b> Research and development report on Quantum Gaussian Mixture Models Implementation
 
 <b>Mento:</b> Sumedh Ghaisas
 
