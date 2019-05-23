@@ -13,6 +13,9 @@ def pdf(x, mean, cov):
 
     return squeeze_output(out)
 
+def ClassicalGMM(G1, G2, weights):
+  return weights[0]*G1 + weights[1]*G2
+
 def getVolume(X, Y, Z):
   v = X[0] * Y[0] * Z[0]
   dim = X.shape[0]
@@ -62,7 +65,7 @@ v2 = getVolume(X, Y, G2)
 print("The volume of the second Gaussian: {0}".format(v2))
 
 # Gaussian Mixture
-G_mix = w[0]*G1 + w[1]*G2
+G_mix = ClassicalGMM(G1, G2, w)
 v3 = getVolume(X, Y, G_mix)
 print("The volume of the Gaussian mixture: {0}".format(v3))
 
