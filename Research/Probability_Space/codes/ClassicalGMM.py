@@ -69,6 +69,7 @@ G_mix = ClassicalGMM(G1, G2, w)
 v3 = getVolume(X, Y, G_mix)
 print("The volume of the Gaussian mixture: {0}".format(v3))
 
+# Plot the surface of the probability
 surf = ax.plot_surface(X, Y, G_mix, cmap=jet,linewidth=0)
 
 plt.show()
