@@ -18,9 +18,10 @@ def getCosine(G1, G2, weights):
   return (1 - (weights[0] * weights[0]) - (weights[1] * weights[1])) / (2.0 * weights[0] * weights[1] * G1 * G2)
   
 def QuantumGMM(G1, G2, weights):
-  cos = getCosine(G1, G2, weights)
-  P1 = (weights[0] * weights[0]) * (G1 * G1) + weights[0] * weights[1] * G1 * G2 * cos
-  P2 = (weights[1] * weights[1]) * (G2 * G2) + weights[0] * weights[1] * G1 * G2 * cos
+  cosine = getCosine(G1, G2, weights)
+  print(np.max(cosine), np.min(cosine))
+  P1 = (weights[0] * weights[0]) * (G1 * G1) + weights[0] * weights[1] * G1 * G2 * cosine
+  P2 = (weights[1] * weights[1]) * (G2 * G2) + weights[0] * weights[1] * G1 * G2 * cosine
 
   return P1 + P2
 
@@ -48,10 +49,7 @@ mean2 = [2, 1]
 cov2 = [4, 3]
 
 # Weight of each Gaussian distribution
-#w = [1, 5]
 w = [math.sqrt(0.6), math.sqrt(0.4)]
-#w = [0.77, 0.63]
-#w = [0.3, 0.2]
 
 x = np.linspace(-10, 10, 500)
 y = np.linspace(-10, 10, 500)
