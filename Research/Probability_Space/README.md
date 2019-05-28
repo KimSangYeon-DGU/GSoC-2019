@@ -16,4 +16,15 @@ Weights: [0.6, 0.4]
 
 # Probability Surface of the Quantum GMM
 
-Working now...
+Dimension: 2
+
+Mean1: [-3, -1], Cov1: [2, 3]
+
+Mean2: [2, 1], Cov2: [4, 3]
+
+Weights: [sqrt(0.6), sqrt(0.4)] = [0.77, 0.63]
+
+<p align="center">
+    <img src="images/QuantumGMM.png", width="640">
+</p>
+
