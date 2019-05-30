@@ -1,3 +1,5 @@
-TODO
+# TODO
 
-Change parameters
+- Change parameters
+
+- Derivate Multivariate Gaussian Integral
