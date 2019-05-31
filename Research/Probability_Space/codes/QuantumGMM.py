@@ -18,7 +18,11 @@ def getCosine(G1, G2, weights):
   return (1 - (weights[0] * weights[0]) - (weights[1] * weights[1])) / (2.0 * weights[0] * weights[1] * G1 * G2)
   
 def QuantumGMM(G1, G2, weights):
-  cosine = getCosine(G1, G2, weights)
+  #cosine = getCosine(G1, G2, weights)
+  cosine = np.ones((500,500))
+  #cosine *= math.pi/2
+  cosine = 0
+  print(cosine)
   print(np.max(cosine), np.min(cosine))
   P1 = (weights[0] * weights[0]) * (G1 * G1) + weights[0] * weights[1] * G1 * G2 * cosine
   P2 = (weights[1] * weights[1]) * (G2 * G2) + weights[0] * weights[1] * G1 * G2 * cosine
@@ -32,7 +36,7 @@ def getVolume(X, Y, Z):
     for i in range(1, dim):
       v += (X[j][i] - X[j][i-1]) * (Y[j][i] - Y[j-1][i]) * Z[j][i]
 
-  return np.sum(v / dim)
+  return np.sum(v)
 
 fig = plt.figure()
 ax = fig.gca(projection='3d')
@@ -41,12 +45,12 @@ jet = plt.get_cmap('jet')
 d = 2 # Number of dimensions
 
 # Mean and covariance of the first Gaussian distribution
-mean1 = [-3, -1]
+mean1 = [-2, -1]
 cov1 = [2, 3]
 
 # Mean and covariance of the second Gaussian distribution
-mean2 = [2, 1]
-cov2 = [4, 3]
+mean2 = [3, 2]
+cov2 = [2, 1]
 
 # Weight of each Gaussian distribution
 w = [math.sqrt(0.6), math.sqrt(0.4)]

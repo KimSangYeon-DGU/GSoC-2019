@@ -23,14 +23,14 @@ def getVolume(X, Y, Z):
     for i in range(1, dim):
       v += (X[j][i] - X[j][i-1]) * (Y[j][i] - Y[j-1][i]) * Z[j][i]
 
-  return np.sum(v / dim)
+  return np.sum(v)
 
 fig = plt.figure()
 ax = fig.gca(projection='3d')
 jet = plt.get_cmap('jet')
 
 d = 2 # Number of dimensions
-
+'''
 # Mean and covariance of the first Gaussian distribution
 mean1 = [-3, -1]
 cov1 = [2, 3]
@@ -38,8 +38,17 @@ cov1 = [2, 3]
 # Mean and covariance of the second Gaussian distribution
 mean2 = [2, 1]
 cov2 = [4, 3]
+'''
+# Mean and covariance of the first Gaussian distribution
+mean1 = [-2, -1]
+cov1 = [2, 3]
+
+# Mean and covariance of the second Gaussian distribution
+mean2 = [3, 2]
+cov2 = [2, 1]
 
 # Weight of each Gaussian distribution
+#w = [0.6, 0.4]
 w = [0.6, 0.4]
 
 x = np.linspace(-10, 10, 500)
