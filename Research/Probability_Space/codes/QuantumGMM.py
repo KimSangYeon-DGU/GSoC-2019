@@ -15,15 +15,12 @@ def pdf(x, mean, cov):
     return np.sqrt(squeeze_output(out))
 
 def getCosine(G1, G2, weights):
-  return (1 - (weights[0] * weights[0]) - (weights[1] * weights[1])) / (2.0 * weights[0] * weights[1] * G1 * G2)
+  return np.cos((1 - (weights[0] * weights[0]) - (weights[1] * weights[1])) / (2.0 * weights[0] * weights[1] * G1 * G2))
   
 def QuantumGMM(G1, G2, weights):
-  #cosine = getCosine(G1, G2, weights)
-  cosine = np.ones((500,500))
-  #cosine *= math.pi/2
-  cosine = 0
-  print(cosine)
-  print(np.max(cosine), np.min(cosine))
+  cosine = getCosine(G1, G2, weights)
+  print(np.min(cosine), np.max(cosine)) # -1 <= cos <= 1
+
   P1 = (weights[0] * weights[0]) * (G1 * G1) + weights[0] * weights[1] * G1 * G2 * cosine
   P2 = (weights[1] * weights[1]) * (G2 * G2) + weights[0] * weights[1] * G1 * G2 * cosine
 
@@ -83,5 +80,5 @@ v3 = getVolume(X, Y, G_mix)
 print("The volume of the Gaussian mixture: {0}".format(v3))
 
 surf = ax.plot_surface(X, Y, G_mix, cmap=jet,linewidth=0)
-
+fig.savefig("SaveQGMM.png")
 plt.show()
