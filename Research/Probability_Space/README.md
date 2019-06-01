@@ -3,9 +3,9 @@ Observations: Randomly generated
 
 Dimension: 2
 
-Mean1: [-3, -1], Cov1: [2, 3]
+Mean1: [-2, -1], Cov1: [2, 3]
 
-Mean2: [2, 1], Cov2: [4, 3]
+Mean2: [3, 2], Cov2: [2, 1]
 
 Weights: [0.6, 0.4]
 
@@ -18,24 +18,12 @@ Weights: [0.6, 0.4]
 
 Dimension: 2
 
-Mean1: [-3, -1], Cov1: [2, 3]
+Mean1: [-2, -1], Cov1: [2, 3]
 
-Mean2: [2, 1], Cov2: [4, 3]
+Mean2: [3, 2], Cov2: [2, 1]
 
 Weights: [0.6, 0.4]
 
 <p align="center">
     <img src="images/QuantumGMM.png", width="640">
-</p>
-
-Dimension: 2
-
-Mean1: [-3, -1], Cov1: [2, 3]
-
-Mean2: [2, 1], Cov2: [2, 1]
-
-Weights: [0.6, 0.4]
-
-<p align="center">
-    <img src="images/QuantumGMM2.png", width="640">
 </p>
