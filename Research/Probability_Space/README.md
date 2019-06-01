@@ -10,7 +10,7 @@ Mean2: [3, 2], Cov2: [2, 1]
 Weights: [0.6, 0.4]
 
 <p align="center">
-    <img src="images/ClassicalGMM.png", width="640">
+    <img src="images/ClassicalGMM_new.png", width="640">
 </p>
 
 
@@ -25,5 +25,5 @@ Mean2: [3, 2], Cov2: [2, 1]
 Weights: [0.6, 0.4]
 
 <p align="center">
-    <img src="images/QuantumGMM.png", width="640">
+    <img src="images/QuantumGMM_new.png", width="640">
 </p>
