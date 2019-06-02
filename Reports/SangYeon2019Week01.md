@@ -15,12 +15,12 @@ Below are the 3D probability spaces of GMM and QGMM.
 
 [Classical GMM]
 <p>
-<img src = "images/classical_gmm.png" width = "320" height = "330" hspace = "10"/>
+<img src = "images/classical_gmm.png" width = "600" height = "450" hspace = "10"/>
 </p>
 
 [Quantum GMM]
 <p>
-<img src = "images/qgmm_phis.png" width = "640" height = "330" hspace = "10"/>
+<img src = "images/qgmm_phis.png" width = "600" height = "218" hspace = "10"/>
 </p>
 
 At the above Quanmtum GMM images, we can see how much phis will impact on the distribution shape. Especially, when the phi is equal to 90 degree, the GMM and QGMM's probability space looks similar.
