@@ -51,8 +51,8 @@ cov2 = [2, 1]
 #w = [0.6, 0.4]
 w = [0.6, 0.4]
 
-x = np.linspace(-10, 10, 500)
-y = np.linspace(-10, 10, 500)
+x = np.linspace(-5, 5, 500)
+y = np.linspace(-5, 5, 500)
 
 X, Y = np.meshgrid(x, y)
 
@@ -65,20 +65,20 @@ obs[:, :, 0] = X; obs[:, :, 1] = Y
 G1 = pdf(obs, mean1, cov1)
 
 # Calculate volume of G1
-v1 = getVolume(X, Y, G1)
-print("The volume of the first Gaussian: {0}".format(v1))
+#v1 = getVolume(X, Y, G1)
+#print("The volume of the first Gaussian: {0}".format(v1))
 
 # Calculate volume of G2
 G2 = pdf(obs, mean2, cov2)
-v2 = getVolume(X, Y, G2)
-print("The volume of the second Gaussian: {0}".format(v2))
+#v2 = getVolume(X, Y, G2)
+#print("The volume of the second Gaussian: {0}".format(v2))
 
 # Gaussian Mixture
 G_mix = ClassicalGMM(G1, G2, w)
-v3 = getVolume(X, Y, G_mix)
-print("The volume of the Gaussian mixture: {0}".format(v3))
+#v3 = getVolume(X, Y, G_mix)
+#print("The volume of the Gaussian mixture: {0}".format(v3))
 
 # Plot the surface of the probability
 surf = ax.plot_surface(X, Y, G_mix, cmap=jet,linewidth=0)
-
+fig.savefig("SaveCGMM.png")
 plt.show()

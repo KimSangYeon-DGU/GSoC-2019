@@ -52,8 +52,8 @@ cov2 = [2, 1]
 # Weight of each Gaussian distribution
 w = [math.sqrt(0.6), math.sqrt(0.4)]
 
-x = np.linspace(-10, 10, 500)
-y = np.linspace(-10, 10, 500)
+x = np.linspace(-5, 5, 1000)
+y = np.linspace(-5, 5, 1000)
 
 X, Y = np.meshgrid(x, y)
 
