@@ -9,9 +9,13 @@ class QuantumGaussianDistribution:
   log2pi = 1.83787706640934533908193770912475883
 
   def __init__(self, mean, cov):
-    print("Initialize QuantumGaussianDistribution")
+    #print("Initialize QuantumGaussianDistribution")
+
     self.mean = np.asarray(mean)
     self.cov = np.asmatrix(cov)
+
+    # To decompose matrix using Cholesky decomposition, apply a positive definite constraint. 
+    self.ApplyPositiveDefinite(self.cov)
     self.FactorCovariance()
 
   # Calculate probability
@@ -47,10 +51,8 @@ class QuantumGaussianDistribution:
     self.cov = cov
 
   def FactorCovariance(self):
-    # To decompose matrix using Cholesky decomposition, apply a positive definite constraint. 
-    self.ApplyPositiveDefinite(self.cov)
-
     self.covLower = np.linalg.cholesky(self.cov)
+    #print(self.cov.shape)
 
     invCovLower = np.linalg.inv(self.covLower)
 
@@ -59,6 +61,7 @@ class QuantumGaussianDistribution:
     
     self.logDetCov *= 2
 
+  # Apply matrix to positive definite to use Cholesky decomposition.
   def ApplyPositiveDefinite(self, cov):
     eigval, eigvec = np.linalg.eigh(cov)
 
@@ -70,5 +73,26 @@ class QuantumGaussianDistribution:
       
       self.cov = np.dot(np.dot(eigvec, np.diag(eigval)), np.transpose(eigvec))
   
+  # Sample observations with mean and covariance of the distribution.
   def Random(self):
-    return np.dot(self.covLower, np.random.normal(0, 1, (self.mean.shape[0], 1))) + self.mean
+    a = np.dot(self.covLower, np.random.normal(0, 1, (self.mean.shape[0], 1))) + np.reshape(self.mean, (self.mean.shape[0],1))
+    return np.array(a).flatten()
+
+  def Train(self, observations):
+    mean = np.zeros((observations.shape[0], 1))
+    cov = np.zeros((observations.shape[0], observations.shape[0]))
+    
+    for i in range(observations.shape[1]):
+      mean += np.reshape(observations[:, i], (observations.shape[0], 1))
+
+    mean /= observations.shape[1]
+
+    for i in range(observations.shape[1]):
+      diff = np.reshape(observations[:, i], (observations.shape[0], 1)) - mean
+      cov += np.dot(diff, np.transpose(diff))
+
+    cov /= (observations.shape[1] - 1)
+    
+    self.ApplyPositiveDefinite(cov)
+
+    self.FactorCovariance()

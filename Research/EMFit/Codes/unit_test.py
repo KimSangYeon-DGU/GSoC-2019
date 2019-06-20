@@ -44,6 +44,34 @@ def RandomTest():
   print(np_mean)
   print(np_cov)
 
+def TrainTest():
+  mean = np.array([1, 3, 0, 2.5])
+  cov = np.matrix([[3.0, 0.0, 1.0, 4.0],
+                   [0.0, 2.4, 0.5, 0.1],
+                   [1.0, 0.5, 6.3, 0.0],
+                   [4.0, 0.1, 0.0, 9.1]])
+
+  dummy_mean = np.array([0, 0, 0, 0])
+  dummy_cov = np.matrix([[0.0, 0.0, 0.0, 0.0],
+                         [0.0, 0.0, 0.0, 0.0],
+                         [0.0, 0.0, 0.0, 0.0],
+                         [0.0, 0.0, 0.0, 0.0]])
+
+  obs = np.zeros((4, 10000))
+
+  d1 = QuantumGaussianDistribution(mean, cov)
+
+  for i in range(10000):
+    obs[:,i] = d1.Random()
+
+  d2 = QuantumGaussianDistribution(mean, cov)
+
+  d2.Train(obs)
+
+  print(d2.mean)
+  print(d2.cov)
+
 if __name__ == "__main__":
-  RandomTest()
+  #RandomTest()
+  TrainTest()
   
