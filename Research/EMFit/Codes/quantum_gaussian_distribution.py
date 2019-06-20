@@ -50,12 +50,12 @@ class QuantumGaussianDistribution:
     # To decompose matrix using Cholesky decomposition, apply a positive definite constraint. 
     self.ApplyPositiveDefinite(self.cov)
 
-    covLower = np.linalg.cholesky(self.cov)
+    self.covLower = np.linalg.cholesky(self.cov)
 
-    invCovLower = np.linalg.inv(covLower)
+    invCovLower = np.linalg.inv(self.covLower)
 
     self.invCov = np.dot(np.transpose(invCovLower), invCovLower)
-    _, self.logDetCov = np.linalg.slogdet(covLower)
+    _, self.logDetCov = np.linalg.slogdet(self.covLower)
     
     self.logDetCov *= 2
 
@@ -69,5 +69,6 @@ class QuantumGaussianDistribution:
         eigval[i] = max(eigval[i], minEigval)
       
       self.cov = np.dot(np.dot(eigvec, np.diag(eigval)), np.transpose(eigvec))
-      
-    
+  
+  def Random(self):
+    return np.dot(self.covLower, np.random.normal(0, 1, (self.mean.shape[0], 1))) + self.mean
