@@ -27,7 +27,7 @@ if __name__ == "__main__":
                              [3, 7, 8, 0, 1, 1],
                              [4, 8, 1, 1, 0, 0]] )
 
-  print(observations[:, 0])
+  #print(observations[:, 0])
   # Create distributions
   d1 = QuantumGaussianDistribution(mean1, cov1)
   d2 = QuantumGaussianDistribution(mean2, cov2)
@@ -37,6 +37,5 @@ if __name__ == "__main__":
 
   a = gmm.dists[0].Probability(observations)
   #print(a.shape)
-  print(a)
-
+  #print(a)
   

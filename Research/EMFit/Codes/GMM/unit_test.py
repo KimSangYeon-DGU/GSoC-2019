@@ -2,7 +2,11 @@ from quantum_gaussian_distribution import QuantumGaussianDistribution
 from quantum_gmm import QuantumGMM
 import numpy as np
 
-def ProbabilityTest():
+################################
+## Gaussian Distribution Test ##
+################################
+
+def QuantumGaussianDistributionProbabilityTest():
   # Set initial parameters
   mean1 = np.array( [5, 6, 3, 3, 2] )
 
@@ -25,7 +29,7 @@ def ProbabilityTest():
   mean1 *= -1
   print(d1.Probability(observations)) 
 
-def RandomTest():
+def QuantumGaussianDistributionRandomTest():
   mean = np.array([1.0, 2.25])
   cov = np.matrix([[0.85, 0.60],
                    [0.60, 1.45]])
@@ -44,7 +48,7 @@ def RandomTest():
   print(np_mean)
   print(np_cov)
 
-def TrainTest():
+def QuantumGaussianDistributionTrainTest():
   mean = np.array([1, 3, 0, 2.5])
   cov = np.matrix([[3.0, 0.0, 1.0, 4.0],
                    [0.0, 2.4, 0.5, 0.1],
@@ -71,7 +75,11 @@ def TrainTest():
   print(d2.mean)
   print(d2.cov)
 
+##################################
+## Gaussian Mixture Models Test ##
+##################################
+
 if __name__ == "__main__":
-  #RandomTest()
-  TrainTest()
+  #QuantumGaussianDistributionRandomTest()
+  QuantumGaussianDistributionTrainTest()
   
