@@ -21,7 +21,7 @@ class GaussianDistribution:
     obs = np.asmatrix(observations)
     obs_len = obs.shape[1]
     probabilities = []
-
+    
     for i in range(obs_len):
       tmp = self.LogProbability(observations[:, i])
       tmp = np.asarray(tmp[0])
@@ -47,6 +47,8 @@ class GaussianDistribution:
   
   def Covariance(self, cov):
     self.cov = cov
+    self.ApplyPositiveDefinite(self.cov)
+    self.FactorCovariance()
 
   def FactorCovariance(self):
     self.covLower = np.linalg.cholesky(self.cov)

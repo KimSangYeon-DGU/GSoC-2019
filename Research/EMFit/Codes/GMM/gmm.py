@@ -1,4 +1,5 @@
 import numpy as np
+import random
 
 class GMM:
   gaussians = 0
@@ -26,4 +27,39 @@ class GMM:
     else:
       return np.log(self.weights[component]) + self.dists[component].LogProbability(observation)
   
-  #def Random():
+  def Random(self):
+    threshold = random.random()
+    gaussian = 0
+
+    sumProb = 0
+
+    for g in range(self.gaussians):
+      sumProb += self.weights[g]
+      if threshold <= sumProb:
+        gaussian = g
+        break
+
+    return self.dists[gaussian].Random()
+
+  def LogLikelihood(self, observation, dists, weights):
+    loglikelihood = 0
+    probabilities = None
+    likelihoods = np.zeros((self.gaussians, observation.shape[1]))
+
+    for i in range(self.gaussians):
+      probabilities = dists[i].Probability(observation)
+      likelihoods[i] = weights[i] * probabilities
+    
+    for i in range(self.gaussians):
+      loglikelihood += np.log(np.sum(likelihoods[:, i]))
+    
+    return loglikelihood
+
+  def Train(self, observation, trials):
+    distsOrig = []
+    weightsOrig = []
+
+    # fitter = EMFit(300, 1e-10)
+    # fitter.Estimate(observation, self.dists, self.weights)
+
+    bestLikelihood = self.LogLikelihood(observation, self.dists, self.weights)

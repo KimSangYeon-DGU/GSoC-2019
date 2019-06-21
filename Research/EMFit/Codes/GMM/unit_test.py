@@ -81,5 +81,13 @@ def GaussianDistributionTrainTest():
 
 if __name__ == "__main__":
   #GaussianDistributionRandomTest()
-  GaussianDistributionTrainTest()
+  #GaussianDistributionTrainTest()
+
+  mat = np.zeros((5, 5))
+  v = np.array( [1,2,3,4,5] )
+
+  mat[2] = v
+
+  print(mat)
+
   
