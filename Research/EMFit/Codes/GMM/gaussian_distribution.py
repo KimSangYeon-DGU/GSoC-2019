@@ -1,6 +1,6 @@
 import numpy as np
 
-class QuantumGaussianDistribution:
+class GaussianDistribution:
   mean = []
   cov = []
   invCov = []
@@ -9,8 +9,6 @@ class QuantumGaussianDistribution:
   log2pi = 1.83787706640934533908193770912475883
 
   def __init__(self, mean, cov):
-    #print("Initialize QuantumGaussianDistribution")
-
     self.mean = np.asarray(mean)
     self.cov = np.asmatrix(cov)
 

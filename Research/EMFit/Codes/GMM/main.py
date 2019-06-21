@@ -1,5 +1,5 @@
-from quantum_gaussian_distribution import QuantumGaussianDistribution
-from quantum_gmm import QuantumGMM
+from gaussian_distribution import GaussianDistribution
+from gmm import GMM
 import numpy as np
 
 if __name__ == "__main__":
@@ -29,13 +29,8 @@ if __name__ == "__main__":
 
   #print(observations[:, 0])
   # Create distributions
-  d1 = QuantumGaussianDistribution(mean1, cov1)
-  d2 = QuantumGaussianDistribution(mean2, cov2)
+  d1 = GaussianDistribution(mean1, cov1)
+  d2 = GaussianDistribution(mean2, cov2)
 
   # Create GMM
-  gmm = QuantumGMM(d1, d2)
-
-  a = gmm.dists[0].Probability(observations)
-  #print(a.shape)
-  #print(a)
   

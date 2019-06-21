@@ -1,5 +1,5 @@
-from quantum_gaussian_distribution import QuantumGaussianDistribution
-from quantum_gmm import QuantumGMM
+from gaussian_distribution import GaussianDistribution
+from gmm import GMM
 import numpy as np
 
 ################################
@@ -25,16 +25,16 @@ def QuantumGaussianDistributionProbabilityTest():
 
   print(observations[:, 0])
   # Create distributions
-  d1 = QuantumGaussianDistribution(mean1, cov1)
+  d1 = GaussianDistribution(mean1, cov1)
   mean1 *= -1
   print(d1.Probability(observations)) 
 
-def QuantumGaussianDistributionRandomTest():
+def GaussianDistributionRandomTest():
   mean = np.array([1.0, 2.25])
   cov = np.matrix([[0.85, 0.60],
                    [0.60, 1.45]])
 
-  d = QuantumGaussianDistribution(mean, cov)
+  d = GaussianDistribution(mean, cov)
 
   obs = np.zeros((2, 5000))
 
@@ -48,7 +48,7 @@ def QuantumGaussianDistributionRandomTest():
   print(np_mean)
   print(np_cov)
 
-def QuantumGaussianDistributionTrainTest():
+def GaussianDistributionTrainTest():
   mean = np.array([1, 3, 0, 2.5])
   cov = np.matrix([[3.0, 0.0, 1.0, 4.0],
                    [0.0, 2.4, 0.5, 0.1],
@@ -63,12 +63,12 @@ def QuantumGaussianDistributionTrainTest():
 
   obs = np.zeros((4, 10000))
 
-  d1 = QuantumGaussianDistribution(mean, cov)
+  d1 = GaussianDistribution(mean, cov)
 
   for i in range(10000):
     obs[:,i] = d1.Random()
 
-  d2 = QuantumGaussianDistribution(mean, cov)
+  d2 = GaussianDistribution(mean, cov)
 
   d2.Train(obs)
 
@@ -80,6 +80,6 @@ def QuantumGaussianDistributionTrainTest():
 ##################################
 
 if __name__ == "__main__":
-  #QuantumGaussianDistributionRandomTest()
-  QuantumGaussianDistributionTrainTest()
+  #GaussianDistributionRandomTest()
+  GaussianDistributionTrainTest()
   

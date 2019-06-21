@@ -1,12 +1,12 @@
 import numpy as np
-class QuantumGMM:  
+
+class GMM:
   gaussians = 0
   dimensionality = 0
   dists = []
   weights = []
 
   def __init__(self, gaussian, dimensionality):
-    #print("Initialize QuantumGMM")
     self.gaussians = gaussian
     self.dimensionality = dimensionality
 
@@ -26,5 +26,4 @@ class QuantumGMM:
     else:
       return np.log(self.weights[component]) + self.dists[component].LogProbability(observation)
   
-  def Random():
-    
+  #def Random():
