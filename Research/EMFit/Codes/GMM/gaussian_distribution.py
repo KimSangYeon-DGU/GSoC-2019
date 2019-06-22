@@ -21,8 +21,8 @@ class GaussianDistribution:
     obs = np.asmatrix(observations)
     obs_len = obs.shape[1]
     probabilities = []
-    
-    for i in range(obs_len):
+
+    for i in range(obs_len):      
       tmp = self.LogProbability(observations[:, i])
       tmp = np.asarray(tmp[0])
       probabilities.append(np.exp(tmp[0][0]))
@@ -33,9 +33,11 @@ class GaussianDistribution:
   # Calculate log-probability
   def LogProbability(self, observations):
     observations = np.transpose(observations)
-    #print(observations.shape)
+    
     observations = np.asarray(observations)
-    k = observations.shape[1]
+
+    k = len(observations)
+    
     diff = observations - self.mean
     
     v = np.dot(np.dot(diff, self.invCov), np.transpose(diff))

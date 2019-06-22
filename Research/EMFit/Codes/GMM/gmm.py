@@ -1,5 +1,6 @@
 import numpy as np
 import random
+from emfit import EMFit
 
 class GMM:
   gaussians = 0
@@ -56,10 +57,28 @@ class GMM:
     return loglikelihood
 
   def Train(self, observation, trials):
-    distsOrig = []
-    weightsOrig = []
-
-    # fitter = EMFit(300, 1e-10)
-    # fitter.Estimate(observation, self.dists, self.weights)
+    fitter = EMFit(300, 1e-10)
+    self.dists, self.weights = fitter.Estimate(observation, self.dists, self.weights)
 
     bestLikelihood = self.LogLikelihood(observation, self.dists, self.weights)
+
+    print("GMM::Train(): Log-likelihood of trial 1 is {0}.".format(bestLikelihood))
+
+    distsTrial = self.dists
+    weightsTrial = self.weights
+
+    for i in range(1, trials):
+      distsTrial, weightsTrial = fitter.Estimate(observation, distsTrial, weightsTrial)
+      newLikelihood = self.LogLikelihood(observation, distsTrial, weightsTrial)
+
+      print("GMM::Train(): Log-likelihood of trial {0} is {1}.".format(i + 1, newLikelihood))
+
+      if bestLikelihood < newLikelihood:
+        bestLikelihood = newLikelihood
+
+        self.dists = distsTrial
+        self.weights = weightsTrial
+    
+    print("GMM::Train(): Log-likelihood of trained GMM is {0}.".format(bestLikelihood))
+
+    return bestLikelihood
