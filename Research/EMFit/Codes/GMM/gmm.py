@@ -12,12 +12,21 @@ class GMM:
     self.gaussians = gaussian
     self.dimensionality = dimensionality
 
+  # Warning! the observation should be matrix format.
   def Probability(self, observation, component = -1):
-    if component < 0:
-      return np.exp(self.LogProbability(observation))
-    else:
-      return np.exp(self.LogProbability(observation, component))
+    probs = []
 
+    for i in range(observation.shape[1]):
+      if component < 0:
+        p = np.exp(self.LogProbability(observation[:, i]))
+        probs.append(np.asarray(p)[0][0])
+      else:
+        p = np.exp(self.LogProbability(observation[:, i], component))
+        probs.append(np.asarray(p)[0][0])
+
+    return probs
+
+  # Warning! the observation should be vector format.
   def LogProbability(self, observation, component = -1):
     if component < 0:
       sum = 0
