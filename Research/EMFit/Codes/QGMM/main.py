@@ -30,12 +30,15 @@ if __name__ == "__main__":
 
   # Set observations to train
   # d1 = 0.4, d2 = 0.6  
-  observations = np.zeros((5, 1000))
+  totalObsNum = 1000
+  w1 = 0.3
+  w2 = 1 - w1
+  observations = np.zeros((5, totalObsNum))
 
-  for i in range(400):
+  for i in range(int(w1 * totalObsNum)):
     observations[:, i] = d1.Random()
   
-  for i in range(400, 1000):
+  for i in range(int(w1 * totalObsNum), totalObsNum):
     observations[:, i] = d2.Random()
   
   # Convert it to matrix
@@ -50,18 +53,16 @@ if __name__ == "__main__":
   gmm.Weights(weights)
   
   # Train QGMM
-  gmm.Train(observations, 1)
+  gmm.Train(observations, 3)
   #print(gmm.Probability(observations))
 
   # Check the trained parameters
-  print(gmm.weights ** 2)
-  print(gmm.dists[0].mean)
-  print()
-  
-  print(gmm.dists[1].mean)
-  print()
+  print("*** Check the trained parameters ***")
+  print("d1's weight: {0}".format(gmm.weights[0] ** 2))
+  print("d2's weight: {0}\n".format(gmm.weights[1] ** 2))
 
-  print(gmm.dists[0].cov)
-  print()
+  print("d1's mean: {0}".format(gmm.dists[0].mean))
+  print("d2's mean: {0}\n".format(gmm.dists[1].mean))
 
-  print(gmm.dists[1].cov)
+  print("d1's covariance: \n{0}\n".format(gmm.dists[0].cov))
+  print("d2's covariance: \n{0}\n".format(gmm.dists[1].cov))

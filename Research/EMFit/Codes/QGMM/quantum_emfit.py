@@ -61,9 +61,14 @@ class QuantumEMFit:
       #R = 2 * F 
 
       # Equation 2
+      #R = F
+      #R[:, 0] += ((weightsTrial[0] ** 2) * (G1 ** 2 )) / ((weightsTrial[0] ** 2) * (G1 ** 2) + (weightsTrial[1] ** 2) * (G2 ** 2) + (0.5 * alphao))
+      #R[:, 1] += ((weightsTrial[1] ** 2) * (G2 ** 2 )) / ((weightsTrial[0] ** 2) * (G1 ** 2) + (weightsTrial[1] ** 2) * (G2 ** 2) + (0.5 * alphao))
+
+      # Equation 3
       R = F
-      R[:, 0] += ((weightsTrial[0] ** 2) * (G1 ** 2 )) / ((weightsTrial[0] ** 2) * (G1 ** 2) + (weightsTrial[1] ** 2) * (G2 ** 2) + (0.5 * alphao))
-      R[:, 1] += ((weightsTrial[1] ** 2) * (G2 ** 2 )) / ((weightsTrial[0] ** 2) * (G1 ** 2) + (weightsTrial[1] ** 2) * (G2 ** 2) + (0.5 * alphao))
+      R[:, 0] += ((weightsTrial[0] ** 2) * (G1 ** 2 )) / ((weightsTrial[0] ** 2) * (G1 ** 2) + (weightsTrial[1] ** 2) * (G2 ** 2) + alphao)
+      R[:, 1] += ((weightsTrial[1] ** 2) * (G2 ** 2 )) / ((weightsTrial[0] ** 2) * (G1 ** 2) + (weightsTrial[1] ** 2) * (G2 ** 2) + alphao)
 
       # Normalize row-wise
       for i in range(condProbs.shape[0]):
