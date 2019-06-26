@@ -35,13 +35,21 @@ class QuantumEMFit:
       G2 = distsTrial[1].Probability(observations)
 
       # Calculate o_{i}
-      if np.sum(G1 * G2) == 0:
-        break
-
-      o = (G1 * G2) / np.sum(G1 * G2)
+      #if np.sum(G1 * G2) == 0:
+      #  break
+      '''
+      if np.sum(G1 * G2) != 0:
+        o = (G1 * G2) / np.sum(G1 * G2)
+        np.clip(o, 1e-10, 1e50)
+        print(o)
+      else:
+      '''
+      o = 0
       
       # Calcualte (alpha o)_{i}
       alphao = (1 - weightsTrial[0] ** 2 - weightsTrial[1] ** 2) * o
+      
+      #alphao = 0 # Simulation phis equal zero
 
       commonDivisor = (weightsTrial[0] ** 2) * (G1 ** 2) + (weightsTrial[1] ** 2) * (G2 ** 2) + alphao
 

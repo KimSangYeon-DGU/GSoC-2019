@@ -53,7 +53,6 @@ if __name__ == "__main__":
   gmm.Train(observations, 1)
   #print(gmm.Probability(observations))
 
-  '''
   # Check the trained parameters
   print(gmm.weights)
   print(gmm.dists[0].mean)
@@ -66,4 +65,3 @@ if __name__ == "__main__":
   print()
 
   print(gmm.dists[1].cov)
-  '''
