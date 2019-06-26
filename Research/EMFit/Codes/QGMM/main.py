@@ -54,7 +54,7 @@ if __name__ == "__main__":
   #print(gmm.Probability(observations))
 
   # Check the trained parameters
-  print(gmm.weights)
+  print(gmm.weights ** 2)
   print(gmm.dists[0].mean)
   print()
   

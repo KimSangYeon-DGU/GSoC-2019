@@ -35,34 +35,35 @@ class QuantumEMFit:
       G2 = distsTrial[1].Probability(observations)
 
       # Calculate o_{i}
-      #if np.sum(G1 * G2) == 0:
-      #  break
-      '''
       if np.sum(G1 * G2) != 0:
         o = (G1 * G2) / np.sum(G1 * G2)
-        np.clip(o, 1e-10, 1e50)
-        print(o)
       else:
-      '''
-      o = 0
+        o = 0
       
       # Calcualte (alpha o)_{i}
       alphao = (1 - weightsTrial[0] ** 2 - weightsTrial[1] ** 2) * o
-      
-      #alphao = 0 # Simulation phis equal zero
 
       commonDivisor = (weightsTrial[0] ** 2) * (G1 ** 2) + (weightsTrial[1] ** 2) * (G2 ** 2) + alphao
 
       # Calculate Q matrix
-      condProbs[:, 0] = ((weightsTrial[0] ** 2) * (G1 ** 2 ) + 0.5 * alphao) / commonDivisor
-      condProbs[:, 1] = ((weightsTrial[1] ** 2) * (G2 ** 2 ) + 0.5 * alphao) / commonDivisor
+      if np.sum(commonDivisor) != 0:
+        condProbs[:, 0] = ((weightsTrial[0] ** 2) * (G1 ** 2 ) + 0.5 * alphao) / commonDivisor
+        condProbs[:, 1] = ((weightsTrial[1] ** 2) * (G2 ** 2 ) + 0.5 * alphao) / commonDivisor
+      else:
+        break
 
       # Calculate F matrix
       F[:, 0] = condProbs[:, 0] - o * np.sum(0.5 * alphao / commonDivisor)
       F[:, 1] = condProbs[:, 1] - o * np.sum(0.5 * alphao / commonDivisor)
       
       # Calculate R matrix
-      R = 2 * F
+      # Equation 1
+      #R = 2 * F 
+
+      # Equation 2
+      R = F
+      R[:, 0] += ((weightsTrial[0] ** 2) * (G1 ** 2 )) / ((weightsTrial[0] ** 2) * (G1 ** 2) + (weightsTrial[1] ** 2) * (G2 ** 2) + (0.5 * alphao))
+      R[:, 1] += ((weightsTrial[1] ** 2) * (G2 ** 2 )) / ((weightsTrial[0] ** 2) * (G1 ** 2) + (weightsTrial[1] ** 2) * (G2 ** 2) + (0.5 * alphao))
 
       # Normalize row-wise
       for i in range(condProbs.shape[0]):
@@ -93,7 +94,7 @@ class QuantumEMFit:
 
         distsTrial[i].Covariance(cov)
 
-      weightsTrial = np.sum(condProbs, 0) / observations.shape[1]
+      weightsTrial = np.sqrt(np.sum(condProbs, 0) / observations.shape[1])
       llOld = ll
 
       ll = self.LogLikelihood(observations, distsTrial, weightsTrial)
@@ -113,7 +114,10 @@ class QuantumEMFit:
       likelihoods[i] = (weights[i] * probabilities) ** 2
     
     for i in range(len(dists)):
-      loglikelihood += np.log(np.sum(likelihoods[:, i]))
+      if np.sum(likelihoods[:, i]) != 0:
+        loglikelihood += np.log(np.sum(likelihoods[:, i]))
+      else:
+        loglikelihood += 0
     
     return loglikelihood
 

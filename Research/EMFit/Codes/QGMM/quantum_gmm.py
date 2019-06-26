@@ -32,9 +32,6 @@ class QuantumGMM:
     P1 = (self.weights[0] ** 2) * (G1 ** 2) + self.weights[0] * self.weights[1] * G1 * G2 * self.PhaseDifference(observation)
     P2 = (self.weights[1] ** 2) * (G2 ** 2) + self.weights[0] * self.weights[1] * G1 * G2 * self.PhaseDifference(observation)
 
-    #P1 = (self.weights[0] ** 2) * (G1 ** 2) + self.weights[0] * self.weights[1] * G1 * G2 * 0
-    #P2 = (self.weights[1] ** 2) * (G2 ** 2) + self.weights[0] * self.weights[1] * G1 * G2 * 0
-
     if component == 0:
       return P1
     elif component == 1:
