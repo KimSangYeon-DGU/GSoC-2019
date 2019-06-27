@@ -67,13 +67,24 @@ class QuantumGMM:
     
     return loglikelihood
 
-  def Train(self, observation, trials):
+  def Train(self, observation, trials, init_clustering = True):
     fitter = QuantumEMFit(300, 1e-10)
+    
+    # If initial clustering is true, run the K-means clustering to initialize the parameters 
+    if init_clustering:
+      dists, weights = fitter.InitialClustering(observation, self.dists, self.weights)
+
+    for i in range(len(dists)):
+      self.dists[i].Mean(dists[i].mean)
+      self.dists[i].Covariance(dists[i].cov)
+    
+    self.Weights(weights)
+    
     self.dists, self.weights = fitter.Estimate(observation, self.dists, self.weights)
 
     bestLikelihood = self.LogLikelihood(observation, self.dists, self.weights)
 
-    print("GMM::Train(): Log-likelihood of trial 1 is {0}.".format(bestLikelihood))
+    print("QuantumGMM::Train(): Log-likelihood of trial 1 is {0}.".format(bestLikelihood))
 
     distsTrial = self.dists
     weightsTrial = self.weights
@@ -82,7 +93,7 @@ class QuantumGMM:
       distsTrial, weightsTrial = fitter.Estimate(observation, distsTrial, weightsTrial)
       newLikelihood = self.LogLikelihood(observation, distsTrial, weightsTrial)
 
-      print("GMM::Train(): Log-likelihood of trial {0} is {1}.".format(i + 1, newLikelihood))
+      print("QuantumGMM::Train(): Log-likelihood of trial {0} is {1}.".format(i + 1, newLikelihood))
 
       if bestLikelihood < newLikelihood:
         bestLikelihood = newLikelihood
@@ -90,6 +101,6 @@ class QuantumGMM:
         self.dists = distsTrial
         self.weights = weightsTrial
     
-    print("GMM::Train(): Log-likelihood of trained GMM is {0}.".format(bestLikelihood))
+    print("QuantumGMM::Train(): Log-likelihood of trained GMM is {0}.".format(bestLikelihood))
 
     return bestLikelihood

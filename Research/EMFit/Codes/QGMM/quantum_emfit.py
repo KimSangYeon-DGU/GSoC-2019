@@ -1,6 +1,7 @@
 import numpy as np
 import sys
 import math
+from sklearn.cluster import KMeans
 
 class QuantumEMFit:
   maxIterations = 0
@@ -14,10 +15,6 @@ class QuantumEMFit:
     distsTrial = dists
     weightsTrial = weights
 
-    # If we use the clustering algorithm like K-Means initially, the performance would be increased.
-    # However, this time, I skip any initial clustering.
-    #distsTrial, weightsTrial = self.InitialClustering(distsTrial, weightsTrial)
-
     ll = self.LogLikelihood(observations, distsTrial, weightsTrial)
 
     llOld = -sys.float_info.max
@@ -29,7 +26,7 @@ class QuantumEMFit:
     iteration = 1
 
     while (self.tolerance < abs(ll - llOld) and iteration != self.maxIterations):
-      print("EMFit::Estimate(): iteration {0}, log-likelihood {1}.".format(iteration, ll))
+      print("QuantumEMFit::Estimate(): iteration {0}, log-likelihood {1}.".format(iteration, ll))
 
       G1 = distsTrial[0].Probability(observations)
       G2 = distsTrial[1].Probability(observations)
@@ -126,5 +123,47 @@ class QuantumEMFit:
     
     return loglikelihood
 
-  def InitialClustering(self, dists, weights):
-    print("Initial Clustering")
+  def InitialClustering(self, observations, dists, weights):
+    kmeans = KMeans(n_clusters = len(dists), random_state = 0).fit(np.transpose(observations))
+    assignments = kmeans.labels_
+    #print(assignments)
+
+    # Create the means and covariances
+    means = []
+    covs = []
+    distsTrial = dists
+    weightsTrial = weights
+    for i in range(len(dists)):
+      means.append(np.zeros(len(dists[0].mean)))
+      covs.append(np.zeros((len(dists[0].mean), len(dists[0].mean))))
+
+    # From the assignments, calculate the mean, the covariances, and the weights
+    for i in range(observations.shape[1]):
+      cluster = assignments[i]
+      means[cluster] += np.asarray(observations[:, i].flatten())[0]
+
+      weights[cluster] += 1
+
+    # Normalize the mean
+    for i in range(len(dists)):
+      if weightsTrial[i] > 1:
+        means[i] /= weightsTrial[i]
+
+    for i in range(observations.shape[1]):
+      cluster = assignments[i]
+      
+      diffs = np.asmatrix(np.transpose(observations[:, i]) - means[cluster])[0]
+      diffs = np.transpose(diffs)
+      covs[cluster] += np.dot(diffs, np.transpose(diffs))
+
+    # Normalize and assign the estimated parameters    
+    for i in range(len(dists)):
+      if weightsTrial[i] > 1:
+        covs[i] /= weightsTrial[i]
+      
+      distsTrial[i].Mean(means[i])
+      distsTrial[i].Covariance(covs[i])
+
+    weightsTrial /= np.sum(weightsTrial)
+
+    return distsTrial, weightsTrial

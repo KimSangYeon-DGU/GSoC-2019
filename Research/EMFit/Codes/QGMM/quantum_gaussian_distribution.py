@@ -21,11 +21,12 @@ class QuantumGaussianDistribution:
     obs = np.asmatrix(observations)
     obs_len = obs.shape[1]
     probabilities = []
-
+    
     for i in range(obs_len):      
-      tmp = self.LogProbability(observations[:, i])
-      tmp = np.asarray(tmp[0])
-      probabilities.append(np.exp(tmp[0][0]))
+      tmp = self.LogProbability(observations[:, i])      
+      tmp = np.asarray(tmp)[0]
+      #print(tmp)
+      probabilities.append(np.exp(tmp[0]))
     
     probabilities = np.asarray(probabilities)
     return probabilities
@@ -41,7 +42,7 @@ class QuantumGaussianDistribution:
     diff = observations - self.mean
     
     v = np.dot(np.dot(diff, self.invCov), np.transpose(diff))
-    
+
     return -0.25 * (k * self.log2pi + self.logDetCov + v)
 
   def Mean(self, mean):

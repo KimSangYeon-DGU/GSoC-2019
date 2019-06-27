@@ -65,8 +65,21 @@ class GMM:
     
     return loglikelihood
 
-  def Train(self, observation, trials):
+  def Train(self, observation, trials, init_clustering = True):
     fitter = EMFit(300, 1e-10)
+
+    # If initial clustering is true, run the K-means clustering to initialize the parameters 
+    if init_clustering:
+      dists, weights = fitter.InitialClustering(observation, self.dists, self.weights)
+
+    for i in range(len(dists)):
+      self.dists[i].Mean(dists[i].mean)
+      self.dists[i].Covariance(dists[i].cov)
+    
+    self.weights = weights
+    
+    self.dists, self.weights = fitter.Estimate(observation, self.dists, self.weights)
+
     self.dists, self.weights = fitter.Estimate(observation, self.dists, self.weights)
 
     bestLikelihood = self.LogLikelihood(observation, self.dists, self.weights)
