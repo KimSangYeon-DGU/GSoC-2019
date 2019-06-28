@@ -26,6 +26,7 @@ class QuantumEMFit:
     iteration = 1
 
     while (self.tolerance < abs(ll - llOld) and iteration != self.maxIterations):
+    #while (iteration != 20):
       print("QuantumEMFit::Estimate(): iteration {0}, log-likelihood {1}.".format(iteration, ll))
 
       G1 = distsTrial[0].Probability(observations)
@@ -39,7 +40,7 @@ class QuantumEMFit:
       
       # Calcualte (alpha o)_{i}
       alphao = (1 - weightsTrial[0] ** 2 - weightsTrial[1] ** 2) * o
-
+      #print(np.max(alphao), np.min(alphao))
       commonDivisor = (weightsTrial[0] ** 2) * (G1 ** 2) + (weightsTrial[1] ** 2) * (G2 ** 2) + alphao
 
       # Calculate Q matrix
@@ -55,7 +56,7 @@ class QuantumEMFit:
       
       # Calculate R matrix
       # Equation 1
-      #R = 2 * F 
+      R = 2 * F 
 
       # Equation 2
       #R = F
@@ -63,9 +64,9 @@ class QuantumEMFit:
       #R[:, 1] += ((weightsTrial[1] ** 2) * (G2 ** 2 )) / ((weightsTrial[0] ** 2) * (G1 ** 2) + (weightsTrial[1] ** 2) * (G2 ** 2) + (0.5 * alphao))
 
       # Equation 3
-      R = F
-      R[:, 0] += ((weightsTrial[0] ** 2) * (G1 ** 2 )) / ((weightsTrial[0] ** 2) * (G1 ** 2) + (weightsTrial[1] ** 2) * (G2 ** 2) + alphao)
-      R[:, 1] += ((weightsTrial[1] ** 2) * (G2 ** 2 )) / ((weightsTrial[0] ** 2) * (G1 ** 2) + (weightsTrial[1] ** 2) * (G2 ** 2) + alphao)
+      #R = F
+      #R[:, 0] += ((weightsTrial[0] ** 2) * (G1 ** 2 )) / ((weightsTrial[0] ** 2) * (G1 ** 2) + (weightsTrial[1] ** 2) * (G2 ** 2) + alphao)
+      #R[:, 1] += ((weightsTrial[1] ** 2) * (G2 ** 2 )) / ((weightsTrial[0] ** 2) * (G1 ** 2) + (weightsTrial[1] ** 2) * (G2 ** 2) + alphao)
 
       # Normalize row-wise
       for i in range(condProbs.shape[0]):
@@ -90,19 +91,30 @@ class QuantumEMFit:
         # Update covariance using observations and conditional probabilities
         diffsA = np.transpose(np.transpose(observations) - distsTrial[i].mean)
         
-
         diffsB = np.multiply(diffsA, np.transpose(R[:, i]))
         cov = np.dot(diffsA, np.transpose(diffsB)) / rSums[i]
 
         distsTrial[i].Covariance(cov)
 
-      weightsTrial = np.sqrt(np.sum(condProbs, 0) / observations.shape[1])
+      weightsSum = np.sum(weightsTrial)
+      weightsTrial = np.sum(condProbs, 0) / observations.shape[1]
+      weightsTrial /= weightsSum
+      
+      # Check the equation of the constraint (20) in the paper
+      a = (weightsTrial[0] * G1 - weightsTrial[1] * G2) ** 2
+      b = (weightsTrial[0] * G1 + weightsTrial[1] * G2) ** 2
+      aMax = np.max(a)
+      bMax = np.max(b)
+      aMin = np.min(a)
+      bMin = np.min(b)
+      print(max(aMax, bMax))
+      print(max(aMin, bMin))
+
       llOld = ll
 
       ll = self.LogLikelihood(observations, distsTrial, weightsTrial)
 
       iteration += 1
-
     
     return distsTrial, weightsTrial
 
@@ -110,6 +122,7 @@ class QuantumEMFit:
     loglikelihood = 0
     probabilities = None
     likelihoods = np.zeros((len(dists), observation.shape[1]))
+    weights /= np.sum(weights)
 
     for i in range(len(dists)):
       probabilities = dists[i].Probability(observation)
