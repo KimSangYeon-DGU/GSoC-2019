@@ -29,18 +29,19 @@ def apply_positive_definite_constraint(covariance, num_components):
   return cov
 
 def factor_covariance(covariance):
-  #cov = apply_positive_definite_constraint(covariance, 2)
-  #cov_lower = tf.linalg.cholesky(cov)
-  
-  #inv_cov_lower = tf.linalg.inv(cov_lower)
+  covariance = apply_positive_definite_constraint(covariance, 2)
+  cov_lower = tf.linalg.cholesky(covariance)
 
-  #inv_cov = tf.transpose(inv_cov_lower) * inv_cov_lower
-  #_, log_det_cov = tf.linalg.slogdet(cov_lower)
-  #log_det_cov *= 2
+  inv_cov_lower = tf.linalg.inv(cov_lower)
   
-  inv_cov = tf.diag((1 / tf.diag_part(covariance)))
-  log_det_cov = tf.reduce_sum(tf.math.log(tf.diag_part(covariance)))
-
+  inv_cov = tf.matmul(tf.transpose(inv_cov_lower), inv_cov_lower)
+  _, log_det_cov = tf.linalg.slogdet(cov_lower)
+  log_det_cov *= 2
+  
+  # For using when we use diagonal constraint.
+  #inv_cov = tf.diag((1 / tf.diag_part(covariance)))
+  #log_det_cov = tf.reduce_sum(tf.math.log(tf.diag_part(covariance)))
+  
   return inv_cov, log_det_cov
 
 def log_probability(observations, mean, covariance, c):
