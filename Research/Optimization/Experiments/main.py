@@ -11,11 +11,13 @@ dataset = df.to_numpy()
 dataset = np.transpose(dataset)
 obs = tf.convert_to_tensor(dataset, dtype=tf.float32)
 
+#obs = tf.constant([[1,2,3,4,5], [2,3,4,5,6]], dtype=tf.float32)
+
 # Set the number of components is 2.
 num_components = 2
 
-alphas = tf.Variable([1.0, 1.0], dtype=tf.float32)
-
+alphas = tf.Variable([1.0, 1.7], dtype=tf.float32)
+#alphas = tf.Variable([1.0, 1.0], dtype=tf.float32)
 # Initialize means and covariances.
 means = tf.Variable([[1.0638845, 52.47851638], [5.48966197, 79.96811517]], dtype=tf.float32, trainable=True)
 covs = tf.Variable([[[0.06916767, 0.4], [0.4, 33.69728207]],[[0.16996844, 0.3],[0.3, 36.04621132]]], dtype=tf.float32, trainable=True)
@@ -28,6 +30,8 @@ for i in range(num_components):
 G = tf.convert_to_tensor(G, dtype=tf.float32)
 G = tf.div(G, tf.reduce_sum(G))
 Q = get_Q(G, alphas, num_components)
+Q = tf.stop_gradient(Q)
+#Q = get_Q(G, alphas, num_components)
 
 # lambda
 ld = 0.1
@@ -52,34 +56,35 @@ sess.run(init)
 plot_clustered_data(dataset, means.eval(), covs.eval(), "QGMM_first.png")
 
 # Set the number of iterations is 2000.
-n_iter = 120000
+n_iter = 100
 
-best_j = -2e9
+best_J = -2e9
 best_alphas = None
 best_means = None
 best_covs = None
-for i in range(n_iter):
-    _ = sess.run(training_op)
-    sess.run(alphas)
-    sess.run(means)
-    sess.run(covs)
-    sess.run(J)
-    print(i, means.eval())
-    
-    # Save the parameters.
-    #if math.isnan(J.eval()) != True and best_j < J.eval():
-      #best_j = J.eval()
-      #best_alphas = alphas.eval()
-      #best_means = means.eval()
-      #best_covs = covs.eval()
 
-best_j = J.eval()
+for i in range(n_iter):
+  _ = sess.run(training_op)
+  sess.run(alphas)
+  sess.run(means)
+  sess.run(covs)
+  sess.run(J)
+  print(i, J.eval())
+
+  # Save the parameters.
+  #if math.isnan(J.eval()) != True and best_j < J.eval():
+    #best_j = J.eval()
+    #best_alphas = alphas.eval()
+    #best_means = means.eval()
+    #best_covs = covs.eval()
+
+best_J = J.eval()
 best_alphas = alphas.eval()
 best_means = means.eval()
 best_covs = covs.eval()
 
 # Check the trained parameters with actual mean and covariance using numpy
-print('\nCost:{0}\n\nalphas:\n{1}\n\nmeans:\n{2}\n\ncovariances:\n{3}\n\n'.format(best_j, best_alphas, best_means, best_covs))
+print('\nCost:{0}\n\nalphas:\n{1}\n\nmeans:\n{2}\n\ncovariances:\n{3}\n\n'.format(best_J, best_alphas, best_means, best_covs))
 
 plot_clustered_data(dataset, best_means, best_covs, "QGMM_last_{0}_{1}_{2}.png".format(ld, lr, n_iter))
 
