@@ -19,8 +19,10 @@ num_components = 2
 alphas = tf.Variable([1.0, 1.7], dtype=tf.float32)
 #alphas = tf.Variable([1.0, 1.0], dtype=tf.float32)
 # Initialize means and covariances.
-means = tf.Variable([[1.0638845, 52.47851638], [5.48966197, 79.96811517]], dtype=tf.float32, trainable=True)
-covs = tf.Variable([[[0.06916767, 0.4], [0.4, 33.69728207]],[[0.16996844, 0.3],[0.3, 36.04621132]]], dtype=tf.float32, trainable=True)
+means = tf.Variable([[1.0638845, 52.47851638], [5.48966197, 79.96811517]], \
+     dtype=tf.float32, trainable=True)
+covs = tf.Variable([[[0.06916767, 0.4], [0.4, 33.69728207]], \
+    [[0.16996844, 0.3],[0.3, 36.04621132]]], dtype=tf.float32, trainable=True)
 
 # Calculate normalized gaussians
 G = []
@@ -41,7 +43,11 @@ lr = 0.01
 
 # Objective function :: Minimize (NLL + lambda * approximation constant)
 # Approximation constant :: (Sum of P) - 1 = 0
-J = tf.reduce_sum(Q[0] * tf.math.log(tf.clip_by_value(G[0], 1e-10, 1e10)) + Q[1] * tf.math.log(tf.clip_by_value(G[1], 1e-10, 1e10))) + ld * (((alphas[0] ** 2) + (alphas[1] ** 2) + 2 * alphas[0] * alphas[1] * get_cosine(G, alphas) * tf.reduce_sum(G[0] * G[1])) - 1)
+J = tf.reduce_sum(Q[0] * tf.math.log(tf.clip_by_value(G[0], 1e-10, 1e10)) + \
+    Q[1] * tf.math.log(tf.clip_by_value(G[1], 1e-10, 1e10))) + \
+    ld * (((alphas[0] ** 2) + (alphas[1] ** 2) + \
+    2 * alphas[0] * alphas[1] * get_cosine(G, alphas) * \
+    tf.reduce_sum(G[0] * G[1])) - 1)
 
 # Set optimizer to Adam with learning rate 0.1
 optim = tf.train.AdamOptimizer(learning_rate=lr)
@@ -84,8 +90,10 @@ best_means = means.eval()
 best_covs = covs.eval()
 
 # Check the trained parameters with actual mean and covariance using numpy
-print('\nCost:{0}\n\nalphas:\n{1}\n\nmeans:\n{2}\n\ncovariances:\n{3}\n\n'.format(best_J, best_alphas, best_means, best_covs))
+print('\nCost:{0}\n\nalphas:\n{1}\n\nmeans:\n{2}\n\ncovariances:\n{3}\n\n'.\
+    format(best_J, best_alphas, best_means, best_covs))
 
-plot_clustered_data(dataset, best_means, best_covs, "QGMM_last_{0}_{1}_{2}.png".format(ld, lr, n_iter))
+plot_clustered_data(dataset, best_means, best_covs, \
+    "QGMM_last_{0}_{1}_{2}.png".format(ld, lr, n_iter))
 
 sess.close()

@@ -16,7 +16,8 @@ def apply_positive_definite_constraint(covariance, num_components):
     for i in range(num_components):
       tmp_eigval.append(tf.math.maximum(eigval[i], minEigval))
     
-    cov = tf.matmul(tf.matmul(eigvec, tf.diag(tmp_eigval)), tf.transpose(eigvec))
+    cov = tf.matmul(tf.matmul(eigvec, tf.diag(tmp_eigval)), \
+        tf.transpose(eigvec))
     return cov
 
   def false():
@@ -62,7 +63,8 @@ def unnormalized_gaussians(observations, mean, covariance):
   return tf.exp(log_probability(observations, mean, covariance, 0.25))
 
 def get_cosine(G, alphas):
-  return (1 - (alphas[0] ** 2) - (alphas[1] ** 2)) / (2 * alphas[0] * alphas[1] * tf.reduce_sum(G[0] * G[1]))
+  return (1 - (alphas[0] ** 2) - (alphas[1] ** 2)) / (2 * alphas[0] \
+      * alphas[1] * tf.reduce_sum(G[0] * G[1]))
 
 def quantum_gmm(observations, alphas, means, covariances, num_components):
   G = []
@@ -74,7 +76,8 @@ def quantum_gmm(observations, alphas, means, covariances, num_components):
   prob_sum = 0
   
   for i in range(num_components):
-    prob_sum += (alphas[i] ** 2) * (G[i] ** 2) + (alphas[0] * alphas[1] * get_cosine(G, alphas) * G[0] * G[1])
+    prob_sum += (alphas[i] ** 2) * (G[i] ** 2) + (alphas[0] * alphas[1] \
+        * get_cosine(G, alphas) * G[0] * G[1])
   
   return prob_sum
 
@@ -84,7 +87,8 @@ def constraint(observations, alphas, means, covariances, num_components):
     G.append(unnormalized_gaussians(observations, means[i], covariances[i]))
   G = tf.convert_to_tensor(G, dtype=tf.float32)
 
-  return (alphas[0] ** 2) + (alphas[1] ** 2) + 2 * alphas[0] * alphas[1] * get_cosine(G, alphas) * tf.reduce_sum(G[0] * G[1])
+  return (alphas[0] ** 2) + (alphas[1] ** 2) + 2 * alphas[0] * alphas[1] \
+      * get_cosine(G, alphas) * tf.reduce_sum(G[0] * G[1])
 
 # Calculate responsibilities.
 def get_Q(G, alphas, num_components):
@@ -92,7 +96,8 @@ def get_Q(G, alphas, num_components):
   alphao = (1 - (alphas[0] ** 2) - (alphas[1] ** 2)) * o
 
   Q = []
-  common_divisor = (alphas[0] ** 2) * (G[0] ** 2) + (alphas[1] ** 2) * (G[1] ** 2) + alphao
+  common_divisor = (alphas[0] ** 2) * (G[0] ** 2) + (alphas[1] ** 2) \
+      * (G[1] ** 2) + alphao
   for i in range(num_components):
     Q.append((alphas[i] ** 2) * (G[i] ** 2) + 0.5 * alphao)
   Q /= common_divisor
