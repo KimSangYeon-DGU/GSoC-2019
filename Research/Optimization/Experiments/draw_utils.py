@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import numpy as np
+import os, subprocess, glob
 from matplotlib.patches import Ellipse
 
 CLUSTERS = 2
@@ -26,7 +27,7 @@ def cov_ellipse(points, cov, nstd):
 
     return width, height, theta
 
-def plot_clustered_data(points, c_means, covs, file_name):
+def plot_clustered_data(points, c_means, covs, file_name, image_num):
     """Plots the cluster-colored data and the cluster means"""
     colors = cm.rainbow(np.linspace(0, 1, CLUSTERS))
     ax = plt.gca()
@@ -41,12 +42,22 @@ def plot_clustered_data(points, c_means, covs, file_name):
         height=height1, angle=theta1, edgecolor='g', fc='None', lw=2, zorder=4)
 
     width2, height2, theta2 = cov_ellipse(points, covs[1], nstd=2)                       
-    ellipse2 = Ellipse(xy=(c_means[1][0], c_means[1][1]), width=width1, \
-        height=height1, angle=theta1, edgecolor='b', fc='None', lw=2, zorder=4)
+    ellipse2 = Ellipse(xy=(c_means[1][0], c_means[1][1]), width=width2, \
+        height=height2, angle=theta2, edgecolor='b', fc='None', lw=2, zorder=4)
 
     ax.add_patch(ellipse1)
     ax.add_patch(ellipse2)
     fig = plt.gcf()
-    fig.savefig(file_name)
+    fig.savefig("./videos/file{0:08d}.png".format(image_num))
+    #fig.savefig(file_name)
     plt.close()
-    #plt.show()
+    
+
+def generate_video():        
+    os.chdir("./videos")
+    subprocess.call([
+        'ffmpeg', '-framerate', '8', '-i', 'file%08d.png', '-r', '30', '-pix_fmt', 'yuv420p',
+        'video_name.mp4'
+    ])
+    for file_name in glob.glob("*.png"):
+        os.remove(file_name)
