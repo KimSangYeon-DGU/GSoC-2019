@@ -24,20 +24,21 @@ obs = tf.convert_to_tensor(dataset, dtype=tf.float32)
 num_components = 2
 
 # Initialize means and covariances.
-alphas = tf.Variable([0.4, 0.6], dtype=tf.float32, trainable=True)
-means = tf.Variable([[2.0638845, 70.47851638], [4.58966197, 70.96811517]], \
+alphas = tf.Variable([0.37, 0.63], dtype=tf.float32, trainable=True)
+means = tf.Variable([[3.0638845, 70.47851638], [4.08966197, 70.96811517]], \
      dtype=tf.float32, trainable=True)
-covs = tf.Variable([[[0.06916767, 0.0], [0.0, 10.69728207]], \
-    [[0.06916767, 0.5], [0.5, 10.69728207]]], dtype=tf.float32, trainable=True)
+covs = tf.Variable([[[0.06916767, 0.03], [0.03, 20.69728207]], \
+    [[0.06916767, 0.03], [0.03, 39.69728207]]], dtype=tf.float32, trainable=True)
 
 # Calculate normalized gaussians
 G = []
 for i in range(num_components):
   G.append(unnormalized_gaussians(obs, means[i], covs[i]))
-
 G = tf.convert_to_tensor(G, dtype=tf.float32)
 
-#G = tf.div(G, tf.reduce_sum(G))
+P = quantum_gmm(obs, G, alphas, num_components)
+
+#P = tf.div(P, tf.reduce_sum(P))
 Q = get_Q(G, alphas, num_components)
 Q = tf.stop_gradient(Q)
 #Q = get_Q(G, alphas, num_components)
@@ -52,11 +53,11 @@ lr = 0.001
 
 # Objective function :: Minimize (NLL + lambda * approximation constant)
 # Approximation constant :: (Sum of P) - 1 = 0
-J = tf.reduce_sum(Q[0] * tf.math.log(tf.clip_by_value(G[0], 1e-10, 1e10)) + \
-    Q[1] * tf.math.log(tf.clip_by_value(G[1], 1e-10, 1e10))) + \
+J = tf.reduce_sum(Q[0] * tf.math.log(tf.clip_by_value(P[0], 1e-10, 1e10)) + \
+    Q[1] * tf.math.log(tf.clip_by_value(P[1], 1e-10, 1e10))) + \
     ld * (((alphas[0] ** 2) + (alphas[1] ** 2) + \
     2 * alphas[0] * alphas[1] * get_cosine(G, alphas) * \
-    tf.reduce_sum(G[0] * G[1])) - tf.reduce_sum(G)) #1)
+    tf.reduce_sum(G[0] * G[1])) - 1)#- tf.reduce_sum(P)) #1)
 '''
 J = tf.reduce_sum(Q[0] * tf.math.log(tf.clip_by_value(G[0], 1e-10, 1e10)) + \
     Q[1] * tf.math.log(tf.clip_by_value(G[1], 1e-10, 1e10)))
@@ -70,10 +71,12 @@ sess = tf.InteractiveSession()
 init = tf.global_variables_initializer()
 
 sess.run(init)
-print(sess.run(tf.reduce_sum(G)))
+#print(sess.run(P))
+#print(sess.run(tf.reduce_sum(G)))
+#print(sess.run(tf.reduce_sum(G)))
 
 # Set the number of iterations is 2000.
-n_iter = 100
+n_iter = 10
 
 best_J = -2e9
 best_alphas = None
@@ -83,7 +86,7 @@ best_covs = None
 plot_clustered_data(dataset, means.eval(), covs.eval(),\
     "QGMM_last_{0}_{1}_{2}.png".format(ld, lr, n_iter), 0)
 
-for i in range(200):
+for i in range(2000):
   optimize()  
   sess.run(J)
   #print(J.eval())
@@ -97,14 +100,14 @@ for i in range(200):
     "QGMM_last_{0}_{1}_{2}.png".format(ld, lr, n_iter), i+1)
   
   #print(i, Q.eval())
-  print(sess.run(tf.reduce_sum(G)))
+  print(sess.run(tf.reduce_sum(P)))
   # Save the parameters.
   #if math.isnan(J.eval()) != True and best_j < J.eval():
     #best_j = J.eval()
     #best_alphas = alphas.eval()
     #best_means = means.eval()
     #best_covs = covs.eval()
-print(sess.run(tf.reduce_sum(G)))
+print(sess.run(tf.reduce_sum(P)))
 
 # Check the trained parameters with actual mean and covariance using numpy
 print('\nCost:{0}\n\nalphas:\n{1}\n\nmeans:\n{2}\n\ncovariances:\n{3}\n\n'.\

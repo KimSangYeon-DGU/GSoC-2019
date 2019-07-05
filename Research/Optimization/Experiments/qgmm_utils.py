@@ -30,6 +30,7 @@ def apply_positive_definite_constraint(covariance, num_components):
   return cov
 
 def factor_covariance(covariance):
+  
   covariance = apply_positive_definite_constraint(covariance, 2)
   cov_lower = tf.linalg.cholesky(covariance)
 
@@ -38,7 +39,7 @@ def factor_covariance(covariance):
   inv_cov = tf.matmul(tf.transpose(inv_cov_lower), inv_cov_lower)
   _, log_det_cov = tf.linalg.slogdet(cov_lower)
   log_det_cov *= 2
-  
+
   # For using when we use diagonal constraint.
   #inv_cov = tf.diag((1 / tf.diag_part(covariance)))
   #log_det_cov = tf.reduce_sum(tf.math.log(tf.diag_part(covariance)))
@@ -66,6 +67,7 @@ def get_cosine(G, alphas):
   return (1 - (alphas[0] ** 2) - (alphas[1] ** 2)) / (2 * alphas[0] \
       * alphas[1] * tf.reduce_sum(G[0] * G[1]))
 
+'''
 def quantum_gmm(observations, alphas, means, covariances, num_components):
   G = []
   
@@ -80,6 +82,17 @@ def quantum_gmm(observations, alphas, means, covariances, num_components):
         * get_cosine(G, alphas) * G[0] * G[1])
   
   return prob_sum
+'''
+
+def quantum_gmm(observations, G, alphas, num_components):
+  P = []
+
+  for i in range(num_components):
+    P.append((alphas[i] ** 2) * (G[i] ** 2) + (alphas[0] * alphas[1] \
+        * get_cosine(G, alphas) * G[0] * G[1]))
+
+  P = tf.convert_to_tensor(P, dtype=tf.float32)  
+  return P
 
 def constraint(observations, alphas, means, covariances, num_components):
   G = []
