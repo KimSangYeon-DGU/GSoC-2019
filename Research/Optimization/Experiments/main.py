@@ -1,5 +1,6 @@
 from qgmm_utils import *
 from draw_utils import *
+from param_utils import *
 import numpy as np
 import tensorflow as tf
 import pandas as pd
@@ -11,6 +12,7 @@ def optimize():
     sess.run(alphas)
     sess.run(means)
     sess.run(covs)
+    sess.run(J)
 
 # Load 'Old faithful' dataset
 df = pd.read_csv('faithful.csv', sep=',')
@@ -23,12 +25,18 @@ obs = tf.convert_to_tensor(dataset, dtype=tf.float32)
 # Set the number of components is 2.
 num_components = 2
 
+m1 = get_initial_means()
+m2 = get_initial_means()
+print(m1, m2)
+
 # Initialize means and covariances.
 alphas = tf.Variable([0.37, 0.63], dtype=tf.float32, trainable=True)
-means = tf.Variable([[3.0638845, 70.47851638], [4.08966197, 70.96811517]], \
+
+means = tf.Variable([[m1[0], m1[1]], [m2[0], m2[1]]], \
      dtype=tf.float32, trainable=True)
-covs = tf.Variable([[[0.06916767, 0.03], [0.03, 20.69728207]], \
-    [[0.06916767, 0.03], [0.03, 39.69728207]]], dtype=tf.float32, trainable=True)
+
+covs = tf.Variable([[[0.06916767, 0.0], [0.0, 20.69728207]], \
+    [[0.06916767, 0.0], [0.0, 39.69728207]]], dtype=tf.float32, trainable=True)
 
 # Calculate normalized gaussians
 G = []
@@ -44,25 +52,24 @@ Q = tf.stop_gradient(Q)
 #Q = get_Q(G, alphas, num_components)
 
 # lambda
-#ld = 0.01
-#ld = 1 / tf.reduce_sum(G)
-ld = 0.001
+ld = 0.01
 
 # learning rate
-lr = 0.001
+lr = 0.01
 
 # Objective function :: Minimize (NLL + lambda * approximation constant)
 # Approximation constant :: (Sum of P) - 1 = 0
+
 J = tf.reduce_sum(Q[0] * tf.math.log(tf.clip_by_value(P[0], 1e-10, 1e10)) + \
     Q[1] * tf.math.log(tf.clip_by_value(P[1], 1e-10, 1e10))) + \
     ld * (((alphas[0] ** 2) + (alphas[1] ** 2) + \
     2 * alphas[0] * alphas[1] * get_cosine(G, alphas) * \
     tf.reduce_sum(G[0] * G[1])) - 1)#- tf.reduce_sum(P)) #1)
 '''
-J = tf.reduce_sum(Q[0] * tf.math.log(tf.clip_by_value(G[0], 1e-10, 1e10)) + \
-    Q[1] * tf.math.log(tf.clip_by_value(G[1], 1e-10, 1e10)))
+J = tf.reduce_sum(Q[0] * tf.math.log(tf.clip_by_value(P[0], 1e-10, 1e10)) + \
+    Q[1] * tf.math.log(tf.clip_by_value(P[1], 1e-10, 1e10)))
 '''
-# Set optimizer to Adam with learning rate 0.1
+# Set optimizer to Adam with learning rate 0.01
 optim = tf.train.AdamOptimizer(learning_rate=lr)
 training_op = optim.minimize(-J)
 
@@ -71,12 +78,9 @@ sess = tf.InteractiveSession()
 init = tf.global_variables_initializer()
 
 sess.run(init)
-#print(sess.run(P))
-#print(sess.run(tf.reduce_sum(G)))
-#print(sess.run(tf.reduce_sum(G)))
 
 # Set the number of iterations is 2000.
-n_iter = 10
+n_iter = 100
 
 best_J = -2e9
 best_alphas = None
@@ -86,12 +90,8 @@ best_covs = None
 plot_clustered_data(dataset, means.eval(), covs.eval(),\
     "QGMM_last_{0}_{1}_{2}.png".format(ld, lr, n_iter), 0)
 
-for i in range(2000):
-  optimize()  
-  sess.run(J)
-  #print(J.eval())
-  #print(i, alphas.eval() ** 2)
-  
+for i in range(500):
+  optimize()    
   best_J = J.eval()
   best_alphas = alphas.eval()
   best_means = means.eval()
@@ -100,14 +100,7 @@ for i in range(2000):
     "QGMM_last_{0}_{1}_{2}.png".format(ld, lr, n_iter), i+1)
   
   #print(i, Q.eval())
-  print(sess.run(tf.reduce_sum(P)))
-  # Save the parameters.
-  #if math.isnan(J.eval()) != True and best_j < J.eval():
-    #best_j = J.eval()
-    #best_alphas = alphas.eval()
-    #best_means = means.eval()
-    #best_covs = covs.eval()
-print(sess.run(tf.reduce_sum(P)))
+  print(i, sess.run(tf.reduce_sum(P)))
 
 # Check the trained parameters with actual mean and covariance using numpy
 print('\nCost:{0}\n\nalphas:\n{1}\n\nmeans:\n{2}\n\ncovariances:\n{3}\n\n'.\
