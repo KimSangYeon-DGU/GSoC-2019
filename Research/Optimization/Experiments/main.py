@@ -30,13 +30,19 @@ m2 = get_initial_means()
 print(m1, m2)
 
 # Initialize means and covariances.
-alphas = tf.Variable([0.37, 0.63], dtype=tf.float32, trainable=True)
+#alphas = tf.Variable([0.37, 0.63], dtype=tf.float32, trainable=True)
+alphas = tf.Variable([0.5, 0.5], dtype=tf.float32, trainable=True)
 
 means = tf.Variable([[m1[0], m1[1]], [m2[0], m2[1]]], \
      dtype=tf.float32, trainable=True)
-
-covs = tf.Variable([[[0.06916767, 0.0], [0.0, 20.69728207]], \
-    [[0.06916767, 0.0], [0.0, 39.69728207]]], dtype=tf.float32, trainable=True)
+'''
+means = tf.Variable([[m1[0], m1[1]], [m1[0], m1[1]]], \
+     dtype=tf.float32, trainable=True)
+'''
+#covs = tf.Variable([[[0.06916767, 0.0], [0.0, 20.69728207]], \
+#    [[0.06916767, 0.0], [0.0, 39.69728207]]], dtype=tf.float32, trainable=True)
+covs = tf.Variable([[[1.0, 0.0], [0.0, 1.0]], \
+    [[1.0, 0.0], [0.0, 1.0]]], dtype=tf.float32, trainable=True)
 
 # Calculate normalized gaussians
 G = []
@@ -60,7 +66,7 @@ lr = 0.01
 # Objective function :: Minimize (NLL + lambda * approximation constant)
 # Approximation constant :: (Sum of P) - 1 = 0
 
-J = tf.reduce_sum(Q[0] * tf.math.log(tf.clip_by_value(P[0], 1e-10, 1e10)) + \
+J = -1 * tf.reduce_sum(Q[0] * tf.math.log(tf.clip_by_value(P[0], 1e-10, 1e10)) + \
     Q[1] * tf.math.log(tf.clip_by_value(P[1], 1e-10, 1e10))) + \
     ld * (((alphas[0] ** 2) + (alphas[1] ** 2) + \
     2 * alphas[0] * alphas[1] * get_cosine(G, alphas) * \
@@ -71,7 +77,7 @@ J = tf.reduce_sum(Q[0] * tf.math.log(tf.clip_by_value(P[0], 1e-10, 1e10)) + \
 '''
 # Set optimizer to Adam with learning rate 0.01
 optim = tf.train.AdamOptimizer(learning_rate=lr)
-training_op = optim.minimize(-J)
+training_op = optim.minimize(J)
 
 # Build session
 sess = tf.InteractiveSession()
@@ -100,7 +106,11 @@ for i in range(500):
     "QGMM_last_{0}_{1}_{2}.png".format(ld, lr, n_iter), i+1)
   
   #print(i, Q.eval())
-  print(i, sess.run(tf.reduce_sum(P)))
+  #print(i, sess.run(tf.reduce_sum(P)))
+  print("{0}, NLL:{1}, Costraint:{2}".format(i, (-1 * tf.reduce_sum(Q[0] * tf.math.log(tf.clip_by_value(P[0], 1e-10, 1e10)) + \
+    Q[1] * tf.math.log(tf.clip_by_value(P[1], 1e-10, 1e10)))).eval(),  ld * (((alphas[0] ** 2) + (alphas[1] ** 2) + \
+    2 * alphas[0] * alphas[1] * get_cosine(G, alphas) * \
+    tf.reduce_sum(G[0] * G[1])) - 1).eval() ) )
 
 # Check the trained parameters with actual mean and covariance using numpy
 print('\nCost:{0}\n\nalphas:\n{1}\n\nmeans:\n{2}\n\ncovariances:\n{3}\n\n'.\
