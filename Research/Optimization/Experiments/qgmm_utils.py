@@ -4,12 +4,24 @@ import tensorflow as tf
 log2pi = 1.83787706640934533908193770912475883
 
 def apply_positive_definite_constraint(covariance, num_components):
+  
   eigval, eigvec = tf.linalg.eigh(covariance)
   
   eig_min = tf.reduce_min(eigval)
   eig_max = tf.reduce_max(eigval)
-  
-  def true():
+  check_val = 0
+
+  def T():
+    return 1
+  def F():
+    return 0
+
+  check_val += tf.cond(eig_min < 0.0, T, F)
+  check_val += tf.cond(eig_max / eig_min < 0.0, T, F)
+  check_val += tf.cond(eig_max  < 1e-50, T, F)    
+
+  def apply():
+    print(True)
     minEigval = tf.math.maximum(eig_max / 1e5, 1e-50)
 
     tmp_eigval = []
@@ -19,31 +31,33 @@ def apply_positive_definite_constraint(covariance, num_components):
     cov = tf.matmul(tf.matmul(eigvec, tf.diag(tmp_eigval)), \
         tf.transpose(eigvec))
     return cov
-
-  def false():
+  
+  def disapply():
+    print(False)
     return covariance
+  
+  return tf.cond(0 < check_val, apply, disapply)
 
-  cov = tf.cond(eig_min < 0.0, true, false)
-  cov = tf.cond(eig_max / eig_min < 0.0, true, false)
-  cov = tf.cond(eig_max  < 1e-50, true, false)    
+   
 
-  return cov
 
 def factor_covariance(covariance):
   
   covariance = apply_positive_definite_constraint(covariance, 2)
   cov_lower = tf.linalg.cholesky(covariance)
-
+  
   inv_cov_lower = tf.linalg.inv(cov_lower)
   
   inv_cov = tf.matmul(tf.transpose(inv_cov_lower), inv_cov_lower)
   _, log_det_cov = tf.linalg.slogdet(cov_lower)
   log_det_cov *= 2
-
-  # For using when we use diagonal constraint.
-  #inv_cov = tf.diag((1 / tf.diag_part(covariance)))
-  #log_det_cov = tf.reduce_sum(tf.math.log(tf.diag_part(covariance)))
   
+  '''
+  # For using when we use diagonal constraint.
+  inv_cov = tf.diag((1 / tf.diag_part(covariance)))
+  log_det_cov = tf.reduce_sum(tf.math.log(tf.diag_part(covariance)))
+  '''
+
   return inv_cov, log_det_cov
 
 def log_probability(observations, mean, covariance, c):
