@@ -4,9 +4,11 @@ import tensorflow as tf
 log2pi = 1.83787706640934533908193770912475883
 
 def apply_positive_definite_constraint(covariance, num_components):
-  
-  eigval, eigvec = tf.linalg.eigh(covariance)
-  
+  try:
+    eigval, eigvec = tf.linalg.eigh(covariance)
+  except Exception:
+    print("Eigen decomposition error:{0}".format(covariance))
+
   eig_min = tf.reduce_min(eigval)
   eig_max = tf.reduce_max(eigval)
   check_val = 0
@@ -21,7 +23,6 @@ def apply_positive_definite_constraint(covariance, num_components):
   check_val += tf.cond(eig_max  < 1e-50, T, F)    
 
   def apply():
-    print(True)
     minEigval = tf.math.maximum(eig_max / 1e5, 1e-50)
 
     tmp_eigval = []
@@ -33,17 +34,13 @@ def apply_positive_definite_constraint(covariance, num_components):
     return cov
   
   def disapply():
-    print(False)
     return covariance
   
   return tf.cond(0 < check_val, apply, disapply)
 
-   
-
-
-def factor_covariance(covariance):
+def factor_covariance(covariance, num_components):
   
-  covariance = apply_positive_definite_constraint(covariance, 2)
+  #covariance = apply_positive_definite_constraint(covariance, num_components)
   cov_lower = tf.linalg.cholesky(covariance)
   
   inv_cov_lower = tf.linalg.inv(cov_lower)
@@ -60,11 +57,17 @@ def factor_covariance(covariance):
 
   return inv_cov, log_det_cov
 
-def log_probability(observations, mean, covariance, c):
+def compose_covariance(covariance):
+  #cov_upper = tf.matrix_band_part(covariance, 0, -1)
+  #0.5 * (cov_upper + tf.transpose(cov_upper))
+  lower_cov = tf.matrix_band_part(covariance, -1, 0)
+  return tf.matmul(lower_cov, tf.transpose(lower_cov))
+
+def log_probability(observations, mean, covariance, c, num_components):
   observations = tf.transpose(observations)
   k = tf.cast(tf.shape(observations)[1], tf.float32)
 
-  inv_cov, log_det_cov = factor_covariance(covariance)
+  inv_cov, log_det_cov = factor_covariance(covariance, num_components)
   
   diff = observations - mean
   v = tf.diag_part(tf.matmul(tf.matmul(diff, inv_cov), tf.transpose(diff)))
@@ -73,30 +76,14 @@ def log_probability(observations, mean, covariance, c):
 
 # observations - N x N Matrix observations to used in calculating probability
 # return - N unnormalized gaussian probabilities vector
-def unnormalized_gaussians(observations, mean, covariance):
-  #covariance = tf.matmul(tf.transpose(covariance), covariance)
-  return tf.exp(log_probability(observations, mean, covariance, 0.25))
+def unnormalized_gaussians(observations, mean, covariance, num_components):
+  covariance = compose_covariance(covariance)
+  return tf.exp(log_probability(observations, mean, covariance, \
+      0.25, num_components))
 
 def get_cosine(G, alphas):
   return (1 - (alphas[0] ** 2) - (alphas[1] ** 2)) / (2 * alphas[0] \
       * alphas[1] * tf.reduce_sum(G[0] * G[1]))
-
-'''
-def quantum_gmm(observations, alphas, means, covariances, num_components):
-  G = []
-  
-  for i in range(num_components):
-    G.append(unnormalized_gaussians(observations, means[i], covariances[i]))
-  G = tf.convert_to_tensor(G, dtype=tf.float32)
-
-  prob_sum = 0
-  
-  for i in range(num_components):
-    prob_sum += (alphas[i] ** 2) * (G[i] ** 2) + (alphas[0] * alphas[1] \
-        * get_cosine(G, alphas) * G[0] * G[1])
-  
-  return prob_sum
-'''
 
 def quantum_gmm(observations, G, alphas, num_components):
   P = []
@@ -107,15 +94,6 @@ def quantum_gmm(observations, G, alphas, num_components):
 
   P = tf.convert_to_tensor(P, dtype=tf.float32)  
   return P
-
-def constraint(observations, alphas, means, covariances, num_components):
-  G = []
-  for i in range(num_components):
-    G.append(unnormalized_gaussians(observations, means[i], covariances[i]))
-  G = tf.convert_to_tensor(G, dtype=tf.float32)
-
-  return (alphas[0] ** 2) + (alphas[1] ** 2) + 2 * alphas[0] * alphas[1] \
-      * get_cosine(G, alphas) * tf.reduce_sum(G[0] * G[1])
 
 # Calculate responsibilities.
 def get_Q(G, alphas, num_components):
@@ -131,11 +109,3 @@ def get_Q(G, alphas, num_components):
   Q = tf.convert_to_tensor(Q, dtype=tf.float32)
 
   return Q
-
-def assemble_covs(covs_lower, num_components):
-  covs = []
-  for i in range(num_components):
-    covs.append(tf.matmul(tf.transpose(covs_lower[i]), covs_lower[i]))
-  covs = tf.convert_to_tensor(covs, dtype=tf.float32)
-
-  return covs
