@@ -41,8 +41,8 @@ print(m1, m2)
 #m2 = [4.055697916182589, 65.35135198155628]
 
 # 4) Input is not invertible
-m1 = [4.115197647253183, 30.519398980416106]
-m2 = [2.2308616562224004, 59.32051981012918]
+#m1 = [4.115197647253183, 30.519398980416106]
+#m2 = [2.2308616562224004, 59.32051981012918]
 
 # Initialize means and covariances.
 alphas = tf.Variable([0.5, 0.5], dtype=tf.float32, trainable=True)
@@ -50,8 +50,8 @@ alphas = tf.Variable([0.5, 0.5], dtype=tf.float32, trainable=True)
 means = tf.Variable([[m1[0], m1[1]], [m2[0], m2[1]]], \
      dtype=tf.float32, trainable=True)
 
-covs = tf.Variable([[[0.1, 0.0], [0.0, 5.0]], \
-    [[0.1, 0.0], [0.0, 5.0]]], dtype=tf.float32, trainable=True)
+covs = tf.Variable([[[0.1, 0.0], [3.0, 5.0]], \
+    [[0.1, 0.0], [3.0, 5.0]]], dtype=tf.float32, trainable=True)
 
 # Calculate normalized gaussians
 G = []
@@ -64,42 +64,31 @@ Q = get_Q(G, alphas, num_components)
 Q = tf.stop_gradient(Q)
 
 # lambda
-ld = 0.01
+#ld = 0.01
+ld = 0.1
 
 # learning rate
 lr = 0.001
 
 # Objective function :: Minimize (NLL + lambda * approximation constant)
 # Approximation constant :: (Sum of P) - 1 = 0
-'''
-J = -1 * tf.reduce_sum(Q[0] * tf.math.log(tf.clip_by_value(P[0], 1e-10, 1e10)) + \
-    Q[1] * tf.math.log(tf.clip_by_value(P[1], 1e-10, 1e10))) + \
-    ld * (((alphas[0] ** 2) + (alphas[1] ** 2) + \
-    2 * alphas[0] * alphas[1] * get_cosine(G, alphas) * \
-    tf.reduce_sum(G[0] * G[1])) - 1)#- tf.reduce_sum(P)) #1)
-'''
-'''
-J = -1 * tf.reduce_sum(Q[0] * tf.math.log(tf.clip_by_value(P[0], 1e-10, 1e10)) + \
-    Q[1] * tf.math.log(tf.clip_by_value(P[1], 1e-10, 1e10)))
-'''
-'''
-J = -1 * tf.reduce_sum(Q[0] * tf.math.log(tf.clip_by_value(P[0], 1e-10, 1e10)) + \
-    Q[1] * tf.math.log(tf.clip_by_value(P[1], 1e-10, 1e10))) + \
-    ld * (((alphas[0] ** 2) + (alphas[1] ** 2) + 2 * alphas[0] * \
-    tf.reduce_sum(G[0] ** 2) * alphas[1] * tf.reduce_sum(G[1] ** 2) * \
-    get_cosine(G, alphas) * tf.reduce_sum(G[0] * G[1])) - 1)
-'''
+def loglikeihood(Q, P):
+  return tf.reduce_sum(Q[0] * tf.math.log(tf.clip_by_value(P[0], 1e-10, 1e10)) \
+    + Q[1] * tf.math.log(tf.clip_by_value(P[1], 1e-10, 1e10)))
 
-a = alphas[0] * tf.reduce_sum(G[0] ** 2) - alphas[1] * tf.reduce_sum(G[1] ** 2)
-b = alphas[0] * tf.reduce_sum(G[0] ** 2) + alphas[1] * tf.reduce_sum(G[1] ** 2)
-alpha_max_const = tf.math.maximum(a, b) - 1
-alpha_min_const = tf.math.minimum(a, b) - 1
+def approx_constraint(G, alphas):
+  return ((alphas[0] ** 2) * tf.reduce_sum(G[0] ** 2) + (alphas[1] ** 2) \
+    * tf.reduce_sum(G[1] ** 2) + 2 * alphas[0] * alphas[1] \
+    * get_cosine(G, alphas) * tf.reduce_sum(G[0] * G[1])) - 1
 
-J = -1 * tf.reduce_sum(Q[0] * tf.math.log(tf.clip_by_value(P[0], 1e-10, 1e10)) + \
-    Q[1] * tf.math.log(tf.clip_by_value(P[1], 1e-10, 1e10))) + \
-    ld * (((alphas[0] ** 2) + (alphas[1] ** 2) + 2 * alphas[0] * \
-    tf.reduce_sum(G[0] ** 2) * alphas[1] * tf.reduce_sum(G[1] ** 2) * \
-    get_cosine(G, alphas) * tf.reduce_sum(G[0] * G[1])) - 1)
+'''
+def approx_constraint(G, alphas):
+  return ((alphas[0] ** 2) + (alphas[1] ** 2) \
+    + 2 * alphas[0] * alphas[1] \
+    * get_cosine(G, alphas) * tf.reduce_sum(G[0] * G[1])) - 1
+'''
+J = -loglikeihood(Q, P) + ld * approx_constraint(G, alphas)
+
 
 # Set optimizer to Adam with learning rate 0.01
 optim = tf.train.AdamOptimizer(learning_rate=lr)
@@ -124,35 +113,58 @@ plot_clustered_data(dataset, means.eval(), covs.eval(),\
     "QGMM_last_{0}_{1}_{2}.png".format(ld, lr, n_iter), 0)
 
 # For graph
+max_iteration = 500
 xs = []
 ys = []
+cs = []
+as1 = []
+as2 = []
 
-for i in range(500):
+NLL = -loglikeihood(Q, P).eval()
+C = approx_constraint(G, alphas).eval()
+cur_alphas = alphas.eval()
+
+# Save initial values
+xs.append(0)
+ys.append(NLL)
+cs.append(C)
+#as1.append(cur_alphas[0])
+#as2.append(cur_alphas[1])
+
+tot = 1e-4
+sess.run(J)
+cur_J = J.eval()
+pre_J = cur_J
+# Train QGMM
+for i in range(1, max_iteration):
   optimize()
-  best_J = J.eval()
-  best_alphas = alphas.eval()
-  best_means = means.eval()
-  best_covs = covs.eval()
-  plot_clustered_data(dataset, best_means, best_covs, \
+  cur_J = J.eval()
+  cur_alphas = alphas.eval()
+  cur_means = means.eval()
+  cur_covs = covs.eval()
+  NLL = -loglikeihood(Q, P).eval()
+  C = approx_constraint(G, alphas).eval()
+
+  plot_clustered_data(dataset, cur_means, cur_covs, \
     "QGMM_last_{0}_{1}_{2}.png".format(ld, lr, n_iter), i+1)
   
-  xs.append(i)
-  ys.append(best_J)
-  print("{0} G1**2: {1}, G2**2: {2}".format(i, tf.reduce_sum(G[0]**2).eval(), tf.reduce_sum(G[1]**2).eval() ) )
-  #print("added_loss: {0}".format(added_loss.eval()))
-  '''
-  print("{0}, NLL:{1}, Costraint:{2}".format(i, (tf.reduce_sum(Q[0] * tf.math.log(tf.clip_by_value(P[0], 1e-10, 1e10)) + \
-    Q[1] * tf.math.log(tf.clip_by_value(P[1], 1e-10, 1e10)))).eval(),  ld * (((alphas[0] ** 2) + (alphas[1] ** 2) + \
-    2 * alphas[0] * alphas[1] * get_cosine(G, alphas) * \
-    tf.reduce_sum(G[0] * G[1])) - 1).eval() ) )
-  '''
+  # Save values for graphs
+  xs.append(i * n_iter)
+  ys.append(NLL)
+  cs.append(C)
+  #as1.append(cur_alphas[0])
+  #as2.append(cur_alphas[1])
+  print("{0} G1**2: {1}, G2**2: {2}, alphas: {3}, J: {4}, C: {5}".format(i, tf.reduce_sum(G[0]**2).eval(), tf.reduce_sum(G[1]**2).eval(), cur_alphas, cur_J, C ) )
+  if abs(pre_J - cur_J) < tot:
+    break
+  pre_J = cur_J
 
 # Check the trained parameters with actual mean and covariance using numpy
 print('\nCost:{0}\n\nalphas:\n{1}\n\nmeans:\n{2}\n\ncovariances:\n{3}\n\n'.\
-    format(best_J, best_alphas, best_means, best_covs))
+    format(cur_J, cur_alphas, cur_means, cur_covs))
 
-draw_graph(x=xs, y=ys, x_label='iteration', y_label='NLL', file_name='NLL.png')
-
+draw_graph(x=xs, y=ys, c=cs, x_label='iteration', y_label='NLL with constraint', file_name='NLL.png')
+#draw_alphas_graph(x=xs, a1=as1, a2=as2, x_label='iteration', y_label="alphas", file_name="alphas.png")
 generate_video()
 
 sess.close()
