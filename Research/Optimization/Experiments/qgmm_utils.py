@@ -42,7 +42,6 @@ def factor_covariance(covariance, num_components):
   
   #covariance = apply_positive_definite_constraint(covariance, num_components)
   cov_lower = tf.linalg.cholesky(covariance)
-  
   inv_cov_lower = tf.linalg.inv(cov_lower)
   
   inv_cov = tf.matmul(tf.transpose(inv_cov_lower), inv_cov_lower)

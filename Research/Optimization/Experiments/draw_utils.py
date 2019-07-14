@@ -4,6 +4,8 @@ import numpy as np
 import os, subprocess, glob
 from matplotlib.patches import Ellipse
 from qgmm_utils import compose_covariance
+import matplotlib.animation as animation
+
 
 CLUSTERS = 2
 
@@ -68,11 +70,12 @@ def generate_video():
 def draw_graph(x, y, x_label, y_label, file_name):
   print("Save the graph with the file name: {0}".format(file_name))
 	# Draw
-  plt.plot(x, y, color='r')
+  plt.plot(x, y, color='r', label=y_label)
 
 	# Set labels
   plt.xlabel(x_label)
   plt.ylabel(y_label)
+  plt.legend()
   fig = plt.gcf()
 
   # Save
@@ -80,3 +83,43 @@ def draw_graph(x, y, x_label, y_label, file_name):
 
   # Close
   plt.close()
+
+def draw_alphas_graph(x, a1, a2, x_label, y_label, file_name):
+  print("Save the graph with the file name: {0}".format(file_name))
+	# Draw
+  plt.plot(x, a1, color='r', label='alpha 1')
+  plt.plot(x, a2, color='b', label='alpha 2')
+
+	# Set labels
+  plt.xlabel(x_label)
+  plt.ylabel(y_label)
+  plt.legend()
+  fig = plt.gcf()
+
+  # Save
+  fig.savefig("./graphs/"+file_name)
+
+  # Close
+  plt.close()
+
+
+def generate_video2():
+	import cv2
+	base_path = './videos'
+	file_names = os.listdir(base_path)
+	file_names.sort()
+	frame_array = []
+	fps = 20
+	for file_name in file_names:
+		#reading each files
+		img = cv2.imread(base_path + '/' + file_name)
+		height, width, layers = img.shape
+		size = (width,height)
+		
+		#inserting the frames into an image array
+		frame_array.append(img)
+	out = cv2.VideoWriter('./video.mp4',cv2.VideoWriter_fourcc(*'DIVX'), fps, size)
+	for i in range(len(frame_array)):
+		# writing to a image array
+		out.write(frame_array[i])
+	out.release()
