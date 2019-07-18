@@ -5,7 +5,7 @@ from draw_utils import *
 import numpy as np
 import math
 
-
+# Calculate the alphas from Gaussians and cosine
 def get_alphas(G, cos):
   alphas = []
   a = tf.math.sqrt(tf.math.abs(1/(2*(cos * tf.reduce_sum(G[0] * G[1]) + 1))))
@@ -14,6 +14,7 @@ def get_alphas(G, cos):
   alphas = tf.convert_to_tensor(alphas, dtype=tf.float32)
   return alphas
 
+# This is for drawing QGMM with manipulated cosine
 def helper_quantum_gmm(observations, G, num_components, phi):
   P = []
 
@@ -24,9 +25,8 @@ def helper_quantum_gmm(observations, G, num_components, phi):
         * math.cos(phi) * G[0] * G[1]))
 
   P = tf.convert_to_tensor(P, dtype=tf.float32)  
-  
-  return P
 
+  return P
 
 if __name__ == "__main__":
   x_num = 150
@@ -41,8 +41,6 @@ if __name__ == "__main__":
   obs = np.empty(X.shape + (2, ))
 
   obs[:, :, 0] = X; obs[:, :, 1] = Y
-  #print(obs.shape)
-  print(obs)
   obs = np.transpose(obs)
   x = np.reshape(obs, (2, x_num * y_num))
   x = tf.convert_to_tensor(x, dtype=tf.float32)
@@ -58,6 +56,7 @@ if __name__ == "__main__":
   G.append(unnormalized_gaussians(x, means[1], covs[1], 2))
   G = tf.convert_to_tensor(G, dtype=tf.float32)
 
+  # Get interference phenomena images of QGMM
   for degree in range(0, 190, 10):
     print(degree)
     P = helper_quantum_gmm(x, G, 2, np.deg2rad(degree))
