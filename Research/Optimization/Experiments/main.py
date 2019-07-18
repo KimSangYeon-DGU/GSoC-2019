@@ -72,11 +72,9 @@ Q = get_Q(G, alphas, num_components)
 Q = tf.stop_gradient(Q)
 
 # lambda
-#ld = 0.01
 ld = 1
 
 # learning rate
-#lr = 0.01
 lr = 0.001
 
 # Objective function :: Minimize (NLL + lambda * approximation constant)
