@@ -3,7 +3,6 @@ import matplotlib.cm as cm
 import numpy as np
 import os, subprocess, glob
 from matplotlib.patches import Ellipse
-from qgmm_utils import compose_covariance
 import matplotlib.animation as animation
 
 
@@ -41,6 +40,7 @@ def plot_clustered_data(points, c_means, covs, file_name, image_num):
 	plt.plot(c_means[0][0], c_means[0][1], ".", color="green", zorder=1)
 	plt.plot(c_means[1][0], c_means[1][1], ".", color="blue", zorder=1)
 
+	'''
 	cov_lower = np.tril(covs[0])
 	width1, height1, theta1 = cov_ellipse(points, np.dot(cov_lower, np.transpose(cov_lower)), nstd=2)
 	ellipse1 = Ellipse(xy=(c_means[0][0], c_means[0][1]), width=width1, \
@@ -48,6 +48,15 @@ def plot_clustered_data(points, c_means, covs, file_name, image_num):
 	
 	cov_lower = np.tril(covs[1])
 	width2, height2, theta2 = cov_ellipse(points, np.dot(cov_lower, np.transpose(cov_lower)), nstd=2)
+	ellipse2 = Ellipse(xy=(c_means[1][0], c_means[1][1]), width=width2, \
+			height=height2, angle=theta2, edgecolor='b', fc='None', lw=2, zorder=4)
+	'''
+
+	width1, height1, theta1 = cov_ellipse(points, covs[0], nstd=2)
+	ellipse1 = Ellipse(xy=(c_means[0][0], c_means[0][1]), width=width1, \
+			height=height1, angle=theta1, edgecolor='g', fc='None', lw=2, zorder=4)
+	
+	width2, height2, theta2 = cov_ellipse(points, covs[1], nstd=2)
 	ellipse2 = Ellipse(xy=(c_means[1][0], c_means[1][1]), width=width2, \
 			height=height2, angle=theta2, edgecolor='b', fc='None', lw=2, zorder=4)
 
@@ -109,7 +118,7 @@ def generate_video2():
 	file_names = os.listdir(base_path)
 	file_names.sort()
 	frame_array = []
-	fps = 20
+	fps = 10
 	for file_name in file_names:
 		#reading each files
 		img = cv2.imread(base_path + '/' + file_name)
@@ -123,3 +132,6 @@ def generate_video2():
 		# writing to a image array
 		out.write(frame_array[i])
 	out.release()
+
+def draw_3d_probability():
+	print("test")

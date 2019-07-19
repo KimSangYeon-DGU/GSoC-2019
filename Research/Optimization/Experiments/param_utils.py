@@ -3,11 +3,11 @@ import numpy as np
 
 def get_initial_means():
   means1 = []; means2 = []
-  means1.append(random.uniform(2, 5)) # X
-  means1.append(random.uniform(40, 80)) # Y
+  means1.append(random.uniform(1.2, 5)) # X
+  means1.append(random.uniform(40, 90)) # Y
 
-  means2.append(random.uniform(2, 5)) # X
-  means2.append(random.uniform(40, 80)) # Y
+  means2.append(random.uniform(1.2, 5)) # X
+  means2.append(random.uniform(40, 90)) # Y
 
   return means1, means2
 '''

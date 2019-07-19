@@ -19,8 +19,8 @@ def apply_positive_definite_constraint(covariance, num_components):
     return 0
 
   check_val += tf.cond(eig_min < 0.0, T, F)
-  check_val += tf.cond(eig_max / eig_min < 0.0, T, F)
-  check_val += tf.cond(eig_max  < 1e-50, T, F)    
+  #check_val += tf.cond(eig_max / eig_min < 0.0, T, F)
+  #check_val += tf.cond(eig_max  < 1e-50, T, F)    
 
   def apply():
     minEigval = tf.math.maximum(eig_max / 1e5, 1e-50)
@@ -39,8 +39,7 @@ def apply_positive_definite_constraint(covariance, num_components):
   return tf.cond(0 < check_val, apply, disapply)
 
 def factor_covariance(covariance, num_components):
-  
-  #covariance = apply_positive_definite_constraint(covariance, num_components)
+  covariance = apply_positive_definite_constraint(covariance, num_components)
   cov_lower = tf.linalg.cholesky(covariance)
   inv_cov_lower = tf.linalg.inv(cov_lower)
   
@@ -76,7 +75,7 @@ def log_probability(observations, mean, covariance, c, num_components):
 # observations - N x N Matrix observations to used in calculating probability
 # return - N unnormalized gaussian probabilities vector
 def unnormalized_gaussians(observations, mean, covariance, num_components):
-  covariance = compose_covariance(covariance)
+  #covariance = compose_covariance(covariance)
   return tf.exp(log_probability(observations, mean, covariance, \
       0.25, num_components))
 
