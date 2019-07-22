@@ -1,13 +1,18 @@
 import random
 import numpy as np
 
-def get_initial_means():
-  means1 = []; means2 = []
-  means1.append(random.uniform(1.2, 5)) # X
-  means1.append(random.uniform(40, 90)) # Y
+def get_initial_means(dataset):
+  x_min = np.min(dataset[0])
+  x_max = np.max(dataset[0])
+  y_min = np.min(dataset[1])
+  y_max = np.max(dataset[1])
 
-  means2.append(random.uniform(1.2, 5)) # X
-  means2.append(random.uniform(40, 90)) # Y
+  means1 = []; means2 = []
+  means1.append(random.uniform(x_min, x_max)) # X
+  means1.append(random.uniform(y_min, y_max)) # Y
+
+  means2.append(random.uniform(x_min, x_max)) # X
+  means2.append(random.uniform(y_min, y_max)) # Y
 
   return means1, means2
 '''

@@ -78,10 +78,17 @@ def unnormalized_gaussians(observations, mean, covariance, num_components):
   #covariance = compose_covariance(covariance)
   return tf.exp(log_probability(observations, mean, covariance, \
       0.25, num_components))
-
+      
 def get_cosine(G, alphas):
   return (1 - (alphas[0] ** 2) - (alphas[1] ** 2)) / (2 * alphas[0] \
       * alphas[1] * tf.reduce_sum(G[0] * G[1]))
+
+'''
+def get_cosine(G, alphas):
+  return (1 - (alphas[0] ** 2) * tf.reduce_sum(G[0] ** 2) \
+      - (alphas[1] ** 2) * tf.reduce_sum(G[1] ** 2) ) / (2 * alphas[0] \
+      * alphas[1] * tf.reduce_sum(G[0] * G[1]))
+'''
 
 def quantum_gmm(observations, G, alphas, num_components):
   P = []

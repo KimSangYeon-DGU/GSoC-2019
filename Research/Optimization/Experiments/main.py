@@ -5,6 +5,7 @@ import numpy as np
 import tensorflow as tf
 import pandas as pd
 import math
+import csv
 
 def optimize():
   for _ in range(n_iter):
@@ -23,33 +24,19 @@ obs = tf.convert_to_tensor(dataset, dtype=tf.float32)
 # Set the number of components is 2.
 num_components = 2
 
-#m1 = get_initial_means()
-#m2 = get_initial_means()
-m1, m2 = get_initial_means_from_dataset(dataset)
-#m1 = [2.3, 75]
-#m2 = [3.5, 85]
+test_name = "t1"
+
+m1, m2 = get_initial_means(dataset)
+
+# t1 53
+m1 = [2.756031811312966, 76.62447648112042]
+m2 = [2.9226572802266397, 88.3509418943818]
+
+# t2
+#m1 = [4.171021823127277, 83.66322004888708]
+#m2 = [1.781079954983019, 95.411542531776]
+
 print(m1, m2)
-
-# Easy case
-#m1 = [2.527462637671865, 65.03104989882695]
-#m2 = [4.541881277584392, 75.60486840558593]
-
-# Cases to solve later for stability of the training
-# 1) Diverged case
-#m1 = [3.478331200843432, 75.77990594394055]
-#m2 = [1.402800973631848, 85.03263955392423]
-
-# 2) Variance vanishing case
-#m1 = [4.14836138113223, 61.47837516815865]
-#m2 = [3.8196297714372522, 75.9772116104858]
-
-# 3) One large cluster case
-#m1 = [1.127841276077628, 94.31239215734522]
-#m2 = [4.055697916182589, 65.35135198155628]
-
-# 4) Input is not invertible
-#m1 = [4.115197647253183, 30.519398980416106]
-#m2 = [2.2308616562224004, 59.32051981012918]
 
 # Initialize means and covariances.
 alphas = tf.Variable([0.5, 0.5], dtype=tf.float32, trainable=True)
@@ -57,9 +44,12 @@ alphas = tf.Variable([0.5, 0.5], dtype=tf.float32, trainable=True)
 means = tf.Variable([[m1[0], m1[1]], [m2[0], m2[1]]], \
      dtype=tf.float32, trainable=True)
 
+#covs = tf.Variable([[[0.1, 0.01], [0.01, 6.3]], \
+#    [[0.1, 0.01], [0.01, 6.3]]], dtype=tf.float32, trainable=True)
 
-covs = tf.Variable([[[0.3, 0.0], [0.1, 5.3]], \
-    [[0.3, 0.0], [0.1, 5.3]]], dtype=tf.float32, trainable=True)
+covs = tf.Variable([[[0.08, 0.1], [0.1, 3.3]], \
+    [[0.08, 0.1], [0.1, 3.3]]], dtype=tf.float32, trainable=True)
+
 
 # Calculate normalized gaussians
 G = []
@@ -73,9 +63,10 @@ Q = tf.stop_gradient(Q)
 
 # lambda
 ld = 1
+#ld = 53 # 70 t3
 
 # learning rate
-lr = 0.001
+lr = 0.01
 
 # Objective function :: Minimize (NLL + lambda * approximation constant)
 # Approximation constant :: (Sum of P) - 1 = 0
@@ -83,25 +74,19 @@ def loglikeihood(Q, P):
   return tf.reduce_sum(Q[0] * tf.math.log(tf.clip_by_value(P[0], 1e-10, 1e10)) \
       + Q[1] * tf.math.log(tf.clip_by_value(P[1], 1e-10, 1e10)))
 
-'''
 def approx_constraint(G, alphas):
-  return tf.math.abs( ((alphas[0] ** 2) + (alphas[1] ** 2)) - 1)
-
-def approx_constraint(G, alphas):
-  return ((alphas[0] ** 2) + (alphas[1] ** 2) \
-    + 2 * alphas[0] * alphas[1] \
-    * get_cosine(G, alphas) * tf.reduce_sum(G[0] * G[1])) - 1
-'''
-
-def approx_constraint(G, alphas):
-  return tf.math.abs( ((alphas[0] ** 2) * tf.reduce_sum(G[0] ** 2) + (alphas[1] ** 2) \
-    * tf.reduce_sum(G[1] ** 2) + 2 * alphas[0] * alphas[1] \
+  return tf.math.abs( ((alphas[0] ** 2) * tf.reduce_sum(G[0] ** 2) \
+    + (alphas[1] ** 2) * tf.reduce_sum(G[1] ** 2) + 2 * alphas[0] * alphas[1] \
     * get_cosine(G, alphas) * tf.reduce_sum(G[0] * G[1])) - 1)
 
+'''
+def approx_constraint(G, alphas):
+  return tf.math.abs( ((alphas[0] ** 2) + (alphas[1] ** 2) \
+    + 2 * alphas[0] * alphas[1] * get_cosine(G, alphas) \
+    * tf.reduce_sum(G[0] * G[1])) - 1)
+'''
 
 J = -loglikeihood(Q, P) + ld * approx_constraint(G, alphas)
-#J = -loglikeihood(Q, P) + ld * approx_constraint(G, alphas) + 10 * (tf.reduce_sum(G[0]) + tf.reduce_sum(G[1]))
-
 
 # Set optimizer to Adam with learning rate 0.01
 optim = tf.train.AdamOptimizer(learning_rate=lr)
@@ -122,16 +107,22 @@ best_alphas = None
 best_means = None
 best_covs = None
 
-plot_clustered_data(dataset, means.eval(), covs.eval(),\
-    "QGMM_last_{0}_{1}_{2}.png".format(ld, lr, n_iter), 0)
+
+plot_clustered_data(dataset, means.eval(), covs.eval(), test_name, 0)
 
 # For graph
-max_iteration = 500
+max_iteration = 40
+
 xs = []
 ys = []
 cs = []
 as1 = []
 as2 = []
+Cosines = []
+G1s = []
+G2s = []
+Ps = []
+Js = []
 
 NLL = -loglikeihood(Q, P).eval()
 C = approx_constraint(G, alphas).eval()
@@ -143,34 +134,43 @@ ys.append(NLL)
 cs.append(C)
 as1.append(cur_alphas[0])
 as2.append(cur_alphas[1])
+Cosines.append(get_cosine(G, alphas).eval())
+G1s.append(tf.reduce_sum(G[0]).eval())
+G2s.append(tf.reduce_sum(G[1]).eval())
+Ps.append(tf.reduce_sum(P[0] + P[1]).eval())
 
-tot = 1e-4
+tot = 1e-5
 sess.run(J)
 cur_J = J.eval()
 pre_J = cur_J
+
+Js.append(cur_J)
+
 # Train QGMM
 for i in range(1, max_iteration):
+  print(i, test_name, tf.reduce_sum(P[0] + P[1]).eval())
   optimize()
-  print(i)
   cur_J = J.eval()
   cur_alphas = alphas.eval()
   cur_means = means.eval()
   cur_covs = covs.eval()
-  NLL = -loglikeihood(Q, P).eval()
-  C = approx_constraint(G, alphas).eval()
 
-  plot_clustered_data(dataset, cur_means, cur_covs, \
-    "QGMM_last_{0}_{1}_{2}.png".format(ld, lr, n_iter), i+1)
+  plot_clustered_data(dataset, cur_means, cur_covs, test_name, i)
   
   # Save values for graphs
   xs.append(i * n_iter)
-  ys.append(NLL)
-  cs.append(C)
+  ys.append(-loglikeihood(Q, P).eval())
+  cs.append(approx_constraint(G, alphas).eval())
   as1.append(cur_alphas[0])
   as2.append(cur_alphas[1])
-  print("{0} G1**2: {1}, G2**2: {2}, alphas: {3}, mean: {6}, cov: {7}\nJ: {4}, C: {5}, lambda: {8}".format(i, tf.reduce_sum(G[0]**2).eval(), tf.reduce_sum(G[1]**2).eval(), cur_alphas, cur_J, C, cur_means, cur_covs, ld) )
-  print(get_cosine(G, alphas).eval())
-  print(tf.reduce_sum(P).eval())
+  Cosines.append(get_cosine(G, alphas).eval())
+  #Cosines.append(tf.reduce_sum(get_cosine(G, alphas)).eval())
+  G1s.append(tf.reduce_sum(G[0]).eval())
+  G2s.append(tf.reduce_sum(G[1]).eval())
+  Js.append(cur_J)
+
+  Ps.append(tf.reduce_sum(P[0] + P[1]).eval())
+
   if abs(pre_J - cur_J) < tot:
     break
   pre_J = cur_J
@@ -179,10 +179,73 @@ for i in range(1, max_iteration):
 print('\nCost:{0}\n\nalphas:\n{1}\n\nmeans:\n{2}\n\ncovariances:\n{3}\n\n'.\
     format(cur_J, cur_alphas, cur_means, cur_covs))
 
-draw_graph(x=xs, y=ys, x_label='iteration', y_label='NLL with constraint', file_name='nll.png')
-draw_graph(x=xs, y=cs, x_label='iteration', y_label='Constraint', file_name='constraint.png')
-draw_alphas_graph(x=xs, a1=as1, a2=as2, x_label='iteration', y_label="alphas", file_name="alphas.png")
-#generate_video()
-generate_video2()
+# Set file names
+nll_file_name = '{0}_nll'.format(test_name)
+constraint_file_name = '{0}_constraint'.format(test_name)
+cos_file_name = '{0}_cos'.format(test_name)
+unnorm_gauss_file_name = '{0}_unnorm_gauss'.format(test_name)
+probs_file_name = '{0}_probs'.format(test_name)
+alpha_file_name = '{0}_alpha'.format(test_name)
+obj_file_name = '{0}_obj'.format(test_name)
+csv_path = './csvs/{0}'.format(test_name)
+
+# Save data to csv format and a graph
+# NLL
+with open(csv_path+'/'+nll_file_name, 'w') as myfile:
+    wr = csv.writer(myfile, delimiter=',')
+    wr.writerows(zip(xs, ys))
+
+draw_graph(x=xs, y=ys, x_label='iteration', y_label='NLL', 
+    file_name=nll_file_name+'.png', test_name=test_name)
+
+# Constraint
+with open(csv_path+'/'+constraint_file_name, 'w') as myfile:
+    wr = csv.writer(myfile, delimiter=',')
+    wr.writerows(zip(xs, cs))
+draw_graph(x=xs, y=cs, x_label='iteration', y_label='Constraint', 
+    file_name=constraint_file_name+'.png', test_name=test_name)
+
+# Cosine
+with open(csv_path+'/'+cos_file_name, 'w') as myfile:
+    wr = csv.writer(myfile, delimiter=',')
+    wr.writerows(zip(xs, Cosines))
+
+draw_graph(x=xs, y=Cosines, x_label='iteration', y_label='cos(phi)', 
+    file_name=cos_file_name+'.png', test_name=test_name)
+
+# Alpha
+with open(csv_path+'/'+alpha_file_name, 'w') as myfile:
+    wr = csv.writer(myfile, delimiter=',')
+    wr.writerows(zip(xs, as1, as2))
+
+draw_alphas_graph(x=xs, a1=as1, a2=as2, x_label='iteration', y_label="alphas",\
+    file_name=alpha_file_name, test_name=test_name)
+
+# Unnormalized Gaussians
+with open(csv_path+'/'+unnorm_gauss_file_name, 'w') as myfile:
+    wr = csv.writer(myfile, delimiter=',')
+    wr.writerows(zip(xs, G1s, G2s))
+draw_gaussian(x=xs, g1=G1s, g2=G2s, x_label='iteration', \
+    y_label='Unnormalized Gaussians', g1_label='G1', g2_label='G2', \
+    file_name=unnorm_gauss_file_name+'.png', test_name=test_name)
+
+# Probability
+with open(csv_path+'/'+probs_file_name, 'w') as myfile:
+    wr = csv.writer(myfile, delimiter=',')
+    wr.writerows(zip(xs, Ps))
+
+draw_graph(x=xs, y=Ps, x_label='iteration', y_label='probability', 
+    file_name=probs_file_name+'.png', test_name=test_name)
+
+# Objective function
+with open(csv_path+'/'+obj_file_name, 'w') as myfile:
+    wr = csv.writer(myfile, delimiter=',')
+    wr.writerows(zip(xs, Js))
+
+draw_graph(x=xs, y=Js, x_label='iteration', y_label='objective function', 
+    file_name=obj_file_name+'.png', test_name=test_name)
+
+# Generate a video
+generate_video(test_name)
 
 sess.close()
