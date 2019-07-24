@@ -24,17 +24,9 @@ obs = tf.convert_to_tensor(dataset, dtype=tf.float32)
 # Set the number of components is 2.
 num_components = 2
 
-test_name = "t1"
+test_name = "t2"
 
 m1, m2 = get_initial_means(dataset)
-
-# t1 53
-m1 = [2.756031811312966, 76.62447648112042]
-m2 = [2.9226572802266397, 88.3509418943818]
-
-# t2
-#m1 = [4.171021823127277, 83.66322004888708]
-#m2 = [1.781079954983019, 95.411542531776]
 
 print(m1, m2)
 
@@ -62,8 +54,9 @@ Q = get_Q(G, alphas, num_components)
 Q = tf.stop_gradient(Q)
 
 # lambda
-ld = 1
+#ld = 53
 #ld = 53 # 70 t3
+ld = 139
 
 # learning rate
 lr = 0.01
@@ -78,13 +71,6 @@ def approx_constraint(G, alphas):
   return tf.math.abs( ((alphas[0] ** 2) * tf.reduce_sum(G[0] ** 2) \
     + (alphas[1] ** 2) * tf.reduce_sum(G[1] ** 2) + 2 * alphas[0] * alphas[1] \
     * get_cosine(G, alphas) * tf.reduce_sum(G[0] * G[1])) - 1)
-
-'''
-def approx_constraint(G, alphas):
-  return tf.math.abs( ((alphas[0] ** 2) + (alphas[1] ** 2) \
-    + 2 * alphas[0] * alphas[1] * get_cosine(G, alphas) \
-    * tf.reduce_sum(G[0] * G[1])) - 1)
-'''
 
 J = -loglikeihood(Q, P) + ld * approx_constraint(G, alphas)
 
@@ -111,7 +97,7 @@ best_covs = None
 plot_clustered_data(dataset, means.eval(), covs.eval(), test_name, 0)
 
 # For graph
-max_iteration = 40
+max_iteration = 350
 
 xs = []
 ys = []
@@ -139,7 +125,7 @@ G1s.append(tf.reduce_sum(G[0]).eval())
 G2s.append(tf.reduce_sum(G[1]).eval())
 Ps.append(tf.reduce_sum(P[0] + P[1]).eval())
 
-tot = 1e-5
+tot = 1e-3
 sess.run(J)
 cur_J = J.eval()
 pre_J = cur_J
