@@ -60,6 +60,8 @@ def draw_graph(x, y, x_label, y_label, file_name, test_name):
 	# Draw
   plt.plot(x, y, color='r', label=y_label)
 
+  plt.grid(True)
+
 	# Set labels
   plt.xlabel(x_label)
   plt.ylabel(y_label)
@@ -78,6 +80,8 @@ def draw_alphas_graph(x, a1, a2, x_label, y_label, file_name, test_name):
   plt.plot(x, a1, color='g', label='alpha 1')
   plt.plot(x, a2, color='b', label='alpha 2')
 
+  plt.grid(True)
+
 	# Set labels
   plt.xlabel(x_label)
   plt.ylabel(y_label)
@@ -95,6 +99,8 @@ def draw_gaussian(x, g1, g2, x_label, y_label, g1_label, g2_label, file_name, te
 	# Draw
   plt.plot(x, g1, color='g', label=g1_label)
   plt.plot(x, g2, color='b', label=g2_label)
+
+  plt.grid(True)
 
 	# Set labels
   plt.xlabel(x_label)
@@ -115,6 +121,8 @@ def draw_probs(x, p1, p2, p3, x_label, y_label, file_name, test_name):
   plt.plot(x, p1, color='g', label='P1')
   plt.plot(x, p2, color='b', label='P2')
   plt.plot(x, p3, color='r', label='P1 + P2')
+
+  plt.grid(True)
 
 	# Set labels
   plt.xlabel(x_label)

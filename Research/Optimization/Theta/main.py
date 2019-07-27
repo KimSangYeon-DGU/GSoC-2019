@@ -25,36 +25,71 @@ obs = tf.convert_to_tensor(dataset, dtype=tf.float32)
 # Set the number of components is 2.
 num_components = 2
 
-test_name = "t1"
+test_name = "t12"
 
 m1, m2 = get_initial_means(dataset)
 
 print(m1, m2)
 
-# t1 150
-m1 = [4.635260552571155, 70.199885051446]
-m2 = [4.533706042588, 87.74118169887785]
+# t1
+#m1 = [4.635260552571155, 70.199885051446]
+#m2 = [4.533706042588, 87.74118169887785]
 
-# t2, t3
-#m1 = [1.6370093246808495, 58.1976610188544]
-#m2 = [2.1763603108042435, 82.24250064700527]
+#t2
+#m1 = [1.7196992309880395, 86.98138806627583]
+#m2 = [4.14063200561726, 73.34206501992242]
+
+#t3
+#m1 = [4.171021823127277, 83.66322004888708]
+#m2 = [1.781079954983019, 95.411542531776]
+
+#t4
+#m1 = [1.9363647570623324, 53.40229791825513]
+#m2 = [4.908171710507501, 50.734536692046234]
+
+#t5
+#m1 = [2.056179366100749, 46.5116932468499]
+#m2 = [4.701788931784943, 69.89021305904848]
+
+##t6 ld = 1000
+#m1 = [2.4752429155698743, 92.66691448457172]
+#m2 = [3.209131185301156, 61.04278014593167]
+
+##7 ld = 2000
+#m1 = [2.4752429155698743, 92.66691448457172]
+#m2 = [3.209131185301156, 61.04278014593167]
+
+##8 ld = 3000
+#m1 = [2.4752429155698743, 92.66691448457172]
+#m2 = [3.209131185301156, 61.04278014593167]
+
+##9 ld = 1500
+#m1 = [2.4752429155698743, 92.66691448457172]
+#m2 = [3.209131185301156, 61.04278014593167]
+
+# 10, (1) ld = 1500 
+#m1 = [4.635260552571155, 70.199885051446]
+#m2 = [4.533706042588, 87.74118169887785]
+
+#t11
+#m1 = [4.616385494792178, 68.97139287485163]
+#m2 = [4.73416217991247, 70.48443049223583]
+
+#t12
+m1 = [2.5079325411682585, 93.80246564207411]
+m2 = [4.157493746925683, 52.54658483382926]
 
 # Initialize means and covariances.
 alphas = tf.Variable([0.5, 0.5], dtype=tf.float32, trainable=True)
-#alphas = tf.Variable(np.sqrt([0.5, 0.5]), dtype=tf.float32, trainable=True)
 
 means = tf.Variable([[m1[0], m1[1]], [m2[0], m2[1]]], \
     dtype=tf.float32, trainable=True)
 
-phi = tf.Variable(np.deg2rad(0), \
+phi = tf.Variable(90, \
     dtype=tf.float32, trainable=True)
-
-#covs = tf.Variable([[[0.1, 0.01], [0.01, 6.3]], \
-#    [[0.1, 0.01], [0.01, 6.3]]], dtype=tf.float32, trainable=True)
 
 covs = tf.Variable([[[0.08, 0.1], [0.1, 3.3]], \
     [[0.08, 0.1], [0.1, 3.3]]], dtype=tf.float32, trainable=True)
-
 
 # Calculate normalized gaussians
 G = []
@@ -67,15 +102,10 @@ Q = get_Q(G, alphas, num_components)
 Q = tf.stop_gradient(Q)
 
 # lambda
-#ld = 53
-#ld = 53 # 70 t3
-#ld = 139
-#ld = 84
-#ld = 90 t1
-ld = 217
+ld = 1500
 
 # learning rate
-lr = 0.01
+lr = 0.001
 
 # Objective function :: Minimize (NLL + lambda * approximation constant)
 # Approximation constant :: (Sum of P) - 1 = 0
@@ -89,6 +119,7 @@ def approx_constraint(G, alphas, phi):
     + (alphas[1] ** 2) * tf.reduce_sum(G[1] ** 2) + 2 * alphas[0] * alphas[1] \
     * get_cosine(phi) * tf.reduce_sum(G[0] * G[1])) - 1)
 '''
+
 def approx_constraint(G, alphas, phi):
   return tf.math.abs( ((alphas[0] ** 2) \
     + (alphas[1] ** 2) + 2 * alphas[0] * alphas[1] \
@@ -98,7 +129,6 @@ J = -loglikeihood(Q, P) + ld * approx_constraint(G, alphas, phi)
 
 # Set optimizer to Adam with learning rate 0.01
 optim = tf.train.AdamOptimizer(learning_rate=lr)
-#optim = tf.train.RMSPropOptimizer(learning_rate=lr)
 training_op = optim.minimize(J)
 
 # Build session
@@ -115,11 +145,10 @@ best_alphas = None
 best_means = None
 best_covs = None
 
-
 plot_clustered_data(dataset, means.eval(), covs.eval(), test_name, 0)
 
 # For graph
-max_iteration = 350
+max_iteration = 500
 
 xs = []
 ys = []
@@ -158,6 +187,7 @@ Js.append(cur_J)
 # Train QGMM
 for i in range(1, max_iteration):
   print(i, test_name, tf.reduce_sum(P[0] + P[1]).eval(), cur_cosine)
+  print(phi.eval(), cur_J)
   optimize()
   cur_J = J.eval()
   cur_alphas = alphas.eval()
@@ -174,7 +204,6 @@ for i in range(1, max_iteration):
   as2.append(cur_alphas[1])
   cur_cosine = get_cosine(phi).eval()
   Cosines.append(cur_cosine)
-  #Cosines.append(tf.reduce_sum(get_cosine(G, alphas)).eval())
   G1s.append(tf.reduce_sum(G[0]).eval())
   G2s.append(tf.reduce_sum(G[1]).eval())
   Js.append(cur_J)
@@ -205,14 +234,14 @@ with open(csv_path+'/'+nll_file_name, 'w') as myfile:
     wr = csv.writer(myfile, delimiter=',')
     wr.writerows(zip(xs, ys))
 
-draw_graph(x=xs, y=ys, x_label='iteration', y_label='NLL', 
+draw_graph(x=xs, y=ys, x_label='Iteration', y_label='NLL', 
     file_name=nll_file_name+'.png', test_name=test_name)
 
 # Constraint
 with open(csv_path+'/'+constraint_file_name, 'w') as myfile:
     wr = csv.writer(myfile, delimiter=',')
     wr.writerows(zip(xs, cs))
-draw_graph(x=xs, y=cs, x_label='iteration', y_label='Constraint', 
+draw_graph(x=xs, y=cs, x_label='Iteration', y_label='Constraint', 
     file_name=constraint_file_name+'.png', test_name=test_name)
 
 # Cosine
@@ -220,7 +249,7 @@ with open(csv_path+'/'+cos_file_name, 'w') as myfile:
     wr = csv.writer(myfile, delimiter=',')
     wr.writerows(zip(xs, Cosines))
 
-draw_graph(x=xs, y=Cosines, x_label='iteration', y_label='cos(phi)', 
+draw_graph(x=xs, y=Cosines, x_label='Iteration', y_label='Cosine($\phi$)', 
     file_name=cos_file_name+'.png', test_name=test_name)
 
 # Alpha
@@ -228,14 +257,14 @@ with open(csv_path+'/'+alpha_file_name, 'w') as myfile:
     wr = csv.writer(myfile, delimiter=',')
     wr.writerows(zip(xs, as1, as2))
 
-draw_alphas_graph(x=xs, a1=as1, a2=as2, x_label='iteration', y_label="alphas",\
+draw_alphas_graph(x=xs, a1=as1, a2=as2, x_label='Iteration', y_label="Alphas",\
     file_name=alpha_file_name, test_name=test_name)
 
 # Unnormalized Gaussians
 with open(csv_path+'/'+unnorm_gauss_file_name, 'w') as myfile:
     wr = csv.writer(myfile, delimiter=',')
     wr.writerows(zip(xs, G1s, G2s))
-draw_gaussian(x=xs, g1=G1s, g2=G2s, x_label='iteration', \
+draw_gaussian(x=xs, g1=G1s, g2=G2s, x_label='Iteration', \
     y_label='Unnormalized Gaussians', g1_label='G1', g2_label='G2', \
     file_name=unnorm_gauss_file_name+'.png', test_name=test_name)
 
@@ -244,7 +273,7 @@ with open(csv_path+'/'+probs_file_name, 'w') as myfile:
     wr = csv.writer(myfile, delimiter=',')
     wr.writerows(zip(xs, Ps))
 
-draw_graph(x=xs, y=Ps, x_label='iteration', y_label='probability', 
+draw_graph(x=xs, y=Ps, x_label='Iteration', y_label='Sum of probability', 
     file_name=probs_file_name+'.png', test_name=test_name)
 
 # Objective function
@@ -252,7 +281,7 @@ with open(csv_path+'/'+obj_file_name, 'w') as myfile:
     wr = csv.writer(myfile, delimiter=',')
     wr.writerows(zip(xs, Js))
 
-draw_graph(x=xs, y=Js, x_label='iteration', y_label='objective function', 
+draw_graph(x=xs, y=Js, x_label='Iteration', y_label='Objective function', 
     file_name=obj_file_name+'.png', test_name=test_name)
 
 # Generate a video

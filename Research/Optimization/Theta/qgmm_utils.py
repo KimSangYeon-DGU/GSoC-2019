@@ -85,9 +85,9 @@ def get_cosine(G, alphas):
 '''
 
 def get_cosine(phi):
-  #pi_on_180 = 0.017453292519943295
-  #return tf.cos(phi * pi_on_180)
-  return tf.cos(phi)
+  pi_on_180 = 0.017453292519943295
+  phi = phi * pi_on_180
+  return tf.cos(phi) # deg2rad
 
 '''
 def cosine_constraint(G, alphas):
