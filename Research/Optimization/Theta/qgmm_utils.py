@@ -3,7 +3,7 @@ import tensorflow as tf
 
 log2pi = 1.83787706640934533908193770912475883
 
-def apply_positive_definite_constraint(covariance, num_components):
+def apply_positive_definite_constraint(covariance, gaussians):
   try:
     eigval, eigvec = tf.linalg.eigh(covariance)
   except Exception:
@@ -26,7 +26,7 @@ def apply_positive_definite_constraint(covariance, num_components):
     minEigval = tf.math.maximum(eig_max / 1e5, 1e-50)
 
     tmp_eigval = []
-    for i in range(num_components):
+    for i in range(gaussians):
       tmp_eigval.append(tf.math.maximum(eigval[i], minEigval))
     
     cov = tf.matmul(tf.matmul(eigvec, tf.diag(tmp_eigval)), \
@@ -38,8 +38,8 @@ def apply_positive_definite_constraint(covariance, num_components):
   
   return tf.cond(0 < check_val, apply, disapply)
 
-def factor_covariance(covariance, num_components):
-  covariance = apply_positive_definite_constraint(covariance, num_components)
+def factor_covariance(covariance, gaussians):
+  covariance = apply_positive_definite_constraint(covariance, gaussians)
   cov_lower = tf.linalg.cholesky(covariance)
   inv_cov_lower = tf.linalg.inv(cov_lower)
   
@@ -59,11 +59,11 @@ def compose_covariance(covariance):
   lower_cov = tf.matrix_band_part(covariance, -1, 0)
   return tf.matmul(lower_cov, tf.transpose(lower_cov))
 
-def log_probability(observations, mean, covariance, c, num_components):
+def log_probability(observations, mean, covariance, c, gaussians):
   observations = tf.transpose(observations)
   k = tf.cast(tf.shape(observations)[1], tf.float32)
 
-  inv_cov, log_det_cov = factor_covariance(covariance, num_components)
+  inv_cov, log_det_cov = factor_covariance(covariance, gaussians)
   
   diff = observations - mean
   v = tf.diag_part(tf.matmul(tf.matmul(diff, inv_cov), tf.transpose(diff)))
@@ -72,10 +72,10 @@ def log_probability(observations, mean, covariance, c, num_components):
 
 # observations - N x N Matrix observations to used in calculating probability
 # return - N unnormalized gaussian probabilities vector
-def unnormalized_gaussians(observations, mean, covariance, num_components):
+def unnormalized_gaussians(observations, mean, covariance, gaussians):
   #covariance = compose_covariance(covariance)
   return tf.exp(log_probability(observations, mean, covariance, \
-      0.25, num_components))
+      0.25, gaussians))
 '''
 def get_cosine(G, alphas):
   return (1 - (alphas[0] ** 2) - (alphas[1] ** 2)) / (2 * alphas[0] \

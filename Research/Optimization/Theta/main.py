@@ -26,15 +26,15 @@ obs = tf.convert_to_tensor(dataset, dtype=tf.float32)
 num_components = 2
 
 #test_name = "t3_180"
-test_name = "t4_20000"
+test_name = "t1_1500"
 
 m1, m2 = get_initial_means(dataset)
 
 print(m1, m2)
 
 # t1
-#m1 = [2.756031811312966, 76.62447648112042]
-#m2 = [2.9226572802266397, 88.3509418943818]
+m1 = [2.756031811312966, 76.62447648112042]
+m2 = [2.9226572802266397, 88.3509418943818]
 
 # t2
 #m1 = [4.171021823127277, 83.66322004888708]
@@ -45,14 +45,16 @@ print(m1, m2)
 #m2 = [4.73416217991247, 70.48443049223583]
 
 # t4
-m1 = [3.5335808453329793, 60.79723193882826]
-m2 = [3.748786959785587, 46.017018024467745]
+#m1 = [3.5335808453329793, 60.79723193882826]
+#m2 = [3.748786959785587, 46.017018024467745]
 
 # t5
 #m1 = [4.399318766072071, 63.982790484402784]
 #m2 = [2.511548424664534, 90.2446329311453]
 
 # Initialize means and covariances.
+gaussians = 2
+
 alphas = tf.Variable([0.5, 0.5], dtype=tf.float32, trainable=True)
 
 means = tf.Variable([[m1[0], m1[1]], [m2[0], m2[1]]], \
@@ -67,7 +69,7 @@ covs = tf.Variable([[[0.08, 0.1], [0.1, 3.3]], \
 # Calculate normalized gaussians
 G = []
 for i in range(num_components):
-  G.append(unnormalized_gaussians(obs, means[i], covs[i], num_components))
+  G.append(unnormalized_gaussians(obs, means[i], covs[i], gaussians))
 G = tf.convert_to_tensor(G, dtype=tf.float32)
 P = quantum_gmm(obs, G, alphas, num_components, phi)
 
@@ -75,7 +77,7 @@ Q = get_Q(G, alphas, num_components)
 Q = tf.stop_gradient(Q)
 
 # lambda
-ld = 20000
+ld = 1500
 
 # learning rate
 lr = 0.001
