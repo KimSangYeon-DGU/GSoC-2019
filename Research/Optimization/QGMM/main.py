@@ -19,18 +19,16 @@ dataset = np.transpose(dataset)
 #print(np.max(dataset), np.min(dataset))
 obs = tf.convert_to_tensor(dataset, dtype=tf.float32)
 
-# Set the number of components is 2.
-gaussians = 2
 
 #test_name = "t3_180"
-test_name = "t1_1500_1"
+test_name = "t6"
 
 m1, m2 = get_initial_means(dataset)
 
 print(m1, m2)
 # t1
-m1 = [2.756031811312966, 76.62447648112042]
-m2 = [2.9226572802266397, 88.3509418943818]
+#m1 = [2.756031811312966, 76.62447648112042]
+#m2 = [2.9226572802266397, 88.3509418943818]
 
 # t2
 #m1 = [4.171021823127277, 83.66322004888708]
@@ -48,15 +46,24 @@ m2 = [2.9226572802266397, 88.3509418943818]
 #m1 = [4.399318766072071, 63.982790484402784]
 #m2 = [2.511548424664534, 90.2446329311453]
 
+#m1 = [3.9469057343166334, 82.32985563107177]
+#m2 = [2.2708665221280495, 79.27274542496451]
+
+m1 = [3.1973250138987837, 86.91951792540539]
+m2 = [3.2898566763948844, 87.18052770113775]
+
 # Initialize means and covariances.
 dimensionality = 2
+
+# Set the number of Gaussians
+gaussians = 2
 
 alphas = tf.Variable([0.5, 0.5], dtype=tf.float32, trainable=True)
 
 means = tf.Variable([[m1[0], m1[1]], [m2[0], m2[1]]], \
     dtype=tf.float32, trainable=True)
 
-phis = tf.Variable([45, -45], \
+phis = tf.Variable([90, 0], \
     dtype=tf.float32, trainable=True)
 
 covs = tf.Variable([[[0.08, 0.1],
@@ -68,7 +75,7 @@ covs = tf.Variable([[[0.08, 0.1],
 # Calculate normalized gaussians
 G = []
 for i in range(gaussians):
-  G.append(unnormalized_gaussians(obs, means[i], covs[i], gaussians))
+  G.append(unnormalized_gaussians(obs, means[i], covs[i], dimensionality))
 G = tf.convert_to_tensor(G, dtype=tf.float32)
 P = quantum_gmm(obs, G, alphas, gaussians, phis)
 
@@ -76,7 +83,7 @@ Q = get_Q(P, gaussians)
 Q = tf.stop_gradient(Q)
 
 # lambda
-ld = 250
+ld = 1500
 
 # learning rate
 lr = 0.01
@@ -89,7 +96,6 @@ def loglikeihood(Q, P, gaussians):
         log_likelihood += Q[k] * tf.math.log(tf.clip_by_value(P[k], 1e-10, 1e10))
     
     return tf.reduce_sum(log_likelihood)
-
 
 def approx_constraint(G, alphas, phis, gaussians):
     mix_sum = 0
@@ -116,7 +122,7 @@ sess.run(init)
 # Set the number of iterations is 2000.
 n_iter = 100
 
-plot_clustered_data(dataset, means.eval(), covs.eval(), test_name, 0)
+plot_clustered_data(dataset, means.eval(), covs.eval(), test_name, 0, gaussians)
 
 # For graph
 max_iteration = 500
@@ -165,7 +171,7 @@ for i in range(1, max_iteration):
   cur_means = means.eval()
   cur_covs = covs.eval()
 
-  plot_clustered_data(dataset, cur_means, cur_covs, test_name, i)
+  plot_clustered_data(dataset, cur_means, cur_covs, test_name, i, gaussians)
   
   # Save values for graphs
   xs.append(i * n_iter)

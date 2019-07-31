@@ -30,26 +30,23 @@ def cov_ellipse(points, cov, nstd):
 	
 	return width, height, theta
 
-def plot_clustered_data(points, c_means, covs, test_name, image_num):
+def plot_clustered_data(points, c_means, covs, test_name, image_num, gaussians):
 	"""Plots the cluster-colored data and the cluster means"""
-	colors = cm.rainbow(np.linspace(0, 1, CLUSTERS))
+	#colors = cm.rainbow(np.linspace(0, 1, gaussians))
+	colors = ['g', 'b', 'm']
+
 	ax = plt.gca()
 	for i in range(points.shape[1]):
-		plt.plot(points[:, i][0], points[:, i][1], ".", color="red", zorder=0)
+		plt.plot(points[:, i][0], points[:, i][1], ".", color="r", zorder=0)
 	
-	plt.plot(c_means[0][0], c_means[0][1], ".", color="green", zorder=1)
-	plt.plot(c_means[1][0], c_means[1][1], ".", color="blue", zorder=1)
+	for i in range(gaussians):
+		plt.plot(c_means[i][0], c_means[i][1], ".", color=colors[i], zorder=1)
 
-	width1, height1, theta1 = cov_ellipse(points, covs[0], nstd=2)
-	ellipse1 = Ellipse(xy=(c_means[0][0], c_means[0][1]), width=width1, \
-			height=height1, angle=theta1, edgecolor='g', fc='None', lw=2, zorder=4)
-	
-	width2, height2, theta2 = cov_ellipse(points, covs[1], nstd=2)
-	ellipse2 = Ellipse(xy=(c_means[1][0], c_means[1][1]), width=width2, \
-			height=height2, angle=theta2, edgecolor='b', fc='None', lw=2, zorder=4)
+		width, height, theta = cov_ellipse(points, covs[i], nstd=2)
+		ellipse = Ellipse(xy=(c_means[i][0], c_means[i][1]), width=width, \
+				height=height, angle=theta, edgecolor=colors[i], fc='None', lw=2, zorder=4)
 
-	ax.add_patch(ellipse1)
-	ax.add_patch(ellipse2)
+		ax.add_patch(ellipse)
 	
 	fig = plt.gcf()
 	fig.savefig("./images/{0}/{1:08d}.png".format(test_name, image_num))
