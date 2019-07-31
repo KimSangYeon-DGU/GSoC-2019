@@ -19,8 +19,8 @@ def apply_positive_definite_constraint(covariance, num_components):
     return 0
 
   check_val += tf.cond(eig_min < 0.0, T, F)
-  #check_val += tf.cond(eig_max / eig_min < 0.0, T, F)
-  #check_val += tf.cond(eig_max  < 1e-50, T, F)    
+  check_val += tf.cond(eig_max / eig_min < 0.0, T, F)
+  check_val += tf.cond(eig_max  < 1e-50, T, F)    
 
   def apply():
     minEigval = tf.math.maximum(eig_max / 1e5, 1e-50)
@@ -56,8 +56,6 @@ def factor_covariance(covariance, num_components):
   return inv_cov, log_det_cov
 
 def compose_covariance(covariance):
-  #cov_upper = tf.matrix_band_part(covariance, 0, -1)
-  #0.5 * (cov_upper + tf.transpose(cov_upper))
   lower_cov = tf.matrix_band_part(covariance, -1, 0)
   return tf.matmul(lower_cov, tf.transpose(lower_cov))
 
