@@ -5,3 +5,5 @@ Research/Probability_Space/images/*
 **/csvs
 **/graphs
 **/researches
+**/__pycache__
+**/Code
