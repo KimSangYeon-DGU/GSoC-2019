@@ -91,7 +91,7 @@ def loglikeihood(Q, P, gaussians):
     return tf.reduce_sum(log_likelihood)
 
 
-def approx_constraint(G, alphas, phis):
+def approx_constraint(G, alphas, phis, gaussians):
     mix_sum = 0
     for k in range(gaussians):
         for l in range(gaussians):
@@ -101,7 +101,7 @@ def approx_constraint(G, alphas, phis):
     return tf.math.abs(tf.reduce_sum(alphas ** 2) + tf.reduce_sum(mix_sum) - 1)
 
 # Objective function
-J = -loglikeihood(Q, P, gaussians) + ld * approx_constraint(G, alphas, phis)
+J = -loglikeihood(Q, P, gaussians) + ld * approx_constraint(G, alphas, phis, gaussians)
 
 # Set optimizer to Adam with learning rate 0.01
 optim = tf.train.AdamOptimizer(learning_rate=lr)
@@ -133,7 +133,7 @@ Ps = []
 Js = []
 
 NLL = -loglikeihood(Q, P, gaussians).eval()
-C = approx_constraint(G, alphas, phis).eval()
+C = approx_constraint(G, alphas, phis, gaussians).eval()
 cur_alphas = alphas.eval()
 
 # Save initial values
@@ -170,7 +170,7 @@ for i in range(1, max_iteration):
   # Save values for graphs
   xs.append(i * n_iter)
   ys.append(-loglikeihood(Q, P, gaussians).eval())
-  cs.append(approx_constraint(G, alphas, phis).eval())
+  cs.append(approx_constraint(G, alphas, phis, gaussians).eval())
   as1.append(cur_alphas[0])
   as2.append(cur_alphas[1])
   cur_phi = get_cosine(phis).eval()
