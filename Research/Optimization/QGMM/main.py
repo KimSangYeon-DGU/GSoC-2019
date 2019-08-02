@@ -103,7 +103,7 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis):
     plot_clustered_data(dataset, means.eval(), covs.eval(), test_name, 0, gaussians)
 
     # For graph
-    max_iteration = 500
+    max_iteration = 5
 
     x_records = []
     nll_records = []
@@ -167,14 +167,14 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis):
 
     # Save data to csv format and a graph
     record_csv_graph(x_records,
-                     nll_records,
-                     constraint_records,
-                     alpha_records,
-                     phi_records,
-                     gauss_records,
-                     prob_records,
-                     j_records,
-                     test_name)
+                    nll_records,
+                    constraint_records,
+                    alpha_records,
+                    phi_records,
+                    gauss_records,
+                    prob_records,
+                    j_records,
+                    test_name)
 
     # Generate a video
     generate_video(test_name)
