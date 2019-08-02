@@ -20,7 +20,7 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis):
     images_path = "images/{0}".format(test_name)
 
     if os.path.exists(images_path) == False:
-        os.mkdir("images/{0}".format(images_path))
+        os.mkdir(images_path)
 
     # Initialize means and covariances.
     dimensionality = 2
