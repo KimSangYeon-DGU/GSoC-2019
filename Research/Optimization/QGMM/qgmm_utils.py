@@ -92,8 +92,6 @@ def quantum_gmm(observations, G, alphas, gaussians, phis):
     for l in range(gaussians):
       probs_sum += alphas[l] * get_cosine(phis, k, l)* G[l]
     P.append(probs * probs_sum)
-
-  P = tf.convert_to_tensor(P, dtype=tf.float32)  
   return P
 
 # Calculate responsibilities.

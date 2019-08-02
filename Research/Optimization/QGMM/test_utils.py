@@ -127,14 +127,14 @@ test_cases.append({"name": "t_dist_2",
                     "mean2":[3.3, 92.4],
                     "ld":1500,
                     "phis":[90, -90],
-                    "run":True})
+                    "run":False})
 
 test_cases.append({"name": "t_dist_3",
                     "mean1":[1.5, 68.6],
                     "mean2":[3.3, 92.4],
                     "ld":1500,
                     "phis":[90, -90],
-                    "run":False})
+                    "run":True})
 
 ## Lambda selection
 # Test case 1
