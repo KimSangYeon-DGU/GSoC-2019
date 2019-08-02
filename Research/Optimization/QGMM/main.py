@@ -22,7 +22,6 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis):
     os.mkdir("./csvs/{0}".format(test_name))
     os.mkdir("./images/{0}".format(test_name))
 
-
     # Initialize means and covariances.
     dimensionality = 2
 
@@ -54,7 +53,7 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis):
     G = []
     for i in range(gaussians):
         G.append(unnormalized_gaussians(obs, means[i], covs[i], dimensionality))
-    
+
     G = tf.convert_to_tensor(G, dtype=tf.float32)
 
     P = quantum_gmm(obs, G, alphas, gaussians, phis)
@@ -73,7 +72,7 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis):
         log_likelihood = 0
         for k in range(gaussians):
             log_likelihood += Q[k] * tf.math.log(tf.clip_by_value(P[k], 1e-10, 1e10))
-        
+
         return tf.reduce_sum(log_likelihood)
 
     def approx_constraint(G, alphas, phis, gaussians):
@@ -82,7 +81,7 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis):
             for l in range(gaussians):
                 if k == l:
                     continue
-                mix_sum += alphas[k] * alphas[l] * G[k] * G[l] * get_cosine(phis[k] - phis[l])
+                mix_sum += alphas[k] * alphas[l] * G[k] * G[l] * get_cosine(phis, k, l)
         return tf.math.abs(tf.reduce_sum(alphas ** 2) + tf.reduce_sum(mix_sum) - 1)
 
     # Objective function
@@ -159,6 +158,7 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis):
 
         if abs(pre_J - cur_J) < tot:
             break
+
         pre_J = cur_J
 
     # Check the trained parameters with actual mean and covariance using numpy

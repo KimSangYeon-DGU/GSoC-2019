@@ -77,8 +77,9 @@ def unnormalized_gaussians(observations, mean, covariance, dimensionality):
   return tf.exp(log_probability(observations, mean, covariance, \
       0.25, dimensionality))
 
-def get_cosine(phi):
+def get_cosine(phis, k, l):
   pi_on_180 = 0.017453292519943295
+  phi = phis[k] - phis[l]
   phi = phi * pi_on_180
   return tf.cos(phi) # deg2rad
 
@@ -89,7 +90,7 @@ def quantum_gmm(observations, G, alphas, gaussians, phis):
     probs = alphas[k] * G[k]
     probs_sum = 0
     for l in range(gaussians):
-      probs_sum += alphas[l] * get_cosine(phis[k] - phis[l])* G[l]
+      probs_sum += alphas[l] * get_cosine(phis, k, l)* G[l]
     P.append(probs * probs_sum)
 
   P = tf.convert_to_tensor(P, dtype=tf.float32)  

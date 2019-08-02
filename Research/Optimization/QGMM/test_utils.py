@@ -29,21 +29,21 @@ test_cases.append({"name": "t_init_2",
                     "mean2":[1.781079954983019, 95.411542531776],
                     "ld":1500,
                     "phis":[0, 0],
-                    "run":False})
+                    "run":True})
 
 test_cases.append({"name": "t_init_2",
                     "mean1":[4.171021823127277, 83.66322004888708], 
                     "mean2":[1.781079954983019, 95.411542531776],
                     "ld":1500,
                     "phis":[45, -45],
-                    "run":False})
+                    "run":True})
 
 test_cases.append({"name": "t_init_2",
                     "mean1":[4.171021823127277, 83.66322004888708], 
                     "mean2":[1.781079954983019, 95.411542531776],
                     "ld":1500,
                     "phis":[90, -90],
-                    "run":False})
+                    "run":True})
 
 # Test case 3
 test_cases.append({"name": "t_init_3",
@@ -51,21 +51,21 @@ test_cases.append({"name": "t_init_3",
                     "mean2":[4.73416217991247, 70.48443049223583],
                     "ld":1500,
                     "phis":[0, 0],
-                    "run":False})
+                    "run":True})
 
 test_cases.append({"name": "t_init_3",
                     "mean1":[4.616385494792178, 68.97139287485163], 
                     "mean2":[4.73416217991247, 70.48443049223583],
                     "ld":1500,
                     "phis":[45, -45],
-                    "run":False})
+                    "run":True})
 
 test_cases.append({"name": "t_init_3",
                     "mean1":[4.616385494792178, 68.97139287485163], 
                     "mean2":[4.73416217991247, 70.48443049223583],
                     "ld":1500,
                     "phis":[90, -90],
-                    "run":False})
+                    "run":True})
 
 # Test case 4
 test_cases.append({"name": "t_init_4",
@@ -102,14 +102,14 @@ test_cases.append({"name": "t_init_5",
                     "mean2":[2.511548424664534, 90.2446329311453],
                     "ld":1500,
                     "phis":[45, -45],
-                    "run":False})
+                    "run":True})
 
 test_cases.append({"name": "t_init_5",
                     "mean1":[4.399318766072071, 63.982790484402784], 
                     "mean2":[2.511548424664534, 90.2446329311453],
                     "ld":1500,
                     "phis":[90, -90],
-                    "run":False})
+                    "run":True})
 
 test_cases.append({"name": "t_dist_1",
                     "mean1":[1.756031811312966, 72.62447648112042], 
@@ -130,5 +130,26 @@ test_cases.append({"name": "t_dist_3",
                     "mean1":[2.056031811312966, 72.62447648112042], 
                     "mean2":[3.5226572802266397, 88.3509418943818],
                     "ld":1500,
+                    "phis":[90, -90],
+                    "run":False})
+
+test_cases.append({"name": "t_dist_4",
+                    "mean1":[2.056031811312966, 72.62447648112042], 
+                    "mean2":[3.5226572802266397, 88.3509418943818],
+                    "ld":3000,
+                    "phis":[90, -90],
+                    "run":False})
+
+test_cases.append({"name": "t_dist_5",
+                    "mean1":[2.056031811312966, 72.62447648112042], 
+                    "mean2":[3.5226572802266397, 88.3509418943818],
+                    "ld":5000,
+                    "phis":[90, -90],
+                    "run":False})
+
+test_cases.append({"name": "t_dist_6",
+                    "mean1":[2.056031811312966, 72.62447648112042], 
+                    "mean2":[3.5226572802266397, 88.3509418943818],
+                    "ld":100000,
                     "phis":[90, -90],
                     "run":False})
