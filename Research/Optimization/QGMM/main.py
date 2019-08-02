@@ -16,6 +16,11 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis):
     obs = tf.convert_to_tensor(dataset, dtype=tf.float32)
 
     test_name = "{0}_{1}_{2}".format(_test_name, _phis[0]-_phis[1], _ld)
+    
+    images_path = "images/{0}".format(test_name)
+
+    if os.path.exists(images_path) == False:
+        os.mkdir("images/{0}".format(images_path))
 
     # Initialize means and covariances.
     dimensionality = 2
@@ -107,10 +112,10 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis):
 
     # Train QGMM
     for i in range(1, max_iteration):
-        print(i, test_name)
         sess.run(training)
         
         if i % 100 == 0:
+            print(i, test_name)
             cur_J = sess.run(J)
             
             if abs(pre_J - cur_J) < tot:
