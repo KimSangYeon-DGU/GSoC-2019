@@ -101,7 +101,7 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis):
     plot_clustered_data(dataset, means.eval(), covs.eval(), test_name, 0, gaussians)
 
     # For graph
-    max_iteration = 5000
+    max_iteration = 50000
 
     tot = 1e-3
 
