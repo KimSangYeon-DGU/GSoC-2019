@@ -1,267 +1,192 @@
 from qgmm_utils import *
 from draw_utils import *
 from param_utils import *
+from test_utils import *
+from record_utils import *
 import numpy as np
 import tensorflow as tf
 import pandas as pd
-import math
-import csv
+import math, os
 
-def optimize():
-  for _ in range(n_iter):
-    sess.run(training)
+def train_qgmm(_test_name, _means1, _means2, _ld, _phis):
+    # Load 'Old faithful' dataset
+    df = pd.read_csv('faithful.csv', sep=',')
+    dataset = df.to_numpy()
+    dataset = np.transpose(dataset)
+    obs = tf.convert_to_tensor(dataset, dtype=tf.float32)
 
-# Load 'Old faithful' dataset
-df = pd.read_csv('faithful.csv', sep=',')
-dataset = df.to_numpy()
-dataset = np.transpose(dataset)
-#dataset = (dataset - np.min(dataset)) / (np.max(dataset) - np.min(dataset))
-#print(np.max(dataset), np.min(dataset))
-obs = tf.convert_to_tensor(dataset, dtype=tf.float32)
+    test_name = "{0}_{1}_{2}".format(_test_name, _phis[0]-_phis[1], _ld)
+
+    # Make directories
+    os.mkdir("./graphs/{0}".format(test_name))
+    os.mkdir("./csvs/{0}".format(test_name))
+    os.mkdir("./images/{0}".format(test_name))
 
 
-#test_name = "t3_180"
-test_name = "t6"
+    # Initialize means and covariances.
+    dimensionality = 2
 
-m1, m2 = get_initial_means(dataset)
+    # Set the number of Gaussians
+    gaussians = 2
 
-print(m1, m2)
-# t1
-#m1 = [2.756031811312966, 76.62447648112042]
-#m2 = [2.9226572802266397, 88.3509418943818]
+    alphas = tf.Variable([0.5, 0.5], dtype=tf.float32, trainable=True)
 
-# t2
-#m1 = [4.171021823127277, 83.66322004888708]
-#m2 = [1.781079954983019, 95.411542531776]
+    '''
+    m1, m2 = get_initial_means(dataset)
+    print(m1, m2)
 
-# t3
-#m1 = [4.616385494792178, 68.97139287485163]
-#m2 = [4.73416217991247, 70.48443049223583]
+    means = tf.Variable([[m1[0], m1[1]], [m2[0], m2[1]]], \
+        dtype=tf.float32, trainable=True)
+    '''
+    means = tf.Variable([[_means1[0], _means1[1]], [_means2[0], _means2[1]]], \
+        dtype=tf.float32, trainable=True)
 
-# t4
-#m1 = [3.5335808453329793, 60.79723193882826]
-#m2 = [3.748786959785587, 46.017018024467745]
+    phis = tf.Variable([_phis[0], _phis[1]], \
+        dtype=tf.float32, trainable=True)
 
-# t5
-#m1 = [4.399318766072071, 63.982790484402784]
-#m2 = [2.511548424664534, 90.2446329311453]
+    covs = tf.Variable([[[0.08, 0.1],
+                        [0.1, 3.3]], \
+                            
+                        [[0.08, 0.1],
+                        [0.1, 3.3]]], dtype=tf.float32, trainable=True)
 
-#m1 = [3.9469057343166334, 82.32985563107177]
-#m2 = [2.2708665221280495, 79.27274542496451]
-
-m1 = [3.1973250138987837, 86.91951792540539]
-m2 = [3.2898566763948844, 87.18052770113775]
-
-# Initialize means and covariances.
-dimensionality = 2
-
-# Set the number of Gaussians
-gaussians = 2
-
-alphas = tf.Variable([0.5, 0.5], dtype=tf.float32, trainable=True)
-
-means = tf.Variable([[m1[0], m1[1]], [m2[0], m2[1]]], \
-    dtype=tf.float32, trainable=True)
-
-phis = tf.Variable([90, 0], \
-    dtype=tf.float32, trainable=True)
-
-covs = tf.Variable([[[0.08, 0.1],
-                     [0.1, 3.3]], \
-                         
-                    [[0.08, 0.1],
-                     [0.1, 3.3]]], dtype=tf.float32, trainable=True)
-
-# Calculate normalized gaussians
-G = []
-for i in range(gaussians):
-  G.append(unnormalized_gaussians(obs, means[i], covs[i], dimensionality))
-G = tf.convert_to_tensor(G, dtype=tf.float32)
-P = quantum_gmm(obs, G, alphas, gaussians, phis)
-
-Q = get_Q(P, gaussians)
-Q = tf.stop_gradient(Q)
-
-# lambda
-ld = 1500
-
-# learning rate
-lr = 0.01
-
-# Objective function :: Minimize (NLL + lambda * approximation constant)
-# Approximation constant :: (Sum of P(p_{i}, k| alpha_{k}, theta_{k})) - 1 = 0
-def loglikeihood(Q, P, gaussians):
-    log_likelihood = 0
-    for k in range(gaussians):
-        log_likelihood += Q[k] * tf.math.log(tf.clip_by_value(P[k], 1e-10, 1e10))
+    # Calculate normalized gaussians
+    G = []
+    for i in range(gaussians):
+        G.append(unnormalized_gaussians(obs, means[i], covs[i], dimensionality))
     
-    return tf.reduce_sum(log_likelihood)
+    G = tf.convert_to_tensor(G, dtype=tf.float32)
 
-def approx_constraint(G, alphas, phis, gaussians):
-    mix_sum = 0
-    for k in range(gaussians):
-        for l in range(gaussians):
-            if k == l:
-                continue
-            mix_sum += alphas[k] * alphas[l] * G[k] * G[l] * get_cosine(phis[k] - phis[l])
-    return tf.math.abs(tf.reduce_sum(alphas ** 2) + tf.reduce_sum(mix_sum) - 1)
+    P = quantum_gmm(obs, G, alphas, gaussians, phis)
 
-# Objective function
-J = -loglikeihood(Q, P, gaussians) + ld * approx_constraint(G, alphas, phis, gaussians)
+    Q = get_Q(P, gaussians); Q = tf.stop_gradient(Q)
 
-# Set optimizer to Adam with learning rate 0.01
-optim = tf.train.AdamOptimizer(learning_rate=lr)
-training = optim.minimize(J)
+    # lambda
+    ld = _ld
 
-# Build session
-sess = tf.InteractiveSession()
-init = tf.global_variables_initializer()
+    # learning rate
+    lr = 0.001
 
-sess.run(init)
+    # Objective function :: Minimize (NLL + lambda * approximation constant)
+    # Approximation constant :: (Sum of P(p_{i}, k| alpha_{k}, theta_{k})) - 1 = 0
+    def loglikeihood(Q, P, gaussians):
+        log_likelihood = 0
+        for k in range(gaussians):
+            log_likelihood += Q[k] * tf.math.log(tf.clip_by_value(P[k], 1e-10, 1e10))
+        
+        return tf.reduce_sum(log_likelihood)
 
-# Set the number of iterations is 2000.
-n_iter = 100
+    def approx_constraint(G, alphas, phis, gaussians):
+        mix_sum = 0
+        for k in range(gaussians):
+            for l in range(gaussians):
+                if k == l:
+                    continue
+                mix_sum += alphas[k] * alphas[l] * G[k] * G[l] * get_cosine(phis[k] - phis[l])
+        return tf.math.abs(tf.reduce_sum(alphas ** 2) + tf.reduce_sum(mix_sum) - 1)
 
-plot_clustered_data(dataset, means.eval(), covs.eval(), test_name, 0, gaussians)
+    # Objective function
+    J = -loglikeihood(Q, P, gaussians) + ld * approx_constraint(G, alphas, phis, gaussians)
 
-# For graph
-max_iteration = 500
+    # Set optimizer to Adam with learning rate 0.01
+    optim = tf.train.AdamOptimizer(learning_rate=lr)
+    training = optim.minimize(J)
 
-xs = []
-ys = []
-cs = []
-as1 = []
-as2 = []
-Phis = []
-G1s = []
-G2s = []
-Ps = []
-Js = []
+    # Build session
+    sess = tf.InteractiveSession()
+    init = tf.global_variables_initializer()
 
-NLL = -loglikeihood(Q, P, gaussians).eval()
-C = approx_constraint(G, alphas, phis, gaussians).eval()
-cur_alphas = alphas.eval()
+    sess.run(init)
 
-# Save initial values
-xs.append(0)
-ys.append(NLL)
-cs.append(C)
-as1.append(cur_alphas[0])
-as2.append(cur_alphas[1])
-cur_phi = phis.eval()
-Phis.append(cur_phi)
-G1s.append(tf.reduce_sum(G[0]).eval())
-G2s.append(tf.reduce_sum(G[1]).eval())
-Ps.append(tf.reduce_sum(P[0] + P[1]).eval())
+    # Set the number of iterations is 2000.
+    n_iter = 100
 
-tot = 1e-3
-sess.run(J)
-cur_J = J.eval()
-pre_J = cur_J
+    plot_clustered_data(dataset, means.eval(), covs.eval(), test_name, 0, gaussians)
 
-Js.append(cur_J)
+    # For graph
+    max_iteration = 500
 
-# Train QGMM
-for i in range(1, max_iteration):
-  print(i, test_name, tf.reduce_sum(P[0] + P[1]).eval())
-  print(phis.eval(), cur_J)
-  optimize()
-  cur_J = J.eval()
-  cur_alphas = alphas.eval()
-  cur_means = means.eval()
-  cur_covs = covs.eval()
+    x_records = []
+    nll_records = []
+    constraint_records = []
+    alpha_records = []
+    phi_records = []
+    gauss_records = []
+    prob_records = []
+    j_records = []
 
-  plot_clustered_data(dataset, cur_means, cur_covs, test_name, i, gaussians)
-  
-  # Save values for graphs
-  xs.append(i * n_iter)
-  ys.append(-loglikeihood(Q, P, gaussians).eval())
-  cs.append(approx_constraint(G, alphas, phis, gaussians).eval())
-  as1.append(cur_alphas[0])
-  as2.append(cur_alphas[1])
-  cur_phi = get_cosine(phis).eval()
-  Phis.append(cur_phi)
-  G1s.append(tf.reduce_sum(G[0]).eval())
-  G2s.append(tf.reduce_sum(G[1]).eval())
-  Js.append(cur_J)
+    # Save initial values
+    x_records.append(0)
+    nll_records.append(-loglikeihood(Q, P, gaussians).eval())
+    constraint_records.append(approx_constraint(G, alphas, phis, gaussians).eval())
+    alpha_records.append(alphas.eval())
+    phi_records.append(phis.eval())
+    gauss_records.append(tf.reduce_sum(G, axis=1).eval())
+    prob_records.append(tf.reduce_sum(P, axis=1).eval())
 
-  Ps.append(tf.reduce_sum(P[0] + P[1]).eval())
+    tot = 1e-3
+    sess.run(J)
+    cur_J = J.eval()
+    pre_J = cur_J
 
-  if abs(pre_J - cur_J) < tot:
-    break
-  pre_J = cur_J
+    j_records.append(cur_J)
 
-# Check the trained parameters with actual mean and covariance using numpy
-print('\nCost:{0}\n\nalphas:\n{1}\n\nmeans:\n{2}\n\ncovariances:\n{3}\n\n'.\
-    format(cur_J, cur_alphas, cur_means, cur_covs))
+    def optimize():
+        for _ in range(n_iter):
+            sess.run(training)
 
-# Set file names
-nll_file_name = '{0}_nll'.format(test_name)
-constraint_file_name = '{0}_constraint'.format(test_name)
-phi_file_name = '{0}_phi'.format(test_name)
-unnorm_gauss_file_name = '{0}_unnorm_gauss'.format(test_name)
-probs_file_name = '{0}_probs'.format(test_name)
-alpha_file_name = '{0}_alpha'.format(test_name)
-obj_file_name = '{0}_obj'.format(test_name)
-csv_path = './csvs/{0}'.format(test_name)
+    # Train QGMM
+    for i in range(1, max_iteration):
+        print(i, test_name, tf.reduce_sum(P[0] + P[1]).eval())
+        print(phis.eval(), cur_J)
+        optimize()
+        cur_J = J.eval()
+        cur_alphas = alphas.eval()
+        cur_means = means.eval()
+        cur_covs = covs.eval()
 
-# Save data to csv format and a graph
-# NLL
-with open(csv_path+'/'+nll_file_name, 'w') as myfile:
-    wr = csv.writer(myfile, delimiter=',')
-    wr.writerows(zip(xs, ys))
+        plot_clustered_data(dataset, cur_means, cur_covs, test_name, i, gaussians)
 
-draw_graph(x=xs, y=ys, x_label='Iteration', y_label='NLL', 
-    file_name=nll_file_name+'.png', test_name=test_name)
+        # Save values for graphs
+        x_records.append(i * n_iter)
+        nll_records.append(-loglikeihood(Q, P, gaussians).eval())
+        constraint_records.append(approx_constraint(G, alphas, phis, gaussians).eval())
+        alpha_records.append(cur_alphas)
+        phi_records.append(phis.eval())
+        gauss_records.append(tf.reduce_sum(G, axis=1).eval())
+        prob_records.append(tf.reduce_sum(P, axis=1).eval())
+        j_records.append(cur_J)
 
-# Constraint
-with open(csv_path+'/'+constraint_file_name, 'w') as myfile:
-    wr = csv.writer(myfile, delimiter=',')
-    wr.writerows(zip(xs, cs))
-draw_graph(x=xs, y=cs, x_label='Iteration', y_label='Constraint', 
-    file_name=constraint_file_name+'.png', test_name=test_name)
+        if abs(pre_J - cur_J) < tot:
+            break
+        pre_J = cur_J
 
-# Phi
-with open(csv_path+'/'+phi_file_name, 'w') as myfile:
-    wr = csv.writer(myfile, delimiter=',')
-    wr.writerows(zip(xs, Phis))
+    # Check the trained parameters with actual mean and covariance using numpy
+    print('\nCost:{0}\n\nalphas:\n{1}\n\nmeans:\n{2}\n\ncovariances:\n{3}\n\n'.\
+        format(cur_J, cur_alphas, cur_means, cur_covs))
 
-draw_graph(x=xs, y=Phis, x_label='Iteration', y_label="Phi", \
-    file_name=phi_file_name+'.png', test_name=test_name)
+    # Save data to csv format and a graph
+    record_csv_graph(x_records,
+                     nll_records,
+                     constraint_records,
+                     alpha_records,
+                     phi_records,
+                     gauss_records,
+                     prob_records,
+                     j_records,
+                     test_name)
 
-# Alpha
-with open(csv_path+'/'+alpha_file_name, 'w') as myfile:
-    wr = csv.writer(myfile, delimiter=',')
-    wr.writerows(zip(xs, as1, as2))
+    # Generate a video
+    generate_video(test_name)
 
-draw_alphas_graph(x=xs, a1=as1, a2=as2, x_label='Iteration', y_label="Alphas",\
-    file_name=alpha_file_name, test_name=test_name)
+    sess.close()
 
-# Unnormalized Gaussians
-with open(csv_path+'/'+unnorm_gauss_file_name, 'w') as myfile:
-    wr = csv.writer(myfile, delimiter=',')
-    wr.writerows(zip(xs, G1s, G2s))
-draw_gaussian(x=xs, g1=G1s, g2=G2s, x_label='Iteration', \
-    y_label='Unnormalized Gaussians', g1_label='G1', g2_label='G2', \
-    file_name=unnorm_gauss_file_name+'.png', test_name=test_name)
+if __name__== "__main__":
+    n_tests = len(test_cases)
 
-# Probability
-with open(csv_path+'/'+probs_file_name, 'w') as myfile:
-    wr = csv.writer(myfile, delimiter=',')
-    wr.writerows(zip(xs, Ps))
-
-draw_graph(x=xs, y=Ps, x_label='Iteration', y_label='Sum of probability', 
-    file_name=probs_file_name+'.png', test_name=test_name)
-
-# Objective function
-with open(csv_path+'/'+obj_file_name, 'w') as myfile:
-    wr = csv.writer(myfile, delimiter=',')
-    wr.writerows(zip(xs, Js))
-
-draw_graph(x=xs, y=Js, x_label='Iteration', y_label='Objective function', 
-    file_name=obj_file_name+'.png', test_name=test_name)
-
-# Generate a video
-generate_video(test_name)
-
-sess.close()
+    for i in range(n_tests):
+        if test_cases[i]["run"] == False:
+            continue
+        train_qgmm(test_cases[i]["name"], test_cases[i]["mean1"], 
+                   test_cases[i]["mean2"], test_cases[i]["ld"],
+                   test_cases[i]["phis"])

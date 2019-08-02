@@ -33,7 +33,7 @@ def cov_ellipse(points, cov, nstd):
 def plot_clustered_data(points, c_means, covs, test_name, image_num, gaussians):
 	"""Plots the cluster-colored data and the cluster means"""
 	#colors = cm.rainbow(np.linspace(0, 1, gaussians))
-	colors = ['g', 'b', 'm']
+	colors = ['b', 'g', 'm']
 
 	ax = plt.gca()
 	for i in range(points.shape[1]):
@@ -52,6 +52,7 @@ def plot_clustered_data(points, c_means, covs, test_name, image_num, gaussians):
 	fig.savefig("./images/{0}/{1:08d}.png".format(test_name, image_num))
 	plt.close()
 
+'''
 def draw_graph(x, y, x_label, y_label, file_name, test_name):
   print("Save the graph with the file name: {0}".format(file_name))
 	# Draw
@@ -70,68 +71,54 @@ def draw_graph(x, y, x_label, y_label, file_name, test_name):
 
   # Close
   plt.close()
+'''
 
-def draw_alphas_graph(x, a1, a2, x_label, y_label, file_name, test_name):
-  print("Save the graph with the file name: {0}".format(file_name))
-	# Draw
-  plt.plot(x, a1, color='g', label='alpha 1')
-  plt.plot(x, a2, color='b', label='alpha 2')
+def draw_graph(x, ys, x_label, ys_labels, file_name, test_name):
+    print("Save the graph with the file name: {0}".format(file_name))
+    colors = ['b', 'g', 'm']
+    # Draw
+    dim = len(ys.shape)
+    if dim == 1:
+        plt.plot(x, ys, color=colors[0], label=ys_labels[1])
+    else:
+        n_rows = ys.shape[0]
+        for i in range(n_rows):
+            plt.plot(x, ys[i], color=colors[i], label=ys_labels[i+1])
 
-  plt.grid(True)
+    plt.grid(True)
 
-	# Set labels
-  plt.xlabel(x_label)
-  plt.ylabel(y_label)
-  plt.legend()
-  fig = plt.gcf()
+    # Set labels
+    plt.xlabel(x_label[0])
+    plt.ylabel(ys_labels[0])
+    plt.legend()
+    fig = plt.gcf()
 
-  # Save
-  fig.savefig("./graphs/{0}/".format(test_name)+file_name)
+    # Save
+    fig.savefig("./graphs/{0}/".format(test_name)+file_name)
 
-  # Close
-  plt.close()
-
-def draw_gaussian(x, g1, g2, x_label, y_label, g1_label, g2_label, file_name, test_name):
-  print("Save the graph with the file name: {0}".format(file_name))
-	# Draw
-  plt.plot(x, g1, color='g', label=g1_label)
-  plt.plot(x, g2, color='b', label=g2_label)
-
-  plt.grid(True)
-
-	# Set labels
-  plt.xlabel(x_label)
-  plt.ylabel(y_label)
-  plt.legend()
-  fig = plt.gcf()
-
-  # Save
-  fig.savefig("./graphs/{0}/".format(test_name)+file_name)
-
-  # Close
-  plt.close()
-
+    # Close
+    plt.close()
 
 def draw_probs(x, p1, p2, p3, x_label, y_label, file_name, test_name):
-  print("Save the graph with the file name: {0}".format(file_name))
-	# Draw
-  plt.plot(x, p1, color='g', label='P1')
-  plt.plot(x, p2, color='b', label='P2')
-  plt.plot(x, p3, color='r', label='P1 + P2')
+    print("Save the graph with the file name: {0}".format(file_name))
+    # Draw
+    plt.plot(x, p1, color='g', label='P1')
+    plt.plot(x, p2, color='b', label='P2')
+    plt.plot(x, p3, color='r', label='P1 + P2')
 
-  plt.grid(True)
+    plt.grid(True)
 
-	# Set labels
-  plt.xlabel(x_label)
-  plt.ylabel(y_label)
-  plt.legend()
-  fig = plt.gcf()
+    # Set labels
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
+    plt.legend()
+    fig = plt.gcf()
 
-  # Save
-  fig.savefig("./graphs/{0}/".format(test_name)+file_name)
+    # Save
+    fig.savefig("./graphs/{0}/".format(test_name)+file_name)
 
-  # Close
-  plt.close()
+    # Close
+    plt.close()
 
 def generate_video(test_name):
 	import cv2
