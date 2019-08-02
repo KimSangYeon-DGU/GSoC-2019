@@ -103,7 +103,7 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis):
     plot_clustered_data(dataset, means.eval(), covs.eval(), test_name, 0, gaussians)
 
     # For graph
-    max_iteration = 5
+    max_iteration = 500
 
     x_records = []
     nll_records = []
@@ -113,6 +113,10 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis):
     gauss_records = []
     prob_records = []
     j_records = []
+    mean1_records = []
+    mean2_records = []
+    cov1_records = []
+    cov2_records = []
 
     # Save initial values
     x_records.append(0)
@@ -122,6 +126,21 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis):
     phi_records.append(phis.eval())
     gauss_records.append(tf.reduce_sum(G, axis=1).eval())
     prob_records.append(tf.reduce_sum(P, axis=1).eval())
+    cur_means = means.eval()
+    cur_covs = covs.eval()
+    mean1_records.append(cur_means[0])
+    mean2_records.append(cur_means[1])
+
+    cov1_records.append([cur_covs[0][0][0], 
+                         cur_covs[0][0][1],
+                         cur_covs[0][1][0],
+                         cur_covs[0][1][1]])
+
+    cov2_records.append([cur_covs[1][0][0], 
+                         cur_covs[1][0][1],
+                         cur_covs[1][1][0],
+                         cur_covs[1][1][1]])
+
 
     tot = 1e-3
     sess.run(J)
@@ -139,12 +158,15 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis):
         print(i, test_name, tf.reduce_sum(P[0] + P[1]).eval())
         print(phis.eval(), cur_J)
         optimize()
+        
         cur_J = J.eval()
         cur_alphas = alphas.eval()
         cur_means = means.eval()
         cur_covs = covs.eval()
-
+        
+        '''
         plot_clustered_data(dataset, cur_means, cur_covs, test_name, i, gaussians)
+        '''
 
         # Save values for graphs
         x_records.append(i * n_iter)
@@ -155,26 +177,72 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis):
         gauss_records.append(tf.reduce_sum(G, axis=1).eval())
         prob_records.append(tf.reduce_sum(P, axis=1).eval())
         j_records.append(cur_J)
+        mean1_records.append(cur_means[0])
+        mean2_records.append(cur_means[1])
 
+        cov1_records.append([cur_covs[0][0][0], 
+                            cur_covs[0][0][1],
+                            cur_covs[0][1][0],
+                            cur_covs[0][1][1]])
+
+        cov2_records.append([cur_covs[1][0][0], 
+                            cur_covs[1][0][1],
+                            cur_covs[1][1][0],
+                            cur_covs[1][1][1]])
+        
         if abs(pre_J - cur_J) < tot:
             break
 
         pre_J = cur_J
+
+        if i % 50 == 0:
+            record_csv_graph(x_records=x_records,
+                            nll_records=nll_records,
+                            constraint_records=constraint_records,
+                            alpha_records=alpha_records,
+                            phi_records=phi_records,
+                            gauss_records=gauss_records,
+                            prob_records=prob_records,
+                            j_records=j_records,
+                            mean1_records=mean1_records,
+                            mean2_records=mean2_records,
+                            cov1_records=cov1_records,
+                            cov2_records=cov2_records,
+                            test_name=test_name,
+                            open_type='a+')
+
+            x_records = []
+            nll_records = []
+            constraint_records = []
+            alpha_records = []
+            phi_records = []
+            gauss_records = []
+            prob_records = []
+            j_records = []
+            mean1_records = []
+            mean2_records = []
+            cov1_records = []
+            cov2_records = []
 
     # Check the trained parameters with actual mean and covariance using numpy
     print('\nCost:{0}\n\nalphas:\n{1}\n\nmeans:\n{2}\n\ncovariances:\n{3}\n\n'.\
         format(cur_J, cur_alphas, cur_means, cur_covs))
 
     # Save data to csv format and a graph
-    record_csv_graph(x_records,
-                    nll_records,
-                    constraint_records,
-                    alpha_records,
-                    phi_records,
-                    gauss_records,
-                    prob_records,
-                    j_records,
-                    test_name)
+    record_csv_graph(x_records=x_records,
+                    nll_records=nll_records,
+                    constraint_records=constraint_records,
+                    alpha_records=alpha_records,
+                    phi_records=phi_records,
+                    gauss_records=gauss_records,
+                    prob_records=prob_records,
+                    j_records=j_records,
+                    mean1_records=mean1_records,
+                    mean2_records=mean2_records,
+                    cov1_records=cov1_records,
+                    cov2_records=cov2_records,
+                    test_name=test_name,
+                    open_type='a+')
 
     # Generate a video
     generate_video(test_name)
