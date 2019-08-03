@@ -1,12 +1,10 @@
 from qgmm_utils import *
 from draw_utils import *
 from param_utils import *
-from test_utils import *
-from record_utils import *
 import numpy as np
 import tensorflow as tf
 import pandas as pd
-import math, os
+import math, os, json, sys
 
 def train_qgmm(_test_name, _means1, _means2, _ld, _phis):
     # Load 'Old faithful' dataset
@@ -20,7 +18,7 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis):
     images_path = "images/{0}".format(test_name)
 
     if os.path.exists(images_path) == False:
-        os.mkdir("images/{0}".format(images_path))
+        os.mkdir(images_path)
 
     # Initialize means and covariances.
     dimensionality = 2
@@ -37,6 +35,7 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis):
     means = tf.Variable([[m1[0], m1[1]], [m2[0], m2[1]]], \
         dtype=tf.float32, trainable=True)
     '''
+
     means = tf.Variable([[_means1[0], _means1[1]], [_means2[0], _means2[1]]], \
         dtype=tf.float32, trainable=True, name="means")
 
@@ -86,7 +85,7 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis):
         return tf.math.abs(tf.reduce_sum(alphas ** 2) + tf.reduce_sum(mix_sum) - 1, name="constraint")
 
     # Objective function
-    J = -loglikeihood(Q, P, gaussians) + ld * approx_constraint(G, alphas, phis, gaussians)
+    J = tf.add(-loglikeihood(Q, P, gaussians), ld * approx_constraint(G, alphas, phis, gaussians), name="J")
 
     # Set optimizer to Adam with learning rate 0.01
     optim = tf.train.AdamOptimizer(learning_rate=lr)
@@ -101,7 +100,7 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis):
     plot_clustered_data(dataset, means.eval(), covs.eval(), test_name, 0, gaussians)
 
     # For graph
-    max_iteration = 5000
+    max_iteration = 50000
 
     tot = 1e-3
 
@@ -124,17 +123,21 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis):
             pre_J = cur_J
 
             saver.save(sess, "models/{0}/{1}.ckpt".format(test_name, i), write_meta_graph=False)
-            print(means)
     
     saver.save(sess, "models/{0}/{1}.ckpt".format(test_name, i), write_meta_graph=False)
     sess.close()
 
 if __name__== "__main__":
-    n_tests = len(test_cases)
+    dir_name = sys.argv[1]
+    json_data = open("jsons/"+dir_name+"/"+dir_name+".json").read()
 
-    for i in range(n_tests):
-        if test_cases[i]["run"] == False:
-            continue
-        train_qgmm(test_cases[i]["name"], test_cases[i]["mean1"], 
-                   test_cases[i]["mean2"], test_cases[i]["ld"],
-                   test_cases[i]["phis"])
+    data = json.loads(json_data)
+
+    print(data)
+    #for i in range(n_tests):
+        #if test_cases[i]["run"] == False:
+        #    continue
+    train_qgmm(data["name"], data["mean1"], 
+                data["mean2"], data["ld"],
+                data["phis"])
+

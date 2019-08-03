@@ -1,3 +1,5 @@
+import json, os
+
 
 test_cases = []
 
@@ -118,9 +120,36 @@ test_cases.append({"name": "t_dist_1",
                     "mean1":[2.756031811312966, 76.62447648112042],
                     "mean2":[2.9226572802266397, 88.3509418943818],
                     "ld":1500,
+                    "phis":[0, 0],
+                    "run":False})
+
+test_cases.append({"name": "t_dist_1",
+                    "mean1":[2.756031811312966, 76.62447648112042],
+                    "mean2":[2.9226572802266397, 88.3509418943818],
+                    "ld":1500,
+                    "phis":[45, -45],
+                    "run":True})
+
+test_cases.append({"name": "t_dist_1",
+                    "mean1":[2.756031811312966, 76.62447648112042],
+                    "mean2":[2.9226572802266397, 88.3509418943818],
+                    "ld":1500,
                     "phis":[90, -90],
                     "run":False})
 
+test_cases.append({"name": "t_dist_2",
+                    "mean1":[2.3, 72.6],
+                    "mean2":[3.3, 92.4],
+                    "ld":1500,
+                    "phis":[0, 0],
+                    "run":True})
+
+test_cases.append({"name": "t_dist_2",
+                    "mean1":[2.3, 72.6],
+                    "mean2":[3.3, 92.4],
+                    "ld":1500,
+                    "phis":[45, -45],
+                    "run":True})
 
 test_cases.append({"name": "t_dist_2",
                     "mean1":[2.3, 72.6],
@@ -133,8 +162,22 @@ test_cases.append({"name": "t_dist_3",
                     "mean1":[1.5, 68.6],
                     "mean2":[3.3, 92.4],
                     "ld":1500,
-                    "phis":[90, -90],
+                    "phis":[0, 0],
                     "run":True})
+
+test_cases.append({"name": "t_dist_3",
+                    "mean1":[1.5, 68.6],
+                    "mean2":[3.3, 92.4],
+                    "ld":1500,
+                    "phis":[45, -45],
+                    "run":True})
+
+test_cases.append({"name": "t_dist_3",
+                    "mean1":[1.5, 68.6],
+                    "mean2":[3.3, 92.4],
+                    "ld":1500,
+                    "phis":[90, -90],
+                    "run":False})
 
 ## Lambda selection
 # Test case 1
@@ -246,3 +289,12 @@ test_cases.append({"name": "t_lambda_5",
                     "ld":5000,
                     "phis":[45, -45],
                     "run":False})
+
+for test_case in test_cases:
+    test_name = "{0}_{1}_{2}".format(test_case["name"], \
+        int(test_case["phis"][0]) - int(test_case["phis"][1]), test_case["ld"])
+    os.mkdir("jsons/{0}".format(test_name))
+    with open("jsons/{0}/{0}.json".format(test_name), 'w') as outfile:
+        json.dump(test_case, outfile)
+
+    generate_video(test_name)

@@ -48,34 +48,13 @@ def plot_clustered_data(points, c_means, covs, test_name, image_num, gaussians):
 
 		ax.add_patch(ellipse)
 	
-	fig = plt.gcf()
-	fig.savefig("./images/{0}/{1:08d}.png".format(test_name, image_num))
+	plt.savefig("./images/{0}/{1:08d}.png".format(test_name, image_num))
 	plt.close()
-
-'''
-def draw_graph(x, y, x_label, y_label, file_name, test_name):
-  print("Save the graph with the file name: {0}".format(file_name))
-	# Draw
-  plt.plot(x, y, color='r', label=y_label)
-
-  plt.grid(True)
-
-	# Set labels
-  plt.xlabel(x_label)
-  plt.ylabel(y_label)
-  plt.legend()
-  fig = plt.gcf()
-
-  # Save
-  fig.savefig("./graphs/{0}/".format(test_name)+file_name)
-
-  # Close
-  plt.close()
-'''
 
 def draw_graph(x, ys, x_label, ys_labels, file_name, test_name):
     print("Save the graph with the file name: {0}".format(file_name))
     colors = ['b', 'g', 'm']
+    
     # Draw
     dim = len(ys.shape)
     if dim == 1:
@@ -84,38 +63,16 @@ def draw_graph(x, ys, x_label, ys_labels, file_name, test_name):
         n_rows = ys.shape[0]
         for i in range(n_rows):
             plt.plot(x, ys[i], color=colors[i], label=ys_labels[i+1])
-
+    
     plt.grid(True)
 
     # Set labels
     plt.xlabel(x_label[0])
     plt.ylabel(ys_labels[0])
     plt.legend()
-    fig = plt.gcf()
-
+    
     # Save
-    fig.savefig("./graphs/{0}/".format(test_name)+file_name)
-
-    # Close
-    plt.close()
-
-def draw_probs(x, p1, p2, p3, x_label, y_label, file_name, test_name):
-    print("Save the graph with the file name: {0}".format(file_name))
-    # Draw
-    plt.plot(x, p1, color='g', label='P1')
-    plt.plot(x, p2, color='b', label='P2')
-    plt.plot(x, p3, color='r', label='P1 + P2')
-
-    plt.grid(True)
-
-    # Set labels
-    plt.xlabel(x_label)
-    plt.ylabel(y_label)
-    plt.legend()
-    fig = plt.gcf()
-
-    # Save
-    fig.savefig("./graphs/{0}/".format(test_name)+file_name)
+    plt.savefig("./graphs/{0}/".format(test_name)+file_name)
 
     # Close
     plt.close()
