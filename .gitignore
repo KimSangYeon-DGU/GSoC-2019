@@ -8,6 +8,6 @@ Research/Probability_Space/images/*
 **/__pycache__
 **/Code
 **/figures
-**/gmm
+**/jsons
 **/models
 **/*.pyc
