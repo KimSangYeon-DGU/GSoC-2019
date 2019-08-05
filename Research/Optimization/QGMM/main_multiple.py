@@ -6,7 +6,7 @@ import tensorflow as tf
 import pandas as pd
 import math, os, json, sys
 
-def train_qgmm(_test_name, _means1, _means2, _ld, _phis, _data):
+def train_qgmm(_test_name, _means1, _means2, _means3, _means4, _means5, _ld, _phis, _data):
 	# Load 'Old faithful' dataset
 	df = pd.read_csv('data/{0}'.format(_data), sep=',')
 	dataset = df.to_numpy()
@@ -24,9 +24,9 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis, _data):
 	dimensionality = 2
 
 	# Set the number of Gaussians
-	gaussians = 2
+	gaussians = 5
 
-	alphas = tf.Variable([0.5, 0.5], dtype=tf.float32, trainable=True, name="alphas")
+	alphas = tf.Variable([0.5, 0.5, 0.5, 0.5, 0.5], dtype=tf.float32, trainable=True, name="alphas")
 
 	'''
 	m1, m2 = get_initial_means(dataset)
@@ -36,10 +36,14 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis, _data):
 			dtype=tf.float32, trainable=True)
 	'''
 
-	means = tf.Variable([[_means1[0], _means1[1]], [_means2[0], _means2[1]]], \
+	means = tf.Variable([[_means1[0], _means1[1]], 
+											 [_means2[0], _means2[1]],
+											 [_means3[0], _means3[1]],
+											 [_means4[0], _means4[1]],
+											 [_means5[0], _means5[1]]],
 			dtype=tf.float32, trainable=True, name="means")
 
-	phis = tf.Variable([_phis[0], _phis[1]], \
+	phis = tf.Variable([_phis[0], _phis[1], _phis[2], _phis[3], _phis[4]], \
 			dtype=tf.float32, trainable=True, name="phis")
 
 	'''
@@ -55,6 +59,15 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis, _data):
 	covs = tf.Variable([[[0.5, 0.0],
 											[0.0, 0.5]], \
 													
+											[[0.5, 0.0],
+											[0.0, 0.5]], \
+												
+											[[0.5, 0.0],
+											[0.0, 0.5]], \
+												
+											[[0.5, 0.0],
+											[0.0, 0.5]], \
+												
 											[[0.5, 0.0],
 											[0.0, 0.5]]], dtype=tf.float32, trainable=True, name="covs")
 
@@ -148,6 +161,7 @@ if __name__== "__main__":
 			#if test_cases[i]["run"] == False:
 			#    continue
 	train_qgmm(data["name"], data["mean1"], 
-							data["mean2"], data["ld"],
-							data["phis"], data["data"])
+							data["mean2"], data["mean3"],
+							data["mean4"], data["mean5"],
+							data["ld"], data["phis"], data["data"])
 

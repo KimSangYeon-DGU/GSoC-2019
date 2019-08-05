@@ -2,299 +2,96 @@ import json, os
 
 
 test_cases = []
-
-## Initialization
-# Test case 1
-test_cases.append({"name": "t_init_1",
-                    "mean1":[2.756031811312966, 76.62447648112042], 
-                    "mean2":[2.9226572802266397, 88.3509418943818],
-                    "ld":1500,
-                    "phis":[0, 0],
-                    "run":False})
-
-test_cases.append({"name": "t_init_1",
-                    "mean1":[2.756031811312966, 76.62447648112042], 
-                    "mean2":[2.9226572802266397, 88.3509418943818],
+'''
+## GMM basic test
+test_cases.append({"name": "t_mix_1",
+                    "mean1":[-1.0494156360524627, 5.764644726513884], 
+                    "mean2":[6.9141859213193495, 5.59478222334447],
                     "ld":1500,
                     "phis":[45, -45],
-                    "run":False})
+                    "run":False,
+					"data":"gmm.csv"})
 
-test_cases.append({"name": "t_init_1",
-                    "mean1":[2.756031811312966, 76.62447648112042], 
-                    "mean2":[2.9226572802266397, 88.3509418943818],
-                    "ld":1500,
-                    "phis":[90, -90],
-                    "run":False})
-
-# Test case 2
-test_cases.append({"name": "t_init_2",
-                    "mean1":[4.171021823127277, 83.66322004888708], 
-                    "mean2":[1.781079954983019, 95.411542531776],
-                    "ld":1500,
-                    "phis":[0, 0],
-                    "run":False})
-
-test_cases.append({"name": "t_init_2",
-                    "mean1":[4.171021823127277, 83.66322004888708], 
-                    "mean2":[1.781079954983019, 95.411542531776],
+test_cases.append({"name": "t_mix_2",
+                    "mean1":[3.2782503568831554, 1.793573864746043], 
+                    "mean2":[-0.9389365739797241, 2.05969562705752],
                     "ld":1500,
                     "phis":[45, -45],
-                    "run":False})
+                    "run":False,
+					"data":"gmm.csv"})
 
-test_cases.append({"name": "t_init_2",
-                    "mean1":[4.171021823127277, 83.66322004888708], 
-                    "mean2":[1.781079954983019, 95.411542531776],
-                    "ld":1500,
-                    "phis":[90, -90],
-                    "run":False})
-
-# Test case 3
-test_cases.append({"name": "t_init_3",
-                    "mean1":[4.616385494792178, 68.97139287485163], 
-                    "mean2":[4.73416217991247, 70.48443049223583],
-                    "ld":1500,
-                    "phis":[0, 0],
-                    "run":False})
-
-test_cases.append({"name": "t_init_3",
-                    "mean1":[4.616385494792178, 68.97139287485163], 
-                    "mean2":[4.73416217991247, 70.48443049223583],
+test_cases.append({"name": "t_mix_3",
+                    "mean1":[-1.1431749105000186, 2.0529438865919479], 
+                    "mean2":[1.846096025789632, -0.5656381542446731],
                     "ld":1500,
                     "phis":[45, -45],
-                    "run":False})
+                    "run":False,
+					"data":"gmm.csv"})
 
-test_cases.append({"name": "t_init_3",
-                    "mean1":[4.616385494792178, 68.97139287485163], 
-                    "mean2":[4.73416217991247, 70.48443049223583],
-                    "ld":1500,
-                    "phis":[90, -90],
-                    "run":False})
-
-# Test case 4
-test_cases.append({"name": "t_init_4",
-                    "mean1":[3.5335808453329793, 60.79723193882826], 
-                    "mean2":[3.748786959785587, 46.017018024467745],
-                    "ld":1500,
-                    "phis":[0, 0],
-                    "run":False})
-
-test_cases.append({"name": "t_init_4",
-                    "mean1":[3.5335808453329793, 60.79723193882826], 
-                    "mean2":[3.748786959785587, 46.017018024467745],
+# Radius
+test_cases.append({"name": "t_radius_1_5",
+                    "mean1":[-1.1431749105000186, 2.0529438865919479], 
+                    "mean2":[1.846096025789632, -0.5656381542446731],
                     "ld":1500,
                     "phis":[45, -45],
-                    "run":False})
+                    "run":False,
+					"data":"gmm_radius_1.5.csv"})
 
-test_cases.append({"name": "t_init_4",
-                    "mean1":[3.5335808453329793, 60.79723193882826], 
-                    "mean2":[3.748786959785587, 46.017018024467745],
-                    "ld":1500,
-                    "phis":[90, -90],
-                    "run":False})
-
-# Test case 5
-test_cases.append({"name": "t_init_5",
-                    "mean1":[4.399318766072071, 63.982790484402784], 
-                    "mean2":[2.511548424664534, 90.2446329311453],
-                    "ld":1500,
-                    "phis":[0, 0],
-                    "run":False})
-
-test_cases.append({"name": "t_init_5",
-                    "mean1":[4.399318766072071, 63.982790484402784], 
-                    "mean2":[2.511548424664534, 90.2446329311453],
+test_cases.append({"name": "t_radius_2",
+                    "mean1":[-1.1431749105000186, 2.0529438865919479], 
+                    "mean2":[1.846096025789632, -0.5656381542446731],
                     "ld":1500,
                     "phis":[45, -45],
-                    "run":False})
+                    "run":False,
+					"data":"gmm_radius_2.csv"})
 
-test_cases.append({"name": "t_init_5",
-                    "mean1":[4.399318766072071, 63.982790484402784], 
-                    "mean2":[2.511548424664534, 90.2446329311453],
-                    "ld":1500,
-                    "phis":[90, -90],
-                    "run":False})
-
-## Distance
-# This test case is the same with t_init_1 with phi 180
-test_cases.append({"name": "t_dist_1",
-                    "mean1":[2.756031811312966, 76.62447648112042],
-                    "mean2":[2.9226572802266397, 88.3509418943818],
-                    "ld":1500,
-                    "phis":[0, 0],
-                    "run":False})
-
-test_cases.append({"name": "t_dist_1",
-                    "mean1":[2.756031811312966, 76.62447648112042],
-                    "mean2":[2.9226572802266397, 88.3509418943818],
+test_cases.append({"name": "t_radius_2_5",
+                    "mean1":[-1.1431749105000186, 2.0529438865919479], 
+                    "mean2":[1.846096025789632, -0.5656381542446731],
                     "ld":1500,
                     "phis":[45, -45],
-                    "run":True})
+                    "run":False,
+					"data":"gmm_radius_2.5.csv"})
 
-test_cases.append({"name": "t_dist_1",
-                    "mean1":[2.756031811312966, 76.62447648112042],
-                    "mean2":[2.9226572802266397, 88.3509418943818],
-                    "ld":1500,
-                    "phis":[90, -90],
-                    "run":False})
-
-test_cases.append({"name": "t_dist_2",
-                    "mean1":[2.3, 72.6],
-                    "mean2":[3.3, 92.4],
-                    "ld":1500,
-                    "phis":[0, 0],
-                    "run":True})
-
-test_cases.append({"name": "t_dist_2",
-                    "mean1":[2.3, 72.6],
-                    "mean2":[3.3, 92.4],
+test_cases.append({"name": "t_radius_3",
+                    "mean1":[-1.1431749105000186, 2.0529438865919479], 
+                    "mean2":[1.846096025789632, -0.5656381542446731],
                     "ld":1500,
                     "phis":[45, -45],
-                    "run":True})
+                    "run":False,
+					"data":"gmm_radius_3.csv"})
+'''
 
-test_cases.append({"name": "t_dist_2",
-                    "mean1":[2.3, 72.6],
-                    "mean2":[3.3, 92.4],
+test_cases.append({"name": "t_multiple_1",
+                    "mean1":[1.972979456933269, 0.7560544338372392], 
+                    "mean2":[6.686047548070453, -0.1307013280230782],
+					"mean3":[7.221786450205375, 6.262448613633105],
+					"mean4":[-1.3977125108429398, 0.4590524145870889],
+					"mean5":[3.307847427018068, 6.954851796948616],
                     "ld":1500,
-                    "phis":[90, -90],
-                    "run":False})
+                    "phis":[45, -45, 45, -45, 45],
+                    "run":False,
+					"data":"multiple_5.csv"})
 
-test_cases.append({"name": "t_dist_3",
-                    "mean1":[1.5, 68.6],
-                    "mean2":[3.3, 92.4],
+test_cases.append({"name": "t_multiple_2",
+                    "mean1":[0.072979456933269, -2.5560544338372392], 
+                    "mean2":[6.886047548070453, -0.1307013280230782],
+					"mean3":[9.221786450205375, 6.262448613633105],
+					"mean4":[-5.3977125108429398, 2.0590524145870889],
+					"mean5":[3.307847427018068, 6.954851796948616],
                     "ld":1500,
-                    "phis":[0, 0],
-                    "run":True})
-
-test_cases.append({"name": "t_dist_3",
-                    "mean1":[1.5, 68.6],
-                    "mean2":[3.3, 92.4],
-                    "ld":1500,
-                    "phis":[45, -45],
-                    "run":True})
-
-test_cases.append({"name": "t_dist_3",
-                    "mean1":[1.5, 68.6],
-                    "mean2":[3.3, 92.4],
-                    "ld":1500,
-                    "phis":[90, -90],
-                    "run":False})
-
-## Lambda selection
-# Test case 1
-test_cases.append({"name": "t_lambda_1",
-                    "mean1":[2.756031811312966, 76.62447648112042], 
-                    "mean2":[2.9226572802266397, 88.3509418943818],
-                    "ld":100,
-                    "phis":[45, -45],
-                    "run":False})
-
-test_cases.append({"name": "t_lambda_1",
-                    "mean1":[2.756031811312966, 76.62447648112042], 
-                    "mean2":[2.9226572802266397, 88.3509418943818],
-                    "ld":1500,
-                    "phis":[45, -45],
-                    "run":False})
-
-test_cases.append({"name": "t_lambda_1",
-                    "mean1":[2.756031811312966, 76.62447648112042], 
-                    "mean2":[2.9226572802266397, 88.3509418943818],
-                    "ld":5000,
-                    "phis":[45, -45],
-                    "run":False})
-
-# Test case 2
-test_cases.append({"name": "t_lambda_2",
-                    "mean1":[4.171021823127277, 83.66322004888708], 
-                    "mean2":[1.781079954983019, 95.411542531776],
-                    "ld":100,
-                    "phis":[45, -45],
-                    "run":False})
-
-test_cases.append({"name": "t_lambda_2",
-                    "mean1":[4.171021823127277, 83.66322004888708], 
-                    "mean2":[1.781079954983019, 95.411542531776],
-                    "ld":1500,
-                    "phis":[45, -45],
-                    "run":False})
-
-test_cases.append({"name": "t_lambda_2",
-                    "mean1":[4.171021823127277, 83.66322004888708], 
-                    "mean2":[1.781079954983019, 95.411542531776],
-                    "ld":5000,
-                    "phis":[45, -45],
-                    "run":False})
-
-# Test case 3
-test_cases.append({"name": "t_lambda_3",
-                    "mean1":[4.616385494792178, 68.97139287485163], 
-                    "mean2":[4.73416217991247, 70.48443049223583],
-                    "ld":100,
-                    "phis":[45, -45],
-                    "run":False})
-
-test_cases.append({"name": "t_lambda_3",
-                    "mean1":[4.616385494792178, 68.97139287485163], 
-                    "mean2":[4.73416217991247, 70.48443049223583],
-                    "ld":1500,
-                    "phis":[45, -45],
-                    "run":False})
-
-test_cases.append({"name": "t_lambda_3",
-                    "mean1":[4.616385494792178, 68.97139287485163], 
-                    "mean2":[4.73416217991247, 70.48443049223583],
-                    "ld":5000,
-                    "phis":[45, -45],
-                    "run":False})
-
-# Test case 4
-test_cases.append({"name": "t_lambda_4",
-                    "mean1":[3.5335808453329793, 60.79723193882826], 
-                    "mean2":[3.748786959785587, 46.017018024467745],
-                    "ld":100,
-                    "phis":[45, -45],
-                    "run":False})
-
-test_cases.append({"name": "t_lambda_4",
-                    "mean1":[3.5335808453329793, 60.79723193882826], 
-                    "mean2":[3.748786959785587, 46.017018024467745],
-                    "ld":1500,
-                    "phis":[45, -45],
-                    "run":False})
-
-test_cases.append({"name": "t_lambda_4",
-                    "mean1":[3.5335808453329793, 60.79723193882826], 
-                    "mean2":[3.748786959785587, 46.017018024467745],
-                    "ld":5000,
-                    "phis":[45, -45],
-                    "run":False})
-
-# Test case 5
-test_cases.append({"name": "t_lambda_5",
-                    "mean1":[4.399318766072071, 63.982790484402784], 
-                    "mean2":[2.511548424664534, 90.2446329311453],
-                    "ld":100,
-                    "phis":[45, -45],
-                    "run":False})
-
-test_cases.append({"name": "t_lambda_5",
-                    "mean1":[4.399318766072071, 63.982790484402784], 
-                    "mean2":[2.511548424664534, 90.2446329311453],
-                    "ld":1500,
-                    "phis":[45, -45],
-                    "run":False})
-
-test_cases.append({"name": "t_lambda_5",
-                    "mean1":[4.399318766072071, 63.982790484402784], 
-                    "mean2":[2.511548424664534, 90.2446329311453],
-                    "ld":5000,
-                    "phis":[45, -45],
-                    "run":False})
+                    "phis":[45, -45, 45, -45, 45],
+                    "run":False,
+					"data":"multiple_5.csv"})
 
 for test_case in test_cases:
-    test_name = "{0}_{1}_{2}".format(test_case["name"], \
-        int(test_case["phis"][0]) - int(test_case["phis"][1]), test_case["ld"])
-    os.mkdir("jsons/{0}".format(test_name))
-    with open("jsons/{0}/{0}.json".format(test_name), 'w') as outfile:
-        json.dump(test_case, outfile)
+	test_name = "{0}_{1}_{2}".format(test_case["name"], \
+		int(test_case["phis"][0]) - int(test_case["phis"][1]), test_case["ld"])
+	
+	file_path = "jsons/{0}".format(test_name)
 
-    generate_video(test_name)
+	if os.path.exists(file_path) == False:
+		os.mkdir(file_path)
+    
+	with open("jsons/{0}/{0}.json".format(test_name), 'w') as outfile:
+		json.dump(test_case, outfile)

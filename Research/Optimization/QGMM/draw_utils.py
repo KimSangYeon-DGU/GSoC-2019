@@ -33,11 +33,12 @@ def cov_ellipse(points, cov, nstd):
 def plot_clustered_data(points, c_means, covs, test_name, image_num, gaussians):
 	"""Plots the cluster-colored data and the cluster means"""
 	#colors = cm.rainbow(np.linspace(0, 1, gaussians))
-	colors = ['b', 'g', 'm']
+	colors = ['b', 'g', 'm', 'y', 'c', 'k']
 
 	ax = plt.gca()
-	for i in range(points.shape[1]):
-		plt.plot(points[:, i][0], points[:, i][1], ".", color="r", zorder=0)
+	#for i in range(points.shape[1]):
+		#plt.plot(points[:, i][0], points[:, i][1], ".", color="r", zorder=0)
+	plt.plot(points[0], points[1], ".", color="r", zorder=0)
 	
 	for i in range(gaussians):
 		plt.plot(c_means[i][0], c_means[i][1], ".", color=colors[i], zorder=1)
@@ -53,7 +54,7 @@ def plot_clustered_data(points, c_means, covs, test_name, image_num, gaussians):
 
 def draw_graph(x, ys, x_label, ys_labels, file_name, test_name):
     print("Save the graph with the file name: {0}".format(file_name))
-    colors = ['b', 'g', 'm']
+    colors = ['b', 'g', 'm', 'y', 'c', 'k']
     
     # Draw
     dim = len(ys.shape)

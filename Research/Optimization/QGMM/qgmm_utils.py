@@ -39,7 +39,7 @@ def apply_positive_definite_constraint(covariance, dimensionality):
   return tf.cond(0 < check_val, apply, disapply)
 
 def factor_covariance(covariance, dimensionality):
-  covariance = apply_positive_definite_constraint(covariance, dimensionality)
+  #covariance = apply_positive_definite_constraint(covariance, dimensionality)
   cov_lower = tf.linalg.cholesky(covariance)
   inv_cov_lower = tf.linalg.inv(cov_lower)
   
