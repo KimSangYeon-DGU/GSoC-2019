@@ -7,3 +7,7 @@ Research/Probability_Space/images/*
 **/researches
 **/__pycache__
 **/Code
+**/figures
+**/gmm
+**/models
+**/*.pyc
