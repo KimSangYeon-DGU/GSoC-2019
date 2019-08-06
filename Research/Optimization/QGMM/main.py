@@ -13,7 +13,7 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis, _data):
 	dataset = np.transpose(dataset)
 	obs = tf.convert_to_tensor(dataset, dtype=tf.float32)
 
-	test_name = "{0}_{1}_{2}".format(_test_name, _phis[0]-_phis[1], _ld)
+	test_name = "{0}_{1}_{2}".format(_test_name, int(_phis[0]-_phis[1]), _ld)
 	
 	images_path = "images/{0}".format(test_name)
 
@@ -50,14 +50,14 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis, _data):
 											[[0.08, 0.1],
 											[0.1, 3.3]]], dtype=tf.float32, trainable=True, name="covs")
 	'''
-
+	
 	# For GMM
 	covs = tf.Variable([[[0.5, 0.0],
 											[0.0, 0.5]], \
 													
 											[[0.5, 0.0],
 											[0.0, 0.5]]], dtype=tf.float32, trainable=True, name="covs")
-
+	
 	# Calculate normalized gaussians
 	G = []
 	for i in range(gaussians):
@@ -81,10 +81,10 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis, _data):
 	def loglikeihood(Q, P, gaussians):
 		log_likelihood = 0
 		for k in range(gaussians):
-			log_likelihood += Q[k] * tf.math.log(tf.clip_by_value(P[k], 1e-10, 1e10))
+			log_likelihood += Q[k] * tf.math.log(tf.clip_by_value(P[k], 1e-10, 1))
 
 		return tf.reduce_sum(log_likelihood, name="ll")
-
+	
 	def approx_constraint(G, alphas, phis, gaussians):
 		mix_sum = 0
 		for k in range(gaussians):
@@ -133,7 +133,14 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis, _data):
 			pre_J = cur_J
 
 			saver.save(sess, "models/{0}/{1}.ckpt".format(test_name, i), write_meta_graph=False)
-	
+			
+			plot_clustered_data(dataset, 
+			means.eval(),
+			covs.eval(),
+			test_name,
+			i,
+			gaussians)
+			
 	saver.save(sess, "models/{0}/{1}.ckpt".format(test_name, i), write_meta_graph=False)
 	sess.close()
 
