@@ -84,10 +84,12 @@ def train_qgmm(_test_name, _means1, _means2, _means3, _means4, _means5, _ld, _ph
 	Q = get_Q(P, gaussians); Q = tf.stop_gradient(Q)
 
 	# lambda
-	ld = _ld
+	ld = tf.Variable(0, dtype=tf.float32, trainable=False)
+	
 
 	# learning rate
-	lr = 0.001
+	lr = 0.01
+	mu = tf.Variable(1, dtype=tf.float32, trainable=False)
 
 	# Objective function :: Minimize (NLL + lambda * approximation constant)
 	# Approximation constant :: (Sum of P(p_{i}, k| alpha_{k}, theta_{k})) - 1 = 0
@@ -108,7 +110,11 @@ def train_qgmm(_test_name, _means1, _means2, _means3, _means4, _means5, _ld, _ph
 		return tf.math.abs(tf.reduce_sum(alphas ** 2) + tf.reduce_sum(mix_sum) - 1, name="constraint")
 
 	# Objective function
-	J = tf.add(-loglikeihood(Q, P, gaussians), ld * approx_constraint(G, alphas, phis, gaussians), name="J")
+	nll = -loglikeihood(Q, P, gaussians)
+	constraint = approx_constraint(G, alphas, phis, gaussians)
+	J = tf.add( tf.add(nll, -ld * constraint), 
+			(0.5*(1/mu)) * (constraint ** 2),
+			name="J")
 
 	# Set optimizer to Adam with learning rate 0.01
 	optim = tf.train.AdamOptimizer(learning_rate=lr)
@@ -145,8 +151,25 @@ def train_qgmm(_test_name, _means1, _means2, _means3, _means4, _means5, _ld, _ph
 
 			pre_J = cur_J
 
+			plot_clustered_data(dataset, 
+								means.eval(),
+								covs.eval(),
+								test_name,
+								i,
+								gaussians)
+			
 			saver.save(sess, "models/{0}/{1}.ckpt".format(test_name, i), write_meta_graph=False)
-	
+
+		if i % 1000 == 0:
+			new_ld = ld - (approx_constraint(G, alphas, phis, gaussians).eval() / mu)
+			new_ld = tf.clip_by_value(new_ld, -1e5, 1e5)
+			ld = tf.assign(ld, new_ld)
+
+			mu = tf.assign(mu, tf.clip_by_value(mu * 0.7, -1e5, 1e5))
+
+			print("lambda: ", ld.eval(), "mu: ", mu.eval())
+			print(sess.run(approx_constraint(G, alphas, phis, gaussians)))	
+
 	saver.save(sess, "models/{0}/{1}.ckpt".format(test_name, i), write_meta_graph=False)
 	sess.close()
 

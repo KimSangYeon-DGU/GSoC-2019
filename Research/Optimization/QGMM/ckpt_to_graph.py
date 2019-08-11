@@ -40,14 +40,14 @@ with tf.Session() as sess:
 		saver.restore(sess, ckpt_path)
 		image_num = ckpt_path.split(".")
 		image_num = int(image_num[0].split("/")[-1])
-		
+		'''
 		plot_clustered_data(dataset, 
 			graph.get_tensor_by_name('means:0').eval(),
 			graph.get_tensor_by_name('covs:0').eval(),
 			test_name,
 			image_num,
 			gaussians)
-		
+		'''
 		x_records.append(image_num)
 		ll = graph.get_tensor_by_name('ll:0').eval()
 		nll_records.append(-ll)

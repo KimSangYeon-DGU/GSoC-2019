@@ -42,7 +42,7 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis, _data):
 	phis = tf.Variable([_phis[0], _phis[1]], \
 			dtype=tf.float32, trainable=True, name="phis")
 
-	'''
+	
 	# For Old faithful
 	covs = tf.Variable([[[0.08, 0.1],
 											[0.1, 3.3]], \
@@ -57,7 +57,8 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis, _data):
 													
 											[[0.5, 0.0],
 											[0.0, 0.5]]], dtype=tf.float32, trainable=True, name="covs")
-	
+	'''
+
 	# Calculate normalized gaussians
 	G = []
 	for i in range(gaussians):
@@ -71,11 +72,14 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis, _data):
 	Q = get_Q(P, gaussians); Q = tf.stop_gradient(Q)
 
 	# lambda
-	ld = _ld
+	#ld = _ld
+	#ld = tf.Variable(_ld, dtype=tf.float32, trainable=False)
+	ld = tf.Variable(0, dtype=tf.float32, trainable=False)
+	
 
 	# learning rate
 	lr = 0.001
-
+	mu = tf.Variable(1, dtype=tf.float32, trainable=False)
 	# Objective function :: Minimize (NLL + lambda * approximation constant)
 	# Approximation constant :: (Sum of P(p_{i}, k| alpha_{k}, theta_{k})) - 1 = 0
 	def loglikeihood(Q, P, gaussians):
@@ -95,7 +99,13 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis, _data):
 		return tf.math.abs(tf.reduce_sum(alphas ** 2) + tf.reduce_sum(mix_sum) - 1, name="constraint")
 
 	# Objective function
-	J = tf.add(-loglikeihood(Q, P, gaussians), ld * approx_constraint(G, alphas, phis, gaussians), name="J")
+	#J = tf.add(-loglikeihood(Q, P, gaussians), ld * approx_constraint(G, alphas, phis, gaussians), name="J")
+
+	nll = -loglikeihood(Q, P, gaussians)
+	constraint = approx_constraint(G, alphas, phis, gaussians)
+	J = tf.add( tf.add(nll, -ld * constraint), 
+			(1/(2*mu)) * (constraint ** 2),
+			name="J")
 
 	# Set optimizer to Adam with learning rate 0.01
 	optim = tf.train.AdamOptimizer(learning_rate=lr)
@@ -125,6 +135,7 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis, _data):
 		
 		if i % 100 == 0:
 			print(i, test_name)
+			
 			cur_J = sess.run(J)
 			
 			if abs(pre_J - cur_J) < tot:
@@ -140,7 +151,17 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis, _data):
 			test_name,
 			i,
 			gaussians)
-			
+
+		if i % (max_iteration / 10) == 0:
+			new_ld = ld - (approx_constraint(G, alphas, phis, gaussians).eval() / mu)
+			new_ld = tf.clip_by_value(new_ld, -1e-5, 1e5)
+			ld = tf.assign(ld, new_ld)
+
+			mu = tf.assign(mu, tf.clip_by_value(mu * 0.7, -1e5, 1e5))
+
+			print("lambda: ", ld.eval(), "mu: ", mu.eval())
+			print(sess.run(approx_constraint(G, alphas, phis, gaussians)))
+
 	saver.save(sess, "models/{0}/{1}.ckpt".format(test_name, i), write_meta_graph=False)
 	sess.close()
 
