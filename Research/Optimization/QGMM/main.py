@@ -6,7 +6,8 @@ import tensorflow as tf
 import pandas as pd
 import math, os, json, sys
 
-def train_qgmm(_test_name, _means1, _means2, _ld, _phis, _data):
+def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data, 
+							 _gaussians, _dimensionality,_test_name):
 	# Load 'Old faithful' dataset
 	df = pd.read_csv('data/{0}'.format(_data), sep=',')
 	dataset = df.to_numpy()
@@ -21,43 +22,18 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis, _data):
 		os.mkdir(images_path)
 
 	# Initialize means and covariances.
-	dimensionality = 2
+	dimensionality = _dimensionality
 
 	# Set the number of Gaussians
-	gaussians = 2
+	gaussians = _gaussians
 
-	alphas = tf.Variable([0.5, 0.5], dtype=tf.float32, trainable=True, name="alphas")
+	alphas = tf.Variable(_alphas, dtype=tf.float32, trainable=True, name="alphas")
 
-	'''
-	m1, m2 = get_initial_means(dataset)
-	print(m1, m2)
+	means = tf.Variable(_means, dtype=tf.float32, trainable=True, name="means")
 
-	means = tf.Variable([[m1[0], m1[1]], [m2[0], m2[1]]], \
-			dtype=tf.float32, trainable=True)
-	'''
+	phis = tf.Variable(_phis, dtype=tf.float32, trainable=True, name="phis")
 
-	means = tf.Variable([[_means1[0], _means1[1]], [_means2[0], _means2[1]]], \
-			dtype=tf.float32, trainable=True, name="means")
-
-	phis = tf.Variable([_phis[0], _phis[1]], \
-			dtype=tf.float32, trainable=True, name="phis")
-
-	
-	# For Old faithful
-	covs = tf.Variable([[[0.08, 0.1],
-											[0.1, 3.3]], \
-													
-											[[0.08, 0.1],
-											[0.1, 3.3]]], dtype=tf.float32, trainable=True, name="covs")
-	'''
-	
-	# For GMM
-	covs = tf.Variable([[[0.5, 0.0],
-											[0.0, 0.5]], \
-													
-											[[0.5, 0.0],
-											[0.0, 0.5]]], dtype=tf.float32, trainable=True, name="covs")
-	'''
+	covs = tf.Variable(_covs, dtype=tf.float32, trainable=True, name="covs")
 
 	# Calculate normalized gaussians
 	G = []
@@ -72,14 +48,14 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis, _data):
 	Q = get_Q(P, gaussians); Q = tf.stop_gradient(Q)
 
 	# lambda
-	#ld = _ld
-	#ld = tf.Variable(_ld, dtype=tf.float32, trainable=False)
 	ld = tf.Variable(0, dtype=tf.float32, trainable=False)
 	
-
 	# learning rate
-	lr = 0.001
+	lr = 0.01
+
+	# mu
 	mu = tf.Variable(1, dtype=tf.float32, trainable=False)
+
 	# Objective function :: Minimize (NLL + lambda * approximation constant)
 	# Approximation constant :: (Sum of P(p_{i}, k| alpha_{k}, theta_{k})) - 1 = 0
 	def loglikeihood(Q, P, gaussians):
@@ -100,7 +76,6 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis, _data):
 
 	# Objective function
 	#J = tf.add(-loglikeihood(Q, P, gaussians), ld * approx_constraint(G, alphas, phis, gaussians), name="J")
-
 	nll = -loglikeihood(Q, P, gaussians)
 	constraint = approx_constraint(G, alphas, phis, gaussians)
 	J = tf.add( tf.add(nll, -ld * constraint), 
@@ -146,18 +121,18 @@ def train_qgmm(_test_name, _means1, _means2, _ld, _phis, _data):
 			saver.save(sess, "models/{0}/{1}.ckpt".format(test_name, i), write_meta_graph=False)
 			
 			plot_clustered_data(dataset, 
-			means.eval(),
-			covs.eval(),
-			test_name,
-			i,
-			gaussians)
+													means.eval(),
+													covs.eval(),
+													test_name,
+													i,
+													gaussians)
 
-		if i % (max_iteration / 10) == 0:
+		if i % 5000 == 0:
 			new_ld = ld - (approx_constraint(G, alphas, phis, gaussians).eval() / mu)
-			new_ld = tf.clip_by_value(new_ld, -1e-5, 1e5)
+			new_ld = tf.clip_by_value(new_ld, -1e5, 0)
 			ld = tf.assign(ld, new_ld)
 
-			mu = tf.assign(mu, tf.clip_by_value(mu * 0.7, -1e5, 1e5))
+			mu = tf.assign(mu, tf.clip_by_value(mu * 0.7, 1e-5, 1))
 
 			print("lambda: ", ld.eval(), "mu: ", mu.eval())
 			print(sess.run(approx_constraint(G, alphas, phis, gaussians)))
@@ -170,12 +145,14 @@ if __name__== "__main__":
 	json_data = open("jsons/"+dir_name+"/"+dir_name+".json").read()
 
 	data = json.loads(json_data)
-
 	print(data)
-	#for i in range(n_tests):
-			#if test_cases[i]["run"] == False:
-			#    continue
-	train_qgmm(data["name"], data["mean1"], 
-							data["mean2"], data["ld"],
-							data["phis"], data["data"])
 
+	train_qgmm(_means=data["means"],
+							_covs=data["covs"],
+							_alphas=data["alphas"],
+							_phis=data["phis"],
+							_ld=data["ld"],
+							_data=data["data"],
+							_gaussians=data["gaussians"],
+							_dimensionality=data["dimensionality"],
+							_test_name=data["name"])
