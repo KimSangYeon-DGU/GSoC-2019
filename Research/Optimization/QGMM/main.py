@@ -126,10 +126,10 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 
 		if i % 100 == 0:
 			print("lambda: ", ld.eval(), "mu: ", mu.eval())
-			c = tf.cast(approx_constraint(G, alphas, phis, gaussians), tf.int32)
+			c = approx_constraint(G, alphas, phis, gaussians)
 			if c.eval() != 0:
-				new_ld = tf.add(ld, -tf.div(tf.cast(c, tf.float32), mu))
-				new_ld = tf.clip_by_value(new_ld, -1e7, 0)
+				new_ld = tf.add(ld, -tf.div(c, mu))
+				new_ld = tf.clip_by_value(new_ld, -5e2, 0)
 				op = ld.assign(new_ld)
 				sess.run(op)
 				op = mu.assign(tf.clip_by_value(mu * 0.7, 1e-7, 1))
