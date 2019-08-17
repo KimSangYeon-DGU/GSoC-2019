@@ -109,10 +109,12 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 	for i in range(1, max_iteration):
 		sess.run(training)
 		cur_J = sess.run(J)
+		
+		if abs(pre_J - cur_J) < tot:
+			break
 
 		if i % 100 == 0:
 			print(i, test_name, cur_J, phis.eval())
-			
 			saver.save(sess, "models/{0}/{1}.ckpt".format(test_name, i), write_meta_graph=False)
 			
 			plot_clustered_data(dataset, 
@@ -121,32 +123,27 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 													test_name,
 													i,
 													gaussians)
-			if abs(pre_J - cur_J) < tot:
-				break
-			pre_J = cur_J
 
-		if i % 500 == 0:
-			new_ld = ld - (approx_constraint(G, alphas, phis, gaussians).eval() / mu)
-			new_ld = tf.clip_by_value(new_ld, -5e2, 0)
-			ld = tf.assign(ld, new_ld)
-			mu = tf.assign(mu, tf.clip_by_value(mu * 0.7, 1e-7, 1))
-
+		if i % 100 == 0:
 			print("lambda: ", ld.eval(), "mu: ", mu.eval())
-			print(sess.run(approx_constraint(G, alphas, phis, gaussians)))
+			c = tf.cast(approx_constraint(G, alphas, phis, gaussians), tf.int32)
+			if c.eval() != 0:
+				new_ld = tf.add(ld, -tf.div(tf.cast(c, tf.float32), mu))
+				new_ld = tf.clip_by_value(new_ld, -1e7, 0)
+				op = ld.assign(new_ld)
+				sess.run(op)
+				op = mu.assign(tf.clip_by_value(mu * 0.7, 1e-7, 1))
+				sess.run(op)
 		
-		'''
-		if abs(pre_J - cur_J) < tot:
-			break
 		pre_J = cur_J
-		'''
-	
+
+	saver.save(sess, "models/{0}/{1}.ckpt".format(test_name, i), write_meta_graph=False)
 	plot_clustered_data(dataset, 
 										means.eval(),
 										covs.eval(),
 										test_name,
 										i,
 										gaussians)
-	saver.save(sess, "models/{0}/{1}.ckpt".format(test_name, i), write_meta_graph=False)
 	sess.close()
 
 if __name__== "__main__":
