@@ -54,8 +54,10 @@ with tf.Session() as sess:
 		constraint_records.append(graph.get_tensor_by_name('constraint:0').eval())
 		alpha_records.append(graph.get_tensor_by_name('alphas:0').eval())
 		phi_records.append(graph.get_tensor_by_name('phis:0').eval())
-		gauss_records.append(tf.reduce_sum(graph.get_tensor_by_name('G:0'), axis=1).eval())
-		prob_records.append(tf.reduce_sum(graph.get_tensor_by_name('P:0'), axis=1).eval())
+		gauss_records.append(tf.reduce_sum(graph.get_tensor_by_name('G:0'),
+				axis=1).eval())
+		prob_records.append(tf.reduce_sum(graph.get_tensor_by_name('P:0'),
+				axis=1).eval())
 		j_records.append(graph.get_tensor_by_name('J:0').eval())
 
 		i+=1

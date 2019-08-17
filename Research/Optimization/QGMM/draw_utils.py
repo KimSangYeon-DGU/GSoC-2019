@@ -45,7 +45,8 @@ def plot_clustered_data(points, c_means, covs, test_name, image_num, gaussians):
 
 		width, height, theta = cov_ellipse(points, covs[i], nstd=2)
 		ellipse = Ellipse(xy=(c_means[i][0], c_means[i][1]), width=width, \
-				height=height, angle=theta, edgecolor=colors[i], fc='None', lw=2, zorder=4)
+				height=height, angle=theta, edgecolor=colors[i], fc='None', lw=2,
+						zorder=4)
 
 		ax.add_patch(ellipse)
 	

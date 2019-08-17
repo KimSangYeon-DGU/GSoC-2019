@@ -41,8 +41,9 @@ def record_graph(x_records,
 	constraint_records = np.asarray(constraint_records)
 	ys_labels = ["Constraint", "Constraint"]
 
-	draw_graph(x=x_records, ys=constraint_records, x_label=x_label, ys_labels=ys_labels, 
-			file_name=constraint_file_name+'.png', test_name=test_name)
+	draw_graph(x=x_records, ys=constraint_records, x_label=x_label,
+			ys_labels=ys_labels, file_name=constraint_file_name+'.png',
+			test_name=test_name)
 
 	# Phi
 	phi_records = np.asarray(phi_records).transpose()
@@ -51,7 +52,7 @@ def record_graph(x_records,
 		ys_labels.append("Phi_{0}".format(i+1))
 	
 
-	draw_graph(x=x_records, ys=phi_records, x_label=x_label, ys_labels=ys_labels, \
+	draw_graph(x=x_records, ys=phi_records, x_label=x_label, ys_labels=ys_labels,
 			file_name=phi_file_name+'.png', test_name=test_name)
 
 	# Alpha
@@ -61,7 +62,7 @@ def record_graph(x_records,
 		ys_labels.append("Alpha_{0}".format(i+1))
 	
 
-	draw_graph(x=x_records, ys=alpha_records, x_label=x_label, ys_labels=ys_labels,\
+	draw_graph(x=x_records, ys=alpha_records, x_label=x_label, ys_labels=ys_labels,
 			file_name=alpha_file_name, test_name=test_name)
 
 	# Unnormalized Gaussians
@@ -93,5 +94,5 @@ def record_graph(x_records,
 	j_records = np.asarray(j_records)
 	ys_labels = ["Objective function", "Objective function"]
 
-	draw_graph(x=x_records, ys=j_records, x_label=x_label, ys_labels=ys_labels, 
+	draw_graph(x=x_records, ys=j_records, x_label=x_label, ys_labels=ys_labels,
 			file_name=obj_file_name+'.png', test_name=test_name)

@@ -61,7 +61,7 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 	def loglikeihood(Q, P, gaussians):
 		log_likelihood = 0
 		for k in range(gaussians):
-			log_likelihood += Q[k] * tf.math.log(tf.clip_by_value(P[k], 1e-10, 1))
+			log_likelihood += tf.math.log(Q[k] * tf.clip_by_value(P[k], 1e-10, 1))
 
 		return tf.reduce_sum(log_likelihood, name="ll")
 	
@@ -72,10 +72,12 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 				if k == l:
 					continue
 				mix_sum += alphas[k] * alphas[l] * G[k] * G[l] * get_cosine(phis, k, l)
-		return tf.math.abs(tf.reduce_sum(alphas ** 2) + tf.reduce_sum(mix_sum) - 1, name="constraint")
+		return tf.math.abs(tf.reduce_sum(alphas ** 2) 
+				+ tf.reduce_sum(mix_sum) - 1, name="constraint")
 
 	# Objective function
-	#J = tf.add(-loglikeihood(Q, P, gaussians), ld * approx_constraint(G, alphas, phis, gaussians), name="J")
+	#J = tf.add(-loglikeihood(Q, P, gaussians), 
+	# 	ld * approx_constraint(G, alphas, phis, gaussians), name="J")
 	nll = -loglikeihood(Q, P, gaussians)
 	constraint = approx_constraint(G, alphas, phis, gaussians)
 	
@@ -93,7 +95,12 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 
 	sess.run(init)
 
-	plot_clustered_data(dataset, means.eval(), covs.eval(), test_name, 0, gaussians)
+	plot_clustered_data(dataset,
+											means.eval(),
+											covs.eval(),
+											test_name,
+											0,
+											gaussians)
 
 	# For graph
 	max_iteration = 15000
@@ -115,7 +122,8 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 
 		if i % 100 == 0:
 			print(i, test_name, cur_J, phis.eval())
-			saver.save(sess, "models/{0}/{1}.ckpt".format(test_name, i), write_meta_graph=False)
+			saver.save(sess, "models/{0}/{1}.ckpt".format(test_name, i),
+					write_meta_graph=False)
 			
 			plot_clustered_data(dataset, 
 													means.eval(),
@@ -137,7 +145,8 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 		
 		pre_J = cur_J
 
-	saver.save(sess, "models/{0}/{1}.ckpt".format(test_name, i), write_meta_graph=False)
+	saver.save(sess, "models/{0}/{1}.ckpt".format(test_name, i),
+			write_meta_graph=False)
 	plot_clustered_data(dataset, 
 										means.eval(),
 										covs.eval(),
