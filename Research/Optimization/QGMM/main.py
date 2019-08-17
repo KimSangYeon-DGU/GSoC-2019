@@ -124,7 +124,7 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 													i,
 													gaussians)
 
-		if i % 100 == 0:
+		if i % 500 == 0:
 			print("lambda: ", ld.eval(), "mu: ", mu.eval())
 			c = approx_constraint(G, alphas, phis, gaussians)
 			if c.eval() != 0:
