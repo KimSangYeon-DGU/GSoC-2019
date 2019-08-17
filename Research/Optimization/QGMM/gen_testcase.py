@@ -1,6 +1,7 @@
 import csv, json, os
 import pandas as pd
 import numpy as np
+import shutil
 from param_utils import *
 
 def gen_csv():
@@ -8,17 +9,19 @@ def gen_csv():
   dataset = df.to_numpy()
   dataset = np.transpose(dataset)
 
-  tc_num = 1000
-  x_std = np.std(dataset[0])
-  y_std = np.std(dataset[1])
+  tc_num = 100
+  #x_std = np.std(dataset[0])
+  #y_std = np.std(dataset[1])
+  x_offset = 0.5
+  y_offset = 5
   gaussians = 2
 
-  with open("testcase/tc.csv", "w") as csv_file:
+  with open("testcase/tc_p5_10.csv", "w") as csv_file:
     writer = csv.writer(csv_file, delimiter =",")
 
     for i in range(tc_num):
-      means = get_initial_means(dataset, x_offset=x_std, 
-                  y_offset=y_std, gaussians=gaussians)
+      means = get_initial_means(dataset, x_offset=x_offset, 
+                  y_offset=y_offset, gaussians=gaussians)
       m1_x = means[0][0]
       m1_y = means[0][1]
       m2_x = means[1][0]
@@ -27,9 +30,9 @@ def gen_csv():
 
 def cvt_to_json():
   phi_1 = 45
-  phi_2 = 45
+  phi_2 = -45
   ld = 1
-  with open("testcase/tc.csv", "r") as f:
+  with open("testcase/tc2_p5_10.csv", "r") as f:
     reader = csv.reader(f, delimiter=",")
     for i, row in enumerate(reader):
       data = {"name": "{0:05d}_comp".format(i+1),
@@ -54,6 +57,20 @@ def cvt_to_json():
       with open("jsons/{0}/{0}.json".format(test_name), 'w') as outfile:                
         json.dump(data, outfile)
 
+def copy_ret_img():
+  dst_path = "ret_img"
+  src_path = "images"
+  #dst_path = "init_img"
+
+  file_names = os.listdir(src_path)
+  print(file_names)
+  for file_name in file_names:
+    image_names = os.listdir("{0}/{1}".format(src_path, file_name))
+    image_names.sort()
+    shutil.copy("{0}/{1}/{2}".format(src_path, file_name, image_names[-1]),
+                "{0}/{1}_{2}".format(dst_path, file_name, image_names[-1]))
+
 if __name__ == "__main__":
   #gen_csv()
-  cvt_to_json()
+  #cvt_to_json()
+  copy_ret_img()
