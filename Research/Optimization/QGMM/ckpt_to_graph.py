@@ -18,6 +18,10 @@ gaussians = data["gaussians"]
 with tf.Session() as sess:
 	sess.run(tf.global_variables_initializer())
 
+	# Method to print the values in Tensors.
+	#chkp.print_tensors_in_checkpoint_file(ckpt_path, tensor_name='',
+	#		all_tensors=True)
+
 	ckpt_state = tf.train.get_checkpoint_state("models/"+test_name)
 	ckpt_paths = ckpt_state.all_model_checkpoint_paths
 	
