@@ -78,6 +78,7 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 	#J = tf.add(-loglikeihood(Q, P, gaussians), ld * approx_constraint(G, alphas, phis, gaussians), name="J")
 	nll = -loglikeihood(Q, P, gaussians)
 	constraint = approx_constraint(G, alphas, phis, gaussians)
+	
 	J = tf.add( tf.add(nll, -ld * constraint), 
 			(1/(2*mu)) * (constraint ** 2),
 			name="J")
@@ -95,9 +96,9 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 	plot_clustered_data(dataset, means.eval(), covs.eval(), test_name, 0, gaussians)
 
 	# For graph
-	max_iteration = 50000
+	max_iteration = 15000
 
-	tot = 1e-3
+	tot = 1e-5
 
 	saver = tf.train.Saver(max_to_keep=10000)
 	saver.save(sess, "models/{0}/{1}.ckpt".format(test_name, 0))
@@ -107,17 +108,11 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 	# Train QGMM
 	for i in range(1, max_iteration):
 		sess.run(training)
-		
+		cur_J = sess.run(J)
+
 		if i % 100 == 0:
-			print(i, test_name)
+			print(i, test_name, cur_J, phis.eval())
 			
-			cur_J = sess.run(J)
-			
-			if abs(pre_J - cur_J) < tot:
-				break
-
-			pre_J = cur_J
-
 			saver.save(sess, "models/{0}/{1}.ckpt".format(test_name, i), write_meta_graph=False)
 			
 			plot_clustered_data(dataset, 
@@ -126,17 +121,31 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 													test_name,
 													i,
 													gaussians)
+			if abs(pre_J - cur_J) < tot:
+				break
+			pre_J = cur_J
 
-		if i % 5000 == 0:
+		if i % 500 == 0:
 			new_ld = ld - (approx_constraint(G, alphas, phis, gaussians).eval() / mu)
-			new_ld = tf.clip_by_value(new_ld, -1e5, 0)
+			new_ld = tf.clip_by_value(new_ld, -5e2, 0)
 			ld = tf.assign(ld, new_ld)
-
-			mu = tf.assign(mu, tf.clip_by_value(mu * 0.7, 1e-5, 1))
+			mu = tf.assign(mu, tf.clip_by_value(mu * 0.7, 1e-7, 1))
 
 			print("lambda: ", ld.eval(), "mu: ", mu.eval())
 			print(sess.run(approx_constraint(G, alphas, phis, gaussians)))
-
+		
+		'''
+		if abs(pre_J - cur_J) < tot:
+			break
+		pre_J = cur_J
+		'''
+	
+	plot_clustered_data(dataset, 
+										means.eval(),
+										covs.eval(),
+										test_name,
+										i,
+										gaussians)
 	saver.save(sess, "models/{0}/{1}.ckpt".format(test_name, i), write_meta_graph=False)
 	sess.close()
 
