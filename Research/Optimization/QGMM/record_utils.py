@@ -10,6 +10,7 @@ def record_graph(x_records,
                  gauss_records,
                  prob_records,
                  j_records,
+				 ld_records,
                  test_name,
 								 gaussians,
                  open_type='w'):
@@ -26,6 +27,7 @@ def record_graph(x_records,
 	probs_file_name = '{0}_probs'.format(test_name)
 	alpha_file_name = '{0}_alpha'.format(test_name)
 	obj_file_name = '{0}_obj'.format(test_name)
+	ld_file_name = '{0}_ld'.format(test_name)
 
 	# Save data to csv format and a graph
 	x_label=["Iteration"]
@@ -90,6 +92,13 @@ def record_graph(x_records,
 			ys_labels=ys_labels, file_name=probs_file_name+'.png', \
 			test_name=test_name)
 
+	# ld
+	ld_records = np.asarray(ld_records)
+	ys_labels = ["Lambda", "Lambda"]
+
+	draw_graph(x=x_records, ys=ld_records, x_label=x_label, ys_labels=ys_labels,
+			file_name=ld_file_name+'.png', test_name=test_name)
+	
 	# Objective function
 	j_records = np.asarray(j_records)
 	ys_labels = ["Objective function", "Objective function"]

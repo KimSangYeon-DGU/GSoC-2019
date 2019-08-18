@@ -35,6 +35,7 @@ with tf.Session() as sess:
 	phi_records = []
 	gauss_records = []
 	prob_records = []
+	ld_records = []
 	j_records = []
 	
 	open_type='w'
@@ -64,6 +65,7 @@ with tf.Session() as sess:
 				axis=1).eval())
 		j_records.append(graph.get_tensor_by_name('J:0').eval())
 
+		ld_records.append(graph.get_tensor_by_name('ld:0').eval())
 		i+=1
 
 	record_graph(x_records,
@@ -74,6 +76,7 @@ with tf.Session() as sess:
                  gauss_records,
                  prob_records,
                  j_records,
+				 ld_records,
                  test_name,
 								 gaussians,
                  open_type='w')

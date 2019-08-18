@@ -48,7 +48,7 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 	Q = get_Q(P, gaussians); Q = tf.stop_gradient(Q)
 
 	# lambda
-	ld = tf.Variable(0, dtype=tf.float32, trainable=False)
+	ld = tf.Variable(0, dtype=tf.float32, trainable=False, name="ld")
 	
 	# learning rate
 	lr = 0.01
@@ -132,12 +132,12 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 													i,
 													gaussians)
 
-		if i % 100 == 0:
+		if i % 1000 == 0:
 			print("lambda: ", ld.eval(), "mu: ", mu.eval())
 			c = approx_constraint(G, alphas, phis, gaussians)
-			if c.eval() != 0:
+			if 0.1 <= c.eval():
 				new_ld = tf.add(ld, -tf.div(c, mu))
-				new_ld = tf.clip_by_value(new_ld, -5e2, 0)
+				new_ld = tf.clip_by_value(new_ld, -1e7, 0)
 				op = ld.assign(new_ld)
 				sess.run(op)
 				op = mu.assign(tf.clip_by_value(mu * 0.7, 1e-7, 1))
