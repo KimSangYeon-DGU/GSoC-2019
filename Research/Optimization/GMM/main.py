@@ -1,34 +1,30 @@
 from gaussian_distribution import GaussianDistribution
+from draw_utils import *
 from gmm import GMM
 import numpy as np
 import pandas as pd
+import os, sys, json
 
 if __name__ == "__main__":
+  test_name = sys.argv[1]
+  json_data = open("jsons/"+test_name+"/"+test_name+".json").read()
 
-  # Set initial parameters
-  #mean1 = np.array( [2.6585135519388348, 54.66062219876824] )
-  #mean1 = np.array( [3.427976229515216, 61.46413393088303] )
-  #mean1 = np.array( [2.756031811312966, 76.62447648112042] )
-  mean1 = np.array( [4.893025788130122, 59.46713813379837] )
-  #mean1 = np.array( [4.171021823127277, 83.66322004888708] )
+  data = json.loads(json_data)
 
-  cov1 = np.matrix( [[0.08, 0.1],
-                     [0.1, 3.3]] )
+  # Set initial parameters  
+  mean1 = np.array(data["means"][0])
 
-  #mean2 = np.array( [3.1085745233652995, 77.99698134521407] )
-  #mean2 = np.array( [4.5517041217554945, 51.756595162050985] )
-  #mean2 = np.array( [2.9226572802266397, 88.3509418943818] )
-  mean2 = np.array( [2.080000263954121, 78.15976694366192] )
-  #mean2 = np.array( [1.781079954983019, 95.411542531776] )
+  cov1 = np.matrix(data["covs"][0])
+  
+  mean2 = np.array(data["means"][1])
 
-  cov2 = np.matrix( [[0.08, 0.1],
-                     [0.1, 3.3]] )
+  cov2 = np.matrix(data["covs"][1])
 
   # Create distributions
   d1 = GaussianDistribution(mean1, cov1)
   d2 = GaussianDistribution(mean2, cov2)
 
-  df = pd.read_csv('faithful.csv', sep=',')
+  df = pd.read_csv("data/"+data["data"], sep=',')
   observations = df.to_numpy()
   observations = np.transpose(observations)
   
@@ -42,18 +38,21 @@ if __name__ == "__main__":
   gmm.weights = [0.5, 0.5]
   
   # Train GMM
-  #gmm.Train(observations, 1, False)
   gmm.Train(observations, 1, False)
 
-  # Check the trained parameters
-  print(gmm.weights)
-  print(gmm.dists[0].mean)
-  print()
+  means = []; covs = []
+  gaussians = data["gaussians"]
+  for i in range(gaussians):
+    means.append(gmm.dists[i].mean)
+    covs.append(gmm.dists[i].cov)
   
-  print(gmm.dists[1].mean)
-  print()
+  image_path = "./images/" + test_name
+  if os.path.exists(image_path) == False:
+    os.mkdir(image_path)
 
-  print(gmm.dists[0].cov)
-  print()
-
-  print(gmm.dists[1].cov)
+  plot_clustered_data(observations, 
+    means,
+    covs,
+    test_name,
+    0,
+    gaussians)
