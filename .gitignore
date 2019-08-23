@@ -9,5 +9,6 @@ Research/Probability_Space/images/*
 **/figures
 **/jsons
 **/models
+codes/**/images
 **/interference
 **/*.pyc
