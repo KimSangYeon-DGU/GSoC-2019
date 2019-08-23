@@ -72,7 +72,7 @@ def mean_range():
   df = pd.read_csv('data/multiple_5.csv', sep=',')
   dataset = df.to_numpy()
   dataset = np.transpose(dataset)
-  print(get_initial_means(dataset))
+  print(get_initial_means(dataset, 1, 10, 2))
 
 if __name__ == "__main__":  
   #generate_data()

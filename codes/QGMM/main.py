@@ -16,6 +16,12 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 
 	test_name = "{0}_{1}_{2}".format(_test_name, int(_phis[0]-_phis[1]), _ld)
 	
+	# Create all directories for files to be saved.
+	save_dir_names = ["images", "graphs", "models", "jsons", "videos"]
+	for save_dir_name in save_dir_names:
+		if os.path.exists(save_dir_name) == False:
+			os.mkdir(save_dir_name)
+
 	images_path = "images/{0}".format(test_name)
 
 	if os.path.exists(images_path) == False:
@@ -76,8 +82,11 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 				+ tf.reduce_sum(mix_sum) - 1, name="constraint")
 
 	# Objective function
+	# Normal Lagrangian multiplier
 	#J = tf.add(-loglikeihood(Q, P, gaussians), 
 	# 	ld * approx_constraint(G, alphas, phis, gaussians), name="J")
+
+	# Augmented Lagrangian multiplier
 	nll = -loglikeihood(Q, P, gaussians)
 	constraint = approx_constraint(G, alphas, phis, gaussians)
 	
@@ -95,6 +104,7 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 
 	sess.run(init)
 
+	# Draw the first image.
 	plot_clustered_data(dataset,
 											means.eval(),
 											covs.eval(),
@@ -103,7 +113,7 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 											gaussians)
 
 	# For graph
-	max_iteration = 100000
+	max_iteration = 15000
 
 	tot = 1e-5
 
@@ -132,7 +142,7 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 													i,
 													gaussians)
 
-		if i % 30 == 0:
+		if i % 1000 == 0:
 			#print("lambda: ", ld.eval(), "mu: ", mu.eval())
 			c = approx_constraint(G, alphas, phis, gaussians)
 			if 0.1 <= c.eval():
@@ -144,10 +154,6 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 				sess.run(op)
 		
 		pre_J = cur_J
-		if i == 1000:
-			op = lr.assign(0.01)
-			sess.run(op)
-			print("Learning rate: ", lr.eval())
 
 	saver.save(sess, "models/{0}/{1}.ckpt".format(test_name, i),
 			write_meta_graph=False)

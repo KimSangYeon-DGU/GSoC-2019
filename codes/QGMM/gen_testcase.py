@@ -79,4 +79,4 @@ def copy_ret_img():
 if __name__ == "__main__":
   #gen_csv()
   #cvt_to_json()
-  #copy_ret_img()
+  copy_ret_img()

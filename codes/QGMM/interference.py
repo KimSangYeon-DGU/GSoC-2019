@@ -75,4 +75,4 @@ if __name__ == "__main__":
     jet = plt.get_cmap('jet')
 
     surf = ax.plot_surface(X, Y, Z, cmap=jet,linewidth=0)
-    fig.savefig("{0}.png".format(degree))
+    fig.savefig("interference/{0}.png".format(degree))

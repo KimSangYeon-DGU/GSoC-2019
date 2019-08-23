@@ -15,6 +15,7 @@ df = pd.read_csv('data/{0}'.format(data["data"]), sep=',')
 dataset = df.to_numpy()
 dataset = np.transpose(dataset)
 gaussians = data["gaussians"]
+
 with tf.Session() as sess:
 	sess.run(tf.global_variables_initializer())
 
