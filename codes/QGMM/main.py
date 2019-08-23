@@ -44,7 +44,7 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 	max_iteration = 15000
 	tot = 1e-5
 	# lambda
-	ld = tf.Variable(0, dtype=tf.float32, trainable=False, name="ld")
+	ld = tf.Variable(_ld, dtype=tf.float32, trainable=False, name="ld")
 	# learning rate
 	lr = tf.Variable(0.01, dtype=tf.float32, trainable=False, name="lr")
 
