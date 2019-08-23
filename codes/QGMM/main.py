@@ -65,6 +65,7 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 	Q = get_Q(P, gaussians); Q = tf.stop_gradient(Q)
 
 	# Objective function, J
+	J = None
 
 	def loglikeihood(Q, P, gaussians):
 		log_likelihood = 0
@@ -83,7 +84,6 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 				+ tf.reduce_sum(mix_sum) - 1, name="constraint")
 
 	# Normal Lagrangian multiplier
-	J = None
 	if optim_method == "Normal":
 		J = tf.add(-loglikeihood(Q, P, gaussians), 
 			ld * approx_constraint(G, alphas, phis, gaussians), name="J")
