@@ -10,8 +10,7 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 							 _gaussians, _dimensionality,_test_name):
 	# Load 'Old faithful' dataset
 	df = pd.read_csv('data/{0}'.format(_data), sep=',')
-	dataset = df.to_numpy()
-	dataset = np.transpose(dataset)
+	dataset = df.to_numpy(); dataset = np.transpose(dataset)
 	obs = tf.convert_to_tensor(dataset, dtype=tf.float32)
 
 	test_name = "{0}_{1}_{2}".format(_test_name, int(_phis[0]-_phis[1]), _ld)
@@ -33,13 +32,14 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 	# Set the number of Gaussians
 	gaussians = _gaussians
 
+	# Set parameters to be trained.
 	alphas = tf.Variable(_alphas, dtype=tf.float32, trainable=True, name="alphas")
-
 	means = tf.Variable(_means, dtype=tf.float32, trainable=True, name="means")
-
 	phis = tf.Variable(_phis, dtype=tf.float32, trainable=True, name="phis")
-
 	covs = tf.Variable(_covs, dtype=tf.float32, trainable=True, name="covs")
+
+	# We can select "Normal" and "Augmented"
+	optim_method = "Normal"
 
 	# Calculate normalized gaussians
 	G = []
@@ -57,10 +57,11 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 	ld = tf.Variable(0, dtype=tf.float32, trainable=False, name="ld")
 	
 	# learning rate
-	lr = tf.Variable(0.0001, dtype=tf.float32, trainable=False, name="lr")
+	lr = tf.Variable(0.01, dtype=tf.float32, trainable=False, name="lr")
 
-	# mu
-	mu = tf.Variable(1, dtype=tf.float32, trainable=False)
+	if optim_method == "Augmented":
+		# mu
+		mu = tf.Variable(1, dtype=tf.float32, trainable=False)
 
 	# Objective function :: Minimize (NLL + lambda * approximation constant)
 	# Approximation constant :: (Sum of P(p_{i}, k| alpha_{k}, theta_{k})) - 1 = 0
@@ -82,16 +83,19 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 
 	# Objective function
 	# Normal Lagrangian multiplier
-	#J = tf.add(-loglikeihood(Q, P, gaussians), 
-	# 	ld * approx_constraint(G, alphas, phis, gaussians), name="J")
+	J = None
+	if optim_method == "Normal":
+		J = tf.add(-loglikeihood(Q, P, gaussians), 
+			ld * approx_constraint(G, alphas, phis, gaussians), name="J")
 
-	# Augmented Lagrangian multiplier
-	nll = -loglikeihood(Q, P, gaussians)
-	constraint = approx_constraint(G, alphas, phis, gaussians)
-	
-	J = tf.add( tf.add(nll, -ld * constraint), 
-			(1/(2*mu)) * (constraint ** 2),
-			name="J")
+	elif optim_method == "Augmented":
+		# Augmented Lagrangian multiplier
+		nll = -loglikeihood(Q, P, gaussians)
+		constraint = approx_constraint(G, alphas, phis, gaussians)
+		
+		J = tf.add( tf.add(nll, -ld * constraint), 
+				(1/(2*mu)) * (constraint ** 2),
+				name="J")
 
 	# Set optimizer to Adam with learning rate 0.01
 	optim = tf.train.AdamOptimizer(learning_rate=lr)
@@ -141,7 +145,7 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 													i,
 													gaussians)
 
-		if i % 1000 == 0:
+		if optim_method == "Augmented" and i % 1000 == 0:
 			#print("lambda: ", ld.eval(), "mu: ", mu.eval())
 			c = approx_constraint(G, alphas, phis, gaussians)
 			if 0.1 <= c.eval():
@@ -154,6 +158,7 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 		
 		pre_J = cur_J
 
+	# After training finished, save the last state.
 	saver.save(sess, "models/{0}/{1}.ckpt".format(test_name, i),
 			write_meta_graph=False)
 	plot_clustered_data(dataset, 
