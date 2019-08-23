@@ -51,7 +51,7 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 	ld = tf.Variable(0, dtype=tf.float32, trainable=False, name="ld")
 	
 	# learning rate
-	lr = 0.01
+	lr = tf.Variable(0.0001, dtype=tf.float32, trainable=False, name="lr")
 
 	# mu
 	mu = tf.Variable(1, dtype=tf.float32, trainable=False)
@@ -103,7 +103,7 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 											gaussians)
 
 	# For graph
-	max_iteration = 15000
+	max_iteration = 100000
 
 	tot = 1e-5
 
@@ -132,8 +132,8 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 													i,
 													gaussians)
 
-		if i % 1000 == 0:
-			print("lambda: ", ld.eval(), "mu: ", mu.eval())
+		if i % 30 == 0:
+			#print("lambda: ", ld.eval(), "mu: ", mu.eval())
 			c = approx_constraint(G, alphas, phis, gaussians)
 			if 0.1 <= c.eval():
 				new_ld = tf.add(ld, -tf.div(c, mu))
@@ -144,6 +144,10 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 				sess.run(op)
 		
 		pre_J = cur_J
+		if i == 1000:
+			op = lr.assign(0.01)
+			sess.run(op)
+			print("Learning rate: ", lr.eval())
 
 	saver.save(sess, "models/{0}/{1}.ckpt".format(test_name, i),
 			write_meta_graph=False)

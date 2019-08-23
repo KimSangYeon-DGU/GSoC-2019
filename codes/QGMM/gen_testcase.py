@@ -58,9 +58,11 @@ def cvt_to_json():
         json.dump(data, outfile)
 
 def copy_ret_img():
-  dst_path = "ret_img"
-  src_path = "images"
-  #dst_path = "init_img"
+  #base_path = "./"
+  base_path = "/home/sy0814k/Desktop/KSY/MyMlpack/GSoC/GSoC-2019/Research/Optimization/QGMM/researches/Comparison with GMM/QGMM_aug_phi90_ld0_step1000_max-5e2_tc2/"
+  dst_path = base_path + "img_ret"
+  src_path = base_path + "images"
+  init_dst_path = base_path + "img_init"
 
   file_names = os.listdir(src_path)
   print(file_names)
@@ -69,8 +71,12 @@ def copy_ret_img():
     image_names.sort()
     shutil.copy("{0}/{1}/{2}".format(src_path, file_name, image_names[-1]),
                 "{0}/{1}_{2}".format(dst_path, file_name, image_names[-1]))
+    
+    shutil.copy("{0}/{1}/{2}".format(src_path, file_name, image_names[0]),
+                "{0}/{1}_{2}".format(init_dst_path, file_name, image_names[0]))
+
 
 if __name__ == "__main__":
   #gen_csv()
   #cvt_to_json()
-  copy_ret_img()
+  #copy_ret_img()
