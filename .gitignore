@@ -1,6 +1,6 @@
 Research/Probability_Space/images/*
 **/Archive
-**/images
+./**/images
 **/videos
 **/csvs
 **/graphs
