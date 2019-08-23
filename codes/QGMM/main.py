@@ -65,10 +65,9 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 	# Objective function :: Minimize (NLL + lambda * approximation constant)
 	# Approximation constant :: (Sum of P(p_{i}, k| alpha_{k}, theta_{k})) - 1 = 0
 	def loglikeihood(Q, P, gaussians):
-		likelihood = 0
+		log_likelihood = 0
 		for k in range(gaussians):
-			likelihood += Q[k] * tf.clip_by_value(P[k], 1e-10, 1)
-		log_likelihood = tf.math.log(likelihood)
+			log_likelihood += Q[k] * tf.math.log(tf.clip_by_value(P[k], 1e-10, 1))
 		return tf.reduce_sum(log_likelihood, name="ll")
 	
 	def approx_constraint(G, alphas, phis, gaussians):
