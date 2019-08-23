@@ -22,7 +22,9 @@ According to paper, <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" ti
 
 From the above figures, we can check the interference phenomena as <img src="https://latex.codecogs.com/gif.latex?\phi" title="\phi" /> changed.  In addition, we can see when <img src="https://latex.codecogs.com/gif.latex?\phi=90" title="\phi=90" />, QGMM is the same with GMM.
 
-### 2. Validity of the objective function
+### 2. Phi modeling
+
+### 3. Validity of the objective function
 In the original paper, the objective function is that 
 
 <p align="center">
@@ -38,8 +40,7 @@ However, the derivation of the covariance in the original paper has an error bec
 
 Because Gaussians are unnormalized in QGMM, we defined the new objectvie function like Lagrangian multiplier for constraint optimization. Therefore, the new objective function is NLL + lambda * approximation constraint and using an optimizer, we'll minimize it. With the objective function, we conduct several experiments to check if it works properly.
 
-### 3. Lambda impact
-### 4. Phi modeling
+### 4. Lambda impact
 ### 5. Mixed clusters
 ### 6. Comparison with GMM
 ### 7. Multiple clusters
