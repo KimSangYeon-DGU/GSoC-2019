@@ -46,17 +46,35 @@ Because Gaussians are unnormalized in QGMM, we defined the new objectvie functio
   <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/05_validity_90_1.gif" width=250>
 </p>
 
-From the above GIFs, we can see the training works properly except for the right one. In the next research, we'll dig into the failed case.
+From the above figures, we can see the training works properly except for the right one (In the next research, we'll dig into the failed case).
 
 ### 4. Lambda impact
 From the validity of the objective function research, we figured out it works properly. In addition, the higher value means the optimization is more constrained. Therefore, in this research, we checked the impact of lambda. Generally, the initial lambda can be calculated by NLL / approximation constraint from the objective function, but when the intial Gaussians are almost zero, we can't calculate NLL. Therefore, we set the initial value of lambda manually.
 
+<p align="center">
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/05_validity_90_100.gif" width=250>
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/05_validity_90_1000.gif" width=250>
+</p>
+
+In the above figures, the left one was with lambda 100 and the right one was with lambda 1,000. From that, we found out that there are some cases in which the training works with the more-constrained optimization.
+
 ### 5. Mixed clusters
+Using mlpack's GMM class, we generated the mixed clusters data set to see if how QGMM works. To generate the mixture, we drew a circle between the two clusters and generated observations randomly.
+
+<p align="center">
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/05_validity_90_100.gif" width=250>
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/05_validity_90_1000.gif" width=250>
+</p>
 
 
 ### 6. Comparison with GMM
+In this research, we did compare QGMM with GMM. As the indicator of the training performance, we use the percentage of the convergence on the clusters of the observations. 
 
-
+<p align=center>
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/convg1.png">
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/convg2.png">
+</p>
+  
 ### 7. Multiple clusters
 
 ## Conclusions
