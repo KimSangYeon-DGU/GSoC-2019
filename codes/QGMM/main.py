@@ -38,8 +38,19 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 	phis = tf.Variable(_phis, dtype=tf.float32, trainable=True, name="phis")
 	covs = tf.Variable(_covs, dtype=tf.float32, trainable=True, name="covs")
 
+	# Set hyper-parameters
 	# We can select "Normal" and "Augmented"
 	optim_method = "Normal"
+	max_iteration = 15000
+	tot = 1e-5
+	# lambda
+	ld = tf.Variable(0, dtype=tf.float32, trainable=False, name="ld")
+	# learning rate
+	lr = tf.Variable(0.01, dtype=tf.float32, trainable=False, name="lr")
+
+	if optim_method == "Augmented":
+		mu = tf.Variable(1, dtype=tf.float32, trainable=False)
+		update_step = 1000
 
 	# Calculate normalized gaussians
 	G = []
@@ -53,18 +64,8 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 
 	Q = get_Q(P, gaussians); Q = tf.stop_gradient(Q)
 
-	# lambda
-	ld = tf.Variable(0, dtype=tf.float32, trainable=False, name="ld")
-	
-	# learning rate
-	lr = tf.Variable(0.01, dtype=tf.float32, trainable=False, name="lr")
+	# Objective function, J
 
-	if optim_method == "Augmented":
-		# mu
-		mu = tf.Variable(1, dtype=tf.float32, trainable=False)
-
-	# Objective function :: Minimize (NLL + lambda * approximation constant)
-	# Approximation constant :: (Sum of P(p_{i}, k| alpha_{k}, theta_{k})) - 1 = 0
 	def loglikeihood(Q, P, gaussians):
 		log_likelihood = 0
 		for k in range(gaussians):
@@ -81,7 +82,6 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 		return tf.math.abs(tf.reduce_sum(alphas ** 2) 
 				+ tf.reduce_sum(mix_sum) - 1, name="constraint")
 
-	# Objective function
 	# Normal Lagrangian multiplier
 	J = None
 	if optim_method == "Normal":
@@ -116,10 +116,6 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 											gaussians)
 
 	# For graph
-	max_iteration = 15000
-
-	tot = 1e-5
-
 	saver = tf.train.Saver(max_to_keep=10000)
 	saver.save(sess, "models/{0}/{1}.ckpt".format(test_name, 0))
 	cur_J = sess.run(J)
@@ -145,8 +141,7 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 													i,
 													gaussians)
 
-		if optim_method == "Augmented" and i % 1000 == 0:
-			#print("lambda: ", ld.eval(), "mu: ", mu.eval())
+		if optim_method == "Augmented" and i % update_step == 0:
 			c = approx_constraint(G, alphas, phis, gaussians)
 			if 0.1 <= c.eval():
 				new_ld = tf.add(ld, -tf.div(c, mu))
@@ -156,6 +151,7 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 				op = mu.assign(tf.clip_by_value(mu * 0.7, 1e-7, 1))
 				sess.run(op)
 		
+		# Save the previous value of the objective function.
 		pre_J = cur_J
 
 	# After training finished, save the last state.
