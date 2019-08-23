@@ -36,8 +36,7 @@ However, the derivation of the covariance in the original paper has an error bec
   <img src="https://latex.codecogs.com/gif.latex?\dpi{150}&space;O(\theta_{k})=-\sum_{i}&space;\sum_{k}[Q_{i}(k)\log{P(p_{i},k|{\theta_{k}})}]&plus;\lambda[\sum_{i}&space;\sum_{k}\{P(p_{i},k|\theta_{k})\}-1]" title="O(\theta_{k})=-\sum_{i} \sum_{k}[Q_{i}(k)\log{P(p_{i},k|{\theta_{k}})}]+\lambda[\sum_{i} \sum_{k}\{P(p_{i},k|\theta_{k})\}-1]" />
 </p>
 
-Because Gaussians are unnormalized in QGMM, we defined the new objectvie function like Lagrangian multiplier for constraint optimization.
-With the objective function, we conduct several experiment to check it it works properly.
+Because Gaussians are unnormalized in QGMM, we defined the new objectvie function like Lagrangian multiplier for constraint optimization. Therefore, the new objective function is NLL + lambda * approximation constraint and using an optimizer, we'll minimize it. With the objective function, we conduct several experiments to check if it works properly.
 
 ### 3. Lambda impact
 ### 4. Phi modeling
