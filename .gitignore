@@ -1,6 +1,5 @@
 Research/Probability_Space/images/*
 **/Archive
-**/images
 **/videos
 **/csvs
 **/graphs
@@ -10,4 +9,5 @@ Research/Probability_Space/images/*
 **/figures
 **/jsons
 **/models
+**/interference
 **/*.pyc
