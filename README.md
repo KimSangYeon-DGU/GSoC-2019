@@ -23,7 +23,19 @@ According to paper, <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" ti
 From the above figures, we can check the interference phenomena as <img src="https://latex.codecogs.com/gif.latex?\phi" title="\phi" /> changed.  In addition, we can see when <img src="https://latex.codecogs.com/gif.latex?\phi=90" title="\phi=90" />, QGMM is the same with GMM.
 
 ### 2. Validity of the objective function
-In the original paper, the derivation of the covariance has an error because Q shouldn't have an effect on the calculation. So, we newly defined the objective function as an indication of the training states.
+In the original paper, the objective function that means the expectation of the complete-data log likelihood is that 
+
+<p align="center">
+  <img src="https://latex.codecogs.com/gif.latex?\dpi{150}&space;O(\theta_{k})=\sum_{i}&space;\sum_{k}Q_{i}(k)\log{P(p_{i},k|\theta_{k})}" title="O(\theta_{k})=\sum_{i} \sum_{k}Q_{i}(k)\log{P(p_{i},k|\theta_{k})}" />
+</p>
+
+However, the derivation of the covariance in the original paper has an error because Q shouldn't have an effect on the calculation, so we couldn't use it. Thus, we newly defined the objective function as an indication of the training states.
+
+<p align="center">
+  <img src="https://latex.codecogs.com/gif.latex?\dpi{150}&space;O(\theta_{k})=-\sum_{i}&space;\sum_{k}[Q_{i}(k)\log{P(p_{i},k|{\theta_{k}})}]&plus;\lambda[\sum_{i}&space;\sum_{k}\{P(p_{i},k|\theta_{k})\}-1]" title="O(\theta_{k})=-\sum_{i} \sum_{k}[Q_{i}(k)\log{P(p_{i},k|{\theta_{k}})}]+\lambda[\sum_{i} \sum_{k}\{P(p_{i},k|\theta_{k})\}-1]" />
+</p>
+
+Because Gaussians are unnormalized in QGMM, we defined the new objectvie function like Lagrangian multiplier for constraint optimization.
 
 ### 3. Lambda impact
 ### 4. Phi modeling
