@@ -15,7 +15,8 @@ Gaussian Mixture Model (GMM) is widely used in computer vision as a state-of-the
 ## Researches
 We conducted 7 researches to find out the stengths and weaknesses QGMM has.
 ### 1. Interference phenomena
-According to paper, <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> has an effect on the mixture case. Therefore, we checked its impact by visualizing it in 3D plotting.
+According to paper, <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> has an effect on the mixture case and QGMM and GMM are the same when <img src="https://latex.codecogs.com/gif.latex?\phi=\pi/2" title="\phi=\pi/2" />. Therefore, we checked its interference phenomena by visualizing it in 3D plotting.
+
 ### 2. Validity of the objective function
 ### 3. Lambda impact
 ### 4. Phi modeling
