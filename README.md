@@ -71,10 +71,10 @@ Using mlpack's GMM class, we generated the mixed clusters data set to see if how
 In this research, we did compare QGMM with GMM. As the indicator of the training performance, we use the percentage of the convergence on the clusters of the observations. 
 
 <p align=center>
-  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/convg1.png">
-  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/convg2.png">
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/Convg1.png" width=400>
 </p>
-  
+
+
 ### 7. Multiple clusters
 
 ## Conclusions
