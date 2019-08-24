@@ -86,7 +86,7 @@ Thus, we checked the training results with the different initial values of phi.
   <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/03_phi_180_1500_phi.png" width=256>
 </p>
 
-In the above figures, the left, center, and right are with the initial values of phi 0 (45 - 45), 90 (45 - (-45)), and 180 (90 - (-90)) respectively. When we set the initial phi as 0, the values didn't changed, whereas in the cases of phi 90 and 180, they were changed. From the above figures, we found out that the two distributions get father as cos(phi) is positive, while they get closer as cos(phi) is negative.
+In the above figures, the left, center, and right are with the initial values of phi 0 (45 - 45), 90 (45 - (-45)), and 180 (90 - (-90)) respectively. When we set the initial phi as 0, the values didn't changed, whereas in the cases of phi 90 and 180, they were changed. From some experiments, we found out that the two distributions get father as <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> is positive, while they get closer as <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> is negative.
 
 ### 5. Mixed clusters
 Using mlpack's GMM class, we generated the mixed clusters data set to see if how QGMM works. To generate the mixture, we drew a circle between the two clusters and generated observations randomly.
