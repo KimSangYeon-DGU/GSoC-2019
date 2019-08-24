@@ -56,8 +56,8 @@ From the validity of the objective function research, we figured out it works pr
   <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/05_impact_90_1000.gif" width=256>
 </p>
 <p align="center">
-  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/05_impact_90_100_constraint.gif" width=256>
-  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/05_impact_90_1000_constraint.gif" width=256>
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/05_impact_90_100_constraint.png" width=256>
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/05_impact_90_1000_constraint.png" width=256>
 </p>
 
 In the above figures, the left one was with lambda 100 and the right one was with lambda 1,000. From that, we found out that there are some cases in which the training works with the more-constrained optimization.
