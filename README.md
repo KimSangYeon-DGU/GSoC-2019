@@ -41,9 +41,9 @@ However, the derivation of the covariance in the original paper has an error bec
 Because Gaussians are unnormalized in QGMM, we defined the new objectvie function like Lagrangian multiplier for constraint optimization. Therefore, the new objective function is NLL + lambda * approximation constraint and using an optimizer, we'll minimize it. With the objective function, we conduct several experiments to check if it works properly.
 
 <p align="center">
-  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/03_validity_90_1.gif" width=250>
-  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/04_validity_90_1.gif" width=250>
-  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/05_validity_90_1.gif" width=250>
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/03_validity_90_1.gif" width=256>
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/04_validity_90_1.gif" width=256>
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/05_validity_90_1.gif" width=256>
 </p>
 
 From the above figures, we can see the training works properly except for the right one (In the next research, we'll dig into the failed case).
@@ -52,8 +52,12 @@ From the above figures, we can see the training works properly except for the ri
 From the validity of the objective function research, we figured out it works properly. In addition, the higher value means the optimization is more constrained. Therefore, in this research, we checked the impact of lambda. Generally, the initial lambda can be calculated by NLL / approximation constraint from the objective function, but when the intial Gaussians are almost zero, we can't calculate NLL. Therefore, we set the initial value of lambda manually.
 
 <p align="center">
-  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/05_validity_90_100.gif" width=250>
-  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/05_validity_90_1000.gif" width=250>
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/05_impact_90_100.gif" width=256>
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/05_impact_90_1000.gif" width=256>
+</p>
+<p align="center">
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/05_impact_90_100_constraint.gif" width=256>
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/05_impact_90_1000_constraint.gif" width=256>
 </p>
 
 In the above figures, the left one was with lambda 100 and the right one was with lambda 1,000. From that, we found out that there are some cases in which the training works with the more-constrained optimization.
