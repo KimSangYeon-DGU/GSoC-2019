@@ -22,9 +22,7 @@ According to paper, <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" ti
 
 From the above figures, we can check the interference phenomena as <img src="https://latex.codecogs.com/gif.latex?\phi" title="\phi" /> changed.  In addition, we can see when <img src="https://latex.codecogs.com/gif.latex?\phi=90" title="\phi=90" />, QGMM is the same with GMM.
 
-### 2. Phi modeling
-
-### 3. Validity of the objective function
+### 2. Validity of the objective function
 In the original paper, the objective function is that 
 
 <p align="center">
@@ -48,7 +46,7 @@ Because Gaussians are unnormalized in QGMM, we defined the new objectvie functio
 
 From the above figures, we can see the training works properly except for the right one (In the next research, we'll dig into the failed case).
 
-### 4. Lambda impact
+### 3. Lambda impact
 From the validity of the objective function research, we figured out it works properly. In addition, the higher value means the optimization is more constrained. Therefore, in this research, we checked the impact of lambda. Generally, the initial lambda can be calculated by NLL / approximation constraint from the objective function, but when the intial Gaussians are almost zero, we can't calculate NLL. Therefore, we set the initial value of lambda manually.
 
 <p align="center">
@@ -61,6 +59,15 @@ From the validity of the objective function research, we figured out it works pr
 </p>
 
 The above figures are the training process and the graph of the constraint. The left is with lambda 100 and the right is with lambda 1,000. From that, we found out that with lambda 100, the constraint was unstable and there are some cases in which the training works with the more-constrained optimization.
+
+### 4. Phi modeling
+According to the original paper, <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> can be calculated from that
+
+<p align="center">
+  <img src="https://latex.codecogs.com/gif.latex?\dpi{150}&space;cos(\phi)=\frac{1-\alpha_{1}^{2}-\alpha_{2}^{2}}{2\alpha_{1}\alpha_{2}\sum_{i}G_{i,1}G_{i,2}}" title="cos(\phi)=\frac{1-\alpha_{1}^{2}-\alpha_{2}^{2}}{2\alpha_{1}\alpha_{2}\sum_{i}G_{i,1}G_{i,2}}" />
+</p>
+
+However, when the initial Gaussians are almost zero, the <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> is too large, exceeding the bound, <img src="https://latex.codecogs.com/gif.latex?\dpi{110}&space;-1\leq&space;cos(\phi)&space;\leq&space;1" title="-1\leq cos(\phi) \leq 1" />.
 
 ### 5. Mixed clusters
 Using mlpack's GMM class, we generated the mixed clusters data set to see if how QGMM works. To generate the mixture, we drew a circle between the two clusters and generated observations randomly.
@@ -85,6 +92,8 @@ In this research, we did compare QGMM with GMM. As the indicator of the training
 </p>
 
 ### 7. Multiple clusters
+
+
 
 ## Conclusions
 
