@@ -75,6 +75,8 @@ Using the above data sets, we trained QGMM and GMM. Especially, there are two tr
   <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/Mixed results.png" width=512>
 </p>
 
+From the aboves results, we found out the results between QGMM and GMM are totally different. Furthermore, even between QGMMs, the results vary depending on <img src="https://latex.codecogs.com/gif.latex?\phi" title="\phi" />. 
+
 ### 6. Comparison with GMM
 In this research, we did compare QGMM with GMM. As the indicator of the training performance, we use the percentage of the convergence on the clusters of the observations. 
 
