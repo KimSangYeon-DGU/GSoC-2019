@@ -67,7 +67,7 @@ According to the original paper, <img src="https://latex.codecogs.com/gif.latex?
   <img src="https://latex.codecogs.com/gif.latex?\dpi{150}&space;cos(\phi)=\frac{1-\alpha_{1}^{2}-\alpha_{2}^{2}}{2\alpha_{1}\alpha_{2}\sum_{i}G_{i,1}G_{i,2}}" title="cos(\phi)=\frac{1-\alpha_{1}^{2}-\alpha_{2}^{2}}{2\alpha_{1}\alpha_{2}\sum_{i}G_{i,1}G_{i,2}}" />
 </p>
 
-However, when the initial Gaussians are almost zero, the <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> is too large, exceeding the bound, <img src="https://latex.codecogs.com/gif.latex?\dpi{110}&space;-1\leq&space;cos(\phi)&space;\leq&space;1" title="-1\leq cos(\phi) \leq 1" />.
+However, when the initial Gaussians are almost zero, the <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> is too large, exceeding the bound, <img src="https://latex.codecogs.com/gif.latex?\dpi{110}&space;-1\leq&space;cos(\phi)&space;\leq&space;1" title="-1\leq cos(\phi) \leq 1" />. Therefore, we changed it to a trainable variable and the results in this final document were made after changing it.
 
 ### 5. Mixed clusters
 Using mlpack's GMM class, we generated the mixed clusters data set to see if how QGMM works. To generate the mixture, we drew a circle between the two clusters and generated observations randomly.
