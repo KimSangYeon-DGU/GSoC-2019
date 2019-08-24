@@ -13,7 +13,7 @@ Quantum Gaussian Mixture Models
 Gaussian Mixture Model (GMM) is widely used in computer vision as a state-of-the-art clustering algorithm. This project proposes Quantum Gaussian Mixture Model (QGMM) for Quantum Clustering and it is originally proposed in the [paper](https://arxiv.org/pdf/1612.09199.pdf). In this project, we implemented QGMM and conducted some experiments to see if how fast it trains, how better it models the data, what edge cases there are, and there is anything we can improve.
 
 ## Researches
-We conducted 7 researches to find out the stengths and weaknesses QGMM has.
+We conducted researches to find out the stengths and weaknesses QGMM has.
 ### 1. Interference phenomena
 According to paper, <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> has an effect on the mixture case and QGMM and GMM are the same when <img src="https://latex.codecogs.com/gif.latex?\phi=\pi/2" title="\phi=\pi/2" />. Therefore, we checked its interference phenomena by visualizing it in 3D plotting.
 <p align="center">
@@ -92,10 +92,6 @@ In this research, we did compare QGMM with GMM. As the indicator of the training
 <p align=center>
   <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/Convg1.png" width=400>
 </p>
-
-### 7. Multiple clusters
-
-
 
 ## Conclusions
 
