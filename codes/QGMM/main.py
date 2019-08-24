@@ -40,7 +40,7 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 
 	# Set hyper-parameters
 	# We can select "Normal" and "Augmented"
-	optim_method = "Normal"
+	optim_method = "Augmented"
 	max_iteration = 15000
 	tot = 1e-5
 	# lambda
@@ -142,6 +142,7 @@ def train_qgmm(_means, _covs, _alphas, _phis, _ld, _data,
 													gaussians)
 
 		if optim_method == "Augmented" and i % update_step == 0:
+			print("Lambda: ", ld.eval(), " mu: ", mu.eval())
 			c = approx_constraint(G, alphas, phis, gaussians)
 			if 0.1 <= c.eval():
 				new_ld = tf.add(ld, -tf.div(c, mu))
