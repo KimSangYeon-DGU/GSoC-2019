@@ -58,7 +58,7 @@ From the validity of the objective function research, we figured out it works pr
   <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/05_impact_90_1000_constraint.png" width=256>
 </p>
 
-The above figures are the training process and the graph of the constraint. The left is with lambda 100 and the right is with lambda 1,000. From that, we found out that with lambda 100, the constraint was unstable and there are some cases in which the training works with the more-constrained optimization. In addition, we also found out that the too high lambda rather interferes with the convergence of the objective function.
+The above figures are the training process and the graph of the constraint. The left is with lambda 100 and the right is with lambda 1,000. From that, we found out that with lambda 100, the constraint was unstable and there are some cases in which the training works with the more-constrained optimization. However, we also found out that the too high lambda rather interferes with the convergence of the objective function.
 
 ### 4. Phi modeling
 According to the original paper, <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> can be calculated from that
@@ -67,7 +67,26 @@ According to the original paper, <img src="https://latex.codecogs.com/gif.latex?
   <img src="https://latex.codecogs.com/gif.latex?\dpi{150}&space;cos(\phi)=\frac{1-\alpha_{1}^{2}-\alpha_{2}^{2}}{2\alpha_{1}\alpha_{2}\sum_{i}G_{i,1}G_{i,2}}" title="cos(\phi)=\frac{1-\alpha_{1}^{2}-\alpha_{2}^{2}}{2\alpha_{1}\alpha_{2}\sum_{i}G_{i,1}G_{i,2}}" />
 </p>
 
-However, when the initial Gaussians are almost zero, the <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> is too large, exceeding the bound, <img src="https://latex.codecogs.com/gif.latex?\dpi{110}&space;-1\leq&space;cos(\phi)&space;\leq&space;1" title="-1\leq cos(\phi) \leq 1" />, and it results in the unstable training process. Therefore, we changed it to a trainable variable and the results in this final document were made after changing it.
+However, when the initial Gaussians are almost zero, the <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> is too large, exceeding the bound, <img src="https://latex.codecogs.com/gif.latex?\dpi{110}&space;-1\leq&space;cos(\phi)&space;\leq&space;1" title="-1\leq cos(\phi) \leq 1" />, and it results in the unstable training process. Therefore, we changed it to a trainable variable and the results in this final document were made after changing it. As the original paper mentioned, the phi difference is calculated from
+
+<p align="center">
+  <img src="https://latex.codecogs.com/gif.latex?\dpi{150}&space;\phi_{l,k}=\phi_{k}-\phi_{l}" title="\phi_{l,k}=\phi_{k}-\phi_{l}" />
+</p>
+
+Thus, we checked the training results with the different initial values of phi.
+
+<p align="center">
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/03_phi_0_1500.gif" width=256>
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/03_phi_90_1500.gif" width=256>
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/03_phi_180_1500.gif" width=256>
+</p>
+<p align="center">
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/03_phi_0_1500_phi.png" width=256>
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/03_phi_90_1500_phi.png" width=256>
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/03_phi_180_1500_phi.png" width=256>
+</p>
+
+In the above figures, the left, center, and right are with the initial values of phi 0 (45 - 45), 90 (45 - (-45)), and 180 (90 - (-90)) respectively. When we set the initial phi as 0, the values didn't changed, whereas in the cases of phi 90 and 180, they were changed. From the above figures, we found out that the two distributions get father as cos(phi) is positive, while they get closer as cos(phi) is negative.
 
 ### 5. Mixed clusters
 Using mlpack's GMM class, we generated the mixed clusters data set to see if how QGMM works. To generate the mixture, we drew a circle between the two clusters and generated observations randomly.
