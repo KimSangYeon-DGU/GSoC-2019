@@ -60,7 +60,7 @@ From the validity of the objective function research, we figured out it works pr
   <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/05_impact_90_1000_constraint.png" width=256>
 </p>
 
-In the above figures, the left one was with lambda 100 and the right one was with lambda 1,000. From that, we found out that there are some cases in which the training works with the more-constrained optimization.
+The above figures are the training process and the graph of the constraint. The left is with lambda 100 and the right is with lambda 1,000. From that, we found out that with lambda 100, the constraint was unstable and there are some cases in which the training works with the more-constrained optimization.
 
 ### 5. Mixed clusters
 Using mlpack's GMM class, we generated the mixed clusters data set to see if how QGMM works. To generate the mixture, we drew a circle between the two clusters and generated observations randomly.
