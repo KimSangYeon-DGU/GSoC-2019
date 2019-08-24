@@ -58,8 +58,7 @@ def cvt_to_json():
         json.dump(data, outfile)
 
 def copy_ret_img():
-  #base_path = "./"
-  base_path = "/home/sy0814k/Desktop/KSY/MyMlpack/GSoC/GSoC-2019/Research/Optimization/QGMM/researches/Comparison with GMM/QGMM_aug_phi90_ld0_step1000_max-5e2_tc2/"
+  base_path = "./"
   dst_path = base_path + "img_ret"
   src_path = base_path + "images"
   init_dst_path = base_path + "img_init"
