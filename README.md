@@ -58,7 +58,7 @@ From the validity of the objective function research, we figured out it works pr
   <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/05_impact_90_1000_constraint.png" width=256>
 </p>
 
-The above figures are the training process and the graph of the constraint. The left is with lambda 100 and the right is with lambda 1,000. From that, we found out that with lambda 100, the constraint was unstable and there are some cases in which the training works with the more-constrained optimization.
+The above figures are the training process and the graph of the constraint. The left is with lambda 100 and the right is with lambda 1,000. From that, we found out that with lambda 100, the constraint was unstable and there are some cases in which the training works with the more-constrained optimization. In addition, we also found out that the too high lambda rather interferes with the convergence of the objective function.
 
 ### 4. Phi modeling
 According to the original paper, <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> can be calculated from that
@@ -68,8 +68,6 @@ According to the original paper, <img src="https://latex.codecogs.com/gif.latex?
 </p>
 
 However, when the initial Gaussians are almost zero, the <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> is too large, exceeding the bound, <img src="https://latex.codecogs.com/gif.latex?\dpi{110}&space;-1\leq&space;cos(\phi)&space;\leq&space;1" title="-1\leq cos(\phi) \leq 1" />, and it results in the unstable training process. Therefore, we changed it to a trainable variable and the results in this final document were made after changing it.
-
-
 
 ### 5. Mixed clusters
 Using mlpack's GMM class, we generated the mixed clusters data set to see if how QGMM works. To generate the mixture, we drew a circle between the two clusters and generated observations randomly.
@@ -87,11 +85,13 @@ Using the above data sets, we trained QGMM and GMM. Especially, there are two tr
 From the aboves results, we found out the results between QGMM and GMM are totally different. Furthermore, even between QGMMs, the results vary depending on <img src="https://latex.codecogs.com/gif.latex?\phi" title="\phi" />. 
 
 ### 6. Comparison with GMM
-In this research, we did compare QGMM with GMM. As the indicator of the training performance, we use the percentage of the convergence on the clusters of the observations. 
+In this research, we did compare QGMM with GMM. As the indicator of the training performance, we use the percentage of the convergence on the clusters of the observations.
 
 <p align=center>
   <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/Convg1.png" width=400>
 </p>
+
+### 7. Multiple clusters
 
 ## Conclusions
 
