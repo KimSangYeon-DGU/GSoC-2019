@@ -66,10 +66,14 @@ The above figures are the training process and the graph of the constraint. The 
 Using mlpack's GMM class, we generated the mixed clusters data set to see if how QGMM works. To generate the mixture, we drew a circle between the two clusters and generated observations randomly.
 
 <p align="center">
-  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/05_validity_90_100.gif" width=250>
-  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/05_validity_90_1000.gif" width=250>
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/Mixed data set.png" width=512>
 </p>
 
+Using the above data sets, we trained QGMM and GMM. Especially, there are two trainings for QGMM with the initial phi 0 and 90 to check the impact of the initial phi.
+
+<p align="center">
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/Mixed results.png" width=512>
+</p>
 
 ### 6. Comparison with GMM
 In this research, we did compare QGMM with GMM. As the indicator of the training performance, we use the percentage of the convergence on the clusters of the observations. 
@@ -77,7 +81,6 @@ In this research, we did compare QGMM with GMM. As the indicator of the training
 <p align=center>
   <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/Convg1.png" width=400>
 </p>
-
 
 ### 7. Multiple clusters
 
