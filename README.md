@@ -159,7 +159,7 @@ While looking into the training states, we found the value of cosine of phi is t
 
 As we saw in the comparison with GMM research, QGMM showed the flexible performance by adjusting the hyperparameters. In other words, we should set the proper hyperparameters to model the data correctly, but sometimes it would be not easy to do. Futhermore, from some several experiments, we found out that phi has significant effect on the training process. In particular, it's hard to set the initial sequence of phi when more than 3 clusters cases. Therefore, the current QGMM needs to come up with how to control phi to generalize its performance.
 
-## [Blog]
+## Blog
 - [mlpack GSoC blog](https://www.mlpack.org/gsocblog/SangyeonKimPage.html)
 
 ## Contributions
@@ -175,3 +175,4 @@ As we saw in the comparison with GMM research, QGMM showed the flexible performa
 - [Fixed DBSCAN isn't using PointSelectionPolicy issue ](https://github.com/mlpack/mlpack/pull/1627)
 
 ## Acknowledgement
+Massive thanks to Sumedh. He gave me great supports and guidance for the project. Whenever I got stuck with problems, he presented possible solutions with enough description. While doing project with him, I got impression from his inventive ideas and insightful approaches to the researches and learned a lot from him. Lastly, there are many proficient developers and researchers in mlpack community. It's my pleasure to contribute to this great machine learning library in this summer. Thanks Sumedh, and everyone. :)
