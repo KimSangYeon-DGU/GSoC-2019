@@ -48,7 +48,7 @@ However, the derivation of the covariance in the original paper has an error bec
   <img src="https://latex.codecogs.com/gif.latex?O(\theta_{k})=\left[-\sum_{i}&space;\sum_{k}&space;Q_{i}(k)\log{P(p_{i},k|\theta_{k}})\right]&plus;\lambda&space;\left[&space;\sum_{i}&space;\sum_{k}\{P(p_{i},k|\theta_{k})\}-1&space;\right]" title="O(\theta_{k})=\left[-\sum_{i} \sum_{k} Q_{i}(k)\log{P(p_{i},k|\theta_{k}})\right]+\lambda \left[ \sum_{i} \sum_{k}\{P(p_{i},k|\theta_{k})\}-1 \right]" />
 </p>
 
-Because Gaussians are unnormalized in QGMM, we defined the new objective function like Lagrangian multiplier for constraint optimization. Therefore, the new objective function is <b><i>negative log likelihood + <img src="https://latex.codecogs.com/gif.latex?\lambda" title="\lambda" /> * approximation constraint</i></b> and using an optimizer, we'll minimize it. With the objective function, we conduct several experiments to check if it works properly.
+Because <img src="https://latex.codecogs.com/gif.latex?G_{i,k}" title="G_{i,k}" /> are unnormalized in QGMM, we defined the new objective function like Lagrangian multiplier for constraint optimization. Therefore, the new objective function is <b><i>negative log likelihood + <img src="https://latex.codecogs.com/gif.latex?\lambda" title="\lambda" /> * approximation constraint</i></b> and using an optimizer, we'll minimize it. With the objective function, we conduct several experiments to check if it works properly.
 
 <p align="center">
   <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/03_validity_90_1.gif" width=256>
@@ -59,7 +59,7 @@ Because Gaussians are unnormalized in QGMM, we defined the new objective functio
 From the above images, we can see the training works properly except for the right one (In the next research, we'll dig into the failed case).
 
 ### 3. Lambda(<img src="https://latex.codecogs.com/gif.latex?\dpi{150}&space;\lambda" title="\lambda" />) impact
-From the validity of the objective function research, we figured out it works properly. In addition, the higher value means the optimization is more constrained. Therefore, in this research, we checked the impact of <img src="https://latex.codecogs.com/gif.latex?\lambda" title="\lambda" />. Generally, the initial <img src="https://latex.codecogs.com/gif.latex?\lambda" title="\lambda" /> can be calculated by NLL / approximation constraint from the objective function, but when the initial Gaussians are almost zero, we can't calculate NLL. Therefore, we set the initial value of <img src="https://latex.codecogs.com/gif.latex?\lambda" title="\lambda" /> manually.
+From the validity of the objective function research, we figured out it works properly. In addition, the higher value means the optimization is more constrained. Therefore, in this research, we checked the impact of <img src="https://latex.codecogs.com/gif.latex?\lambda" title="\lambda" />. Generally, the initial <img src="https://latex.codecogs.com/gif.latex?\lambda" title="\lambda" /> can be calculated by NLL / approximation constraint from the objective function, but when the initial <img src="https://latex.codecogs.com/gif.latex?G_{i,k}" title="G_{i,k}" /> are almost zero, we can't calculate NLL. Therefore, we set the initial value of <img src="https://latex.codecogs.com/gif.latex?\lambda" title="\lambda" /> manually.
 
 <p align="center">
   <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/05_impact_90_100.gif" width=256>
@@ -79,7 +79,7 @@ According to the original paper, <img src="https://latex.codecogs.com/gif.latex?
   <img src="https://latex.codecogs.com/gif.latex?\dpi{110}&space;cos(\phi)=\frac{1-\alpha_{1}^{2}-\alpha_{2}^{2}}{2\alpha_{1}\alpha_{2}\sum_{i}G_{i,1}G_{i,2}}" title="cos(\phi)=\frac{1-\alpha_{1}^{2}-\alpha_{2}^{2}}{2\alpha_{1}\alpha_{2}\sum_{i}G_{i,1}G_{i,2}}" />
 </p>
 
-However, when the initial Gaussians are almost zero, the <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> is too large, exceeding the bound, <img src="https://latex.codecogs.com/gif.latex?\dpi{110}&space;-1\leq&space;cos(\phi)&space;\leq&space;1" title="-1\leq cos(\phi) \leq 1" />, and it results in the unstable training process. Therefore, we changed it to a trainable variable and the results in this final document were made after changing it. As the original paper mentioned, the <img src="https://latex.codecogs.com/gif.latex?\phi" title="\phi" /> difference is calculated from
+However, when the initial <img src="https://latex.codecogs.com/gif.latex?G_{i,k}" title="G_{i,k}" /> are almost zero, the <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> is too large, exceeding the bound, <img src="https://latex.codecogs.com/gif.latex?\dpi{110}&space;-1\leq&space;cos(\phi)&space;\leq&space;1" title="-1\leq cos(\phi) \leq 1" />, and it results in the unstable training process. Therefore, we changed it to a trainable variable and the results in this final document were made after changing it. As the original paper mentioned, the <img src="https://latex.codecogs.com/gif.latex?\phi" title="\phi" /> difference is calculated from
 
 <p align="center">
   <img src="https://latex.codecogs.com/gif.latex?\dpi{110}&space;\phi_{l,k}=\phi_{k}-\phi_{l}" title="\phi_{l,k}=\phi_{k}-\phi_{l}" />
