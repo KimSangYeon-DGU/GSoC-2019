@@ -20,6 +20,9 @@ According to the original paper, the probability equation of QGMM is that
 <p align="center">
   <img src="https://latex.codecogs.com/gif.latex?P(p_{i},k|\theta_{k})&space;=&space;\alpha_{k}G_{i,k}\left&space;(&space;\sum_{l=1}^{K}&space;\alpha_{l}\cos(\phi_{l,k})G_{i,l}&space;\right&space;)" title="P(p_{i},k|\theta_{k}) = \alpha_{k}G_{i,k}\left ( \sum_{l=1}^{K} \alpha_{l}\cos(\phi_{l,k})G_{i,l} \right )" />
 </p>
+<p align="center">
+  where <img src="https://latex.codecogs.com/gif.latex?G_{i,k}^{2}" title="G_{i,k}^{2}" /> is normalized
+</p>
 
 In addition, <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> has an effect on the mixture case and QGMM and GMM are the same when <img src="https://latex.codecogs.com/gif.latex?\phi=\pi/2" title="\phi=\pi/2" />. Therefore, we checked its interference phenomena by visualizing it in 3D plotting.
 
