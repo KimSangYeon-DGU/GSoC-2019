@@ -13,15 +13,16 @@ Quantum Gaussian Mixture Models
 Gaussian Mixture Model (GMM) is widely used in computer vision as a state-of-the-art clustering algorithm. This project proposes Quantum Gaussian Mixture Model (QGMM) for Quantum Clustering and it is originally proposed in the [paper](https://arxiv.org/pdf/1612.09199.pdf). In this project, we implemented QGMM and conducted some experiments to see if how fast it trains, how better it models the data, what edge cases there are, and there is anything we can improve.
 
 ## Researches
-We conducted researches to find out the stengths and weaknesses QGMM has.
+We conducted researches to find out the strengths and weaknesses QGMM has.
 ### 1. Interference phenomena
-According to paper, the probability equation of QGMM is that
+According to the original paper, the probability equation of QGMM is that
 
 <p align="center">
   <img src="https://latex.codecogs.com/gif.latex?P(p_{i},k|\theta_{k})&space;=&space;\alpha_{k}G_{i,k}\left&space;(&space;\sum_{l=1}^{K}&space;\alpha_{l}\cos(\phi_{l,k})G_{i,l}&space;\right&space;)" title="P(p_{i},k|\theta_{k}) = \alpha_{k}G_{i,k}\left ( \sum_{l=1}^{K} \alpha_{l}\cos(\phi_{l,k})G_{i,l} \right )" />
 </p>
 
 In addition, <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> has an effect on the mixture case and QGMM and GMM are the same when <img src="https://latex.codecogs.com/gif.latex?\phi=\pi/2" title="\phi=\pi/2" />. Therefore, we checked its interference phenomena by visualizing it in 3D plotting.
+
 <p align="center">
   <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/interferences.png">
 </p>
@@ -42,7 +43,7 @@ However, the derivation of the covariance in the original paper has an error bec
   <img src="https://latex.codecogs.com/gif.latex?O(\theta_{k})=\left[-\sum_{i}&space;\sum_{k}&space;Q_{i}(k)\log{P(p_{i},k|\theta_{k}})\right]&plus;\lambda&space;\left[&space;\sum_{i}&space;\sum_{k}\{P(p_{i},k|\theta_{k})\}-1&space;\right]" title="O(\theta_{k})=\left[-\sum_{i} \sum_{k} Q_{i}(k)\log{P(p_{i},k|\theta_{k}})\right]+\lambda \left[ \sum_{i} \sum_{k}\{P(p_{i},k|\theta_{k})\}-1 \right]" />
 </p>
 
-Because Gaussians are unnormalized in QGMM, we defined the new objectvie function like Lagrangian multiplier for constraint optimization. Therefore, the new objective function is NLL + lambda * approximation constraint and using an optimizer, we'll minimize it. With the objective function, we conduct several experiments to check if it works properly.
+Because Gaussians are unnormalized in QGMM, we defined the new objective function like Lagrangian multiplier for constraint optimization. Therefore, the new objective function is NLL + lambda * approximation constraint and using an optimizer, we'll minimize it. With the objective function, we conduct several experiments to check if it works properly.
 
 <p align="center">
   <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/03_validity_90_1.gif" width=256>
@@ -53,7 +54,7 @@ Because Gaussians are unnormalized in QGMM, we defined the new objectvie functio
 From the above figures, we can see the training works properly except for the right one (In the next research, we'll dig into the failed case).
 
 ### 3. Lambda impact
-From the validity of the objective function research, we figured out it works properly. In addition, the higher value means the optimization is more constrained. Therefore, in this research, we checked the impact of lambda. Generally, the initial lambda can be calculated by NLL / approximation constraint from the objective function, but when the intial Gaussians are almost zero, we can't calculate NLL. Therefore, we set the initial value of lambda manually.
+From the validity of the objective function research, we figured out it works properly. In addition, the higher value means the optimization is more constrained. Therefore, in this research, we checked the impact of lambda. Generally, the initial lambda can be calculated by NLL / approximation constraint from the objective function, but when the initial Gaussians are almost zero, we can't calculate NLL. Therefore, we set the initial value of lambda manually.
 
 <p align="center">
   <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/05_impact_90_100.gif" width=256>
@@ -92,25 +93,25 @@ Thus, we checked the training results with the different initial values of phi.
   <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/03_phi_180_1500_phi.png" width=256>
 </p>
 
-In the above figures, the left, center, and right are with the initial values of phi 0 (45 - 45), 90 (45 - (-45)), and 180 (90 - (-90)) respectively. When we set the initial phi as 0, the values didn't changed, whereas in the cases of phi 90 and 180, they were changed. From some experiments, we found out that the two distributions get father as <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> is positive, while they get closer as <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> is negative.
+In the above figures, the left, center, and right are with the initial values of phi 0 (45 - 45), 90 (45 - (-45)), and 180 (90 - (-90)) respectively. When we set the initial phi as 0, the values weren't changed, whereas in the cases of phi 90 and 180, they were changed. From some experiments, we found out that the two distributions get father as <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> is positive, while they get closer as <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> is negative.
 
 ### 5. Mixed clusters
-Using mlpack's GMM class, we generated the mixed clusters data set to see if how QGMM works. To generate the mixture, we drew a circle between the two clusters and generated observations randomly.
+Using mlpack's GMM class, we generated the data set for the mixed clusters to see if how QGMM works. To generate the mixture, we drew a circle between the two clusters and generated observations randomly.
 
 <p align="center">
   <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/Mixed data set.png" width=512>
 </p>
 
-Using the above data sets, we trained QGMM and GMM. Especially, there are two trainings for QGMM with the initial phi 0 and 90 to check the impact of the initial phi.
+Using the above data sets, we trained QGMM and GMM. Especially, we investigated two cases for QGMM with the initial phi 0 and 90 to check the impact of the initial phi.
 
 <p align="center">
   <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/Mixed results.png" width=512>
 </p>
 
-From the aboves results, we found out the results between QGMM and GMM are totally different. Furthermore, even between QGMMs, the results vary depending on <img src="https://latex.codecogs.com/gif.latex?\phi" title="\phi" />. 
+From the above results, we found out the results between QGMM and GMM are totally different. Furthermore, even between QGMMs, the results vary depending on <img src="https://latex.codecogs.com/gif.latex?\phi" title="\phi" />. 
 
 ### 6. Comparison with GMM
-In this research, we compared QGMM with GMM. As the indicator of the training performance, we use the percentage of the convergence on the clusters of the observations. We conducted 100 experiments with different initial means and the initial means were randomly generated between -1 and 1 from the maximum and minimum of x coordinates of the data set, and between -10 and 10 from the maximum and minimum of y coordinates of the data set. Besides, we used the augmented Lagrangian multiplier method for the constrained optimization. Like other researches, we didn't use any initial clustering like K-means.
+In this research, we compared QGMM with GMM. As the indicator of the training performance, we use the percentage of the convergence on the clusters of the observations. We conducted 100 experiments with different initial means and the initial means were randomly generated between -1 and 1 from the maximum and minimum of x coordinates of the data set, and between -10 and 10 from the maximum and minimum of y coordinates of the data set. Besides, we used the augmented Lagrangian multiplier method for constrained optimization. Like other researches, we didn't use any initial clustering like K-means.
 
 <p align=center>
   <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/Convg1.png" width=400>
@@ -138,7 +139,7 @@ From the above table, we can see the performance of QGMM with initial phi 0 incr
   <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/TC2_follow-up_01.gif" width=256>
 </p>
 
-The above images is the case that the two distributions are overlaid initially. The left is with initial phi 0, and the right is with initial phi 180. From the images, we can see that in left image, the two distributions moved to the same cluster first before moving to each cluster, on the other hand, the two distributions moved to each cluster. Therefore, we checked again that phi has an effect on the training process.
+The above images are the case that the two distributions are overlaid initially. The left is with initial phi 0, and the right is with initial phi 180. From the images, we can see that in the left image, the two distributions moved to the same cluster first before moving to each cluster, on the other hand, the two distributions moved to each cluster. Therefore, we checked again that phi has an effect on the training process.
 
 ### 7. Multiple clusters
 In this research, we checked the performance of QGMM in multiple clusters.
@@ -151,13 +152,13 @@ In this research, we checked the performance of QGMM in multiple clusters.
 In the images above, the left is with the sequence of phi, [0, 0, 0, 0, 0] and the right is with the sequence of phi, [45, -45, 45, -45, 45]. For the multiple clusters cases, it's tricky to set the initial sequence of phi to model the data properly.
 
 ## Conclusions
-In this project, we found some errors in the original QGMM, tried to correct them, and made some improvements in its performance while we looked into the property of it through the various trials. Before implementing QGMM, we  simply visualized and checked the 3D probability space of QGMM to investigate its impact and come up with methods to normalize the probablity to make the integral of it one.
+In this project, we found some errors in the original QGMM, tried to correct them, and made some improvements in its performance while we looked into the property of it through the various trials. Before implementing QGMM, we simply visualized and checked the 3D probability space of QGMM to investigate its impact and come up with methods to normalize the probability to make the integral of it one.
   
-Also, we found an error in the derivation of the covariance in the original approach, so we newly defined the objective function with the approxiation constraint for the probability normalization, and checked it works properly. 
+Also, we found an error in the derivation of the covariance in the original approach, so we newly defined the objective function with the approximation constraint for the probability normalization, and checked it works properly. 
 
-While looking into the training states, we found the value of cosine of phi is too large, so we changed phi as a trainable variable. As a result, the training performance became stable than before.
+While looking into the training states, we found the value of the cosine of phi is too large, so we changed phi as a trainable variable. As a result, training performance became stable than before.
 
-As we saw in the comparison with GMM research, QGMM showed the flexible performance by adjusting the hyperparameters. In other words, we should set the proper hyperparameters to model the data correctly, but sometimes it would be not easy to do. Futhermore, from some several experiments, we found out that phi has significant effect on the training process. In particular, it's hard to set the initial sequence of phi when more than 3 clusters cases. Therefore, the current QGMM needs to come up with how to control phi to generalize its performance.
+As we saw in the comparison with GMM research, QGMM showed flexible performance by adjusting the hyperparameters. In other words, we should set the proper hyperparameters to model the data correctly, but sometimes it would be not easy to do. Furthermore, from some several experiments, we found out that phi has a significant effect on the training process. In particular, it's hard to set the initial sequence of phi when more than 3 clusters cases. Therefore, the current QGMM needs to come up with how to control phi to generalize its performance.
 
 ## Blog
 - [mlpack GSoC blog](https://www.mlpack.org/gsocblog/SangyeonKimPage.html)
@@ -175,4 +176,4 @@ As we saw in the comparison with GMM research, QGMM showed the flexible performa
 - [Fixed DBSCAN isn't using PointSelectionPolicy issue ](https://github.com/mlpack/mlpack/pull/1627)
 
 ## Acknowledgement
-Massive thanks to Sumedh. He gave me great supports and guidance for the project. Whenever I got stuck with problems, he presented possible solutions with enough description. While doing project with him, I got impression from his inventive ideas and insightful approaches to the researches and learned a lot from him. Lastly, there are many proficient developers and researchers in mlpack community. It's my pleasure to contribute to this great machine learning library in this summer. Thanks Sumedh, and everyone. :)
+Massive thanks to Sumedh. He gave me great support and guidance for the project. Whenever I got stuck with problems, he presented possible solutions with enough description. While doing this project with him, I got many impressions from his inventive ideas and insightful approaches to the researches and learned a lot from him. Lastly, there are many proficient developers and researchers in mlpack community. It's my pleasure to contribute to this great machine learning library in this summer. Thanks again Sumedh, and everyone. :)
