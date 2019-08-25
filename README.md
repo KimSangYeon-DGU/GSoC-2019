@@ -163,6 +163,15 @@ As we saw in the comparison with GMM research, QGMM showed the flexible performa
 
 
 ## Contributions
-
+[Convert DiagonalGMMs into GMMs in `mlpack_gmm_train`](https://github.com/mlpack/mlpack/pull/1860)
+[Make `GradientTransposedConvolutionLayerTest` robust.](https://github.com/mlpack/mlpack/pull/1777)
+[Synchronize parameter's name with @param in `dists` and `gmm` directory.](https://github.com/mlpack/mlpack/pull/1753)
+[Resolve gcc parameter reorder warning for clean build.](https://github.com/mlpack/mlpack/pull/1738)
+[Edited to comply with the Style Checks](https://github.com/mlpack/mlpack/pull/1713)
+[Implement wrapper for diagonally-constrained GMM HMMs.](https://github.com/mlpack/mlpack/pull/1666)
+[Changed the file name `acrobat.hpp` to `acrobot.hpp`.](https://github.com/mlpack/mlpack/pull/1654)
+[Edited mountain_car.hpp to bound to goal position.](https://github.com/mlpack/mlpack/pull/1649)
+[Fix/Change Windows installer](https://github.com/mlpack/mlpack/pull/1642)
+[Fixed DBSCAN isn't using PointSelectionPolicy issue ](https://github.com/mlpack/mlpack/pull/1627)
 
 ## Acknowledgement
