@@ -1,4 +1,6 @@
-# GSoC-2019
+<p align="center">
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/GSoC_logo.png" width=540>
+</p>
 
 ## Title
 Quantum Gaussian Mixture Models
