@@ -15,7 +15,13 @@ Gaussian Mixture Model (GMM) is widely used in computer vision as a state-of-the
 ## Researches
 We conducted researches to find out the stengths and weaknesses QGMM has.
 ### 1. Interference phenomena
-According to paper, <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> has an effect on the mixture case and QGMM and GMM are the same when <img src="https://latex.codecogs.com/gif.latex?\phi=\pi/2" title="\phi=\pi/2" />. Therefore, we checked its interference phenomena by visualizing it in 3D plotting.
+According to paper, the probability equation of QGMM is that
+
+<p align="center">
+  <img src="https://latex.codecogs.com/gif.latex?P(p_{i},k|\theta_{k})&space;=&space;\alpha_{k}G_{i,k}\left&space;(&space;\sum_{l=1}^{K}&space;\alpha_{l}\cos(\phi_{l,k})G_{i,l}&space;\right&space;)" title="P(p_{i},k|\theta_{k}) = \alpha_{k}G_{i,k}\left ( \sum_{l=1}^{K} \alpha_{l}\cos(\phi_{l,k})G_{i,l} \right )" />
+</p>
+
+In addition, <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> has an effect on the mixture case and QGMM and GMM are the same when <img src="https://latex.codecogs.com/gif.latex?\phi=\pi/2" title="\phi=\pi/2" />. Therefore, we checked its interference phenomena by visualizing it in 3D plotting.
 <p align="center">
   <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/interferences.png">
 </p>
@@ -26,14 +32,14 @@ From the above figures, we can check the interference phenomena as <img src="htt
 In the original paper, the objective function is that 
 
 <p align="center">
-  <img src="https://latex.codecogs.com/gif.latex?\dpi{150}&space;O(\theta_{k})=\sum_{i}&space;\sum_{k}Q_{i}(k)\log{P(p_{i},k|\theta_{k})}" title="O(\theta_{k})=\sum_{i} \sum_{k}Q_{i}(k)\log{P(p_{i},k|\theta_{k})}" />
+  <img src="https://latex.codecogs.com/gif.latex?\dpi{110}&space;O(\theta_{k})=\sum_{i}&space;\sum_{k}Q_{i}(k)\log{P(p_{i},k|\theta_{k})}" title="O(\theta_{k})=\sum_{i} \sum_{k}Q_{i}(k)\log{P(p_{i},k|\theta_{k})}" />
 </p>
 
 In addition, the objective function means the expectation of the complete-data log likelihood, and we'll call it as log likelihood in this report.
 However, the derivation of the covariance in the original paper has an error because Q shouldn't have an effect on the calculation, so we couldn't use it. Thus, we newly defined the objective function as an indicator of the training states.
 
 <p align="center">
-  <img src="https://latex.codecogs.com/gif.latex?\dpi{150}&space;O(\theta_{k})=-\sum_{i}&space;\sum_{k}[Q_{i}(k)\log{P(p_{i},k|{\theta_{k}})}]&plus;\lambda[\sum_{i}&space;\sum_{k}\{P(p_{i},k|\theta_{k})\}-1]" title="O(\theta_{k})=-\sum_{i} \sum_{k}[Q_{i}(k)\log{P(p_{i},k|{\theta_{k}})}]+\lambda[\sum_{i} \sum_{k}\{P(p_{i},k|\theta_{k})\}-1]" />
+  <img src="https://latex.codecogs.com/gif.latex?O(\theta_{k})=\left[-\sum_{i}&space;\sum_{k}&space;Q_{i}(k)\log{P(p_{i},k|\theta_{k}})\right]&plus;\lambda&space;\left[&space;\sum_{i}&space;\sum_{k}\{P(p_{i},k|\theta_{k})\}-1&space;\right]" title="O(\theta_{k})=\left[-\sum_{i} \sum_{k} Q_{i}(k)\log{P(p_{i},k|\theta_{k}})\right]+\lambda \left[ \sum_{i} \sum_{k}\{P(p_{i},k|\theta_{k})\}-1 \right]" />
 </p>
 
 Because Gaussians are unnormalized in QGMM, we defined the new objectvie function like Lagrangian multiplier for constraint optimization. Therefore, the new objective function is NLL + lambda * approximation constraint and using an optimizer, we'll minimize it. With the objective function, we conduct several experiments to check if it works properly.
@@ -137,6 +143,12 @@ The above images is the case that the two distributions are overlaid initially. 
 ### 7. Multiple clusters
 In this research, we checked the performance of QGMM in multiple clusters.
 
+<p align="center">
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/multiple_01.gif" width=256>
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/multiple_02.gif" width=256>
+</p>
+
+In the images above, the left is with the sequence of phi, [0, 0, 0, 0, 0] and the right is with the sequence of phi, [45, -45, 45, -45, 45]. For the multiple clusters cases, it's tricky to set the initial sequence of phi to model the data properly.
 
 ## Conclusions
 We looked into the property of QGMM in this project and made some improvements in the training performance.  
