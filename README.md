@@ -1,4 +1,6 @@
-# GSoC-2019
+<p align="center">
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/GSoC_logo.png" width=540>
+</p>
 
 ## Title
 Quantum Gaussian Mixture Models
@@ -30,7 +32,7 @@ In addition, <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="co
   <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/interferences.png">
 </p>
 
-From the above figures, we can check the interference phenomena as <img src="https://latex.codecogs.com/gif.latex?\phi" title="\phi" /> changed.  In addition, we can see when <img src="https://latex.codecogs.com/gif.latex?\phi=90" title="\phi=90" />, QGMM is the same with GMM.
+From the above images, we can check the interference phenomena as <img src="https://latex.codecogs.com/gif.latex?\phi" title="\phi" /> changed.  In addition, we can see when <img src="https://latex.codecogs.com/gif.latex?\phi=90" title="\phi=90" />, QGMM is the same with GMM.
 
 ### 2. Validity of the objective function
 In the original paper, the objective function is that 
@@ -54,7 +56,7 @@ Because Gaussians are unnormalized in QGMM, we defined the new objective functio
   <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/05_validity_90_1.gif" width=256>
 </p>
 
-From the above figures, we can see the training works properly except for the right one (In the next research, we'll dig into the failed case).
+From the above images, we can see the training works properly except for the right one (In the next research, we'll dig into the failed case).
 
 ### 3. Lambda impact
 From the validity of the objective function research, we figured out it works properly. In addition, the higher value means the optimization is more constrained. Therefore, in this research, we checked the impact of lambda. Generally, the initial lambda can be calculated by NLL / approximation constraint from the objective function, but when the initial Gaussians are almost zero, we can't calculate NLL. Therefore, we set the initial value of lambda manually.
@@ -68,7 +70,7 @@ From the validity of the objective function research, we figured out it works pr
   <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/05_impact_90_1000_constraint.png" width=256>
 </p>
 
-The above figures are the training process and the graph of the constraint. The left is with lambda 100 and the right is with lambda 1,000. From that, we found out that with lambda 100, the constraint was unstable and there are some cases in which the training works with the more-constrained optimization. However, we also found out that the too high lambda rather interferes with the convergence of the objective function.
+The above images are the training process and the graph of the constraint. The left is with lambda 100 and the right is with lambda 1,000. From that, we found out that with lambda 100, the constraint was unstable and there are some cases in which the training works only when using the more-constrained optimization. However, the high lambda is not always desirable because we also found out that the too high lambda rather interferes with the convergence of the objective function.
 
 ### 4. Phi modeling
 According to the original paper, <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> can be calculated from that
@@ -96,19 +98,19 @@ Thus, we checked the training results with the different initial values of phi.
   <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/03_phi_180_1500_phi.png" width=256>
 </p>
 
-In the above figures, the left, center, and right are with the initial values of phi 0 (45 - 45), 90 (45 - (-45)), and 180 (90 - (-90)) respectively. When we set the initial phi as 0, the values weren't changed, whereas in the cases of phi 90 and 180, they were changed. From some experiments, we found out that the two distributions get father as <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> is positive, while they get closer as <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> is negative.
+In the above images, the left, center, and right are with the initial values of phi 0 (45 - 45), 90 (45 - (-45)), and 180 (90 - (-90)) respectively. When we set the initial phi as 0, the values weren't changed, whereas in the cases of phi 90 and 180, they were changed. From some experiments, we found out that the two distributions get father as <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> is positive, while they get closer as <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> is negative.
 
 ### 5. Mixed clusters
 Using mlpack's GMM class, we generated the data set for the mixed clusters to see if how QGMM works. To generate the mixture, we drew a circle between the two clusters and generated observations randomly.
 
 <p align="center">
-  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/Mixed data set.png" width=512>
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/Mixed data set.png" width=640>
 </p>
 
 Using the above data sets, we trained QGMM and GMM. Especially, we investigated two cases for QGMM with the initial phi 0 and 90 to check the impact of the initial phi.
 
 <p align="center">
-  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/Mixed results.png" width=512>
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/Mixed results.png" width=640>
 </p>
 
 From the above results, we found out the results between QGMM and GMM are totally different. Furthermore, even between QGMMs, the results vary depending on <img src="https://latex.codecogs.com/gif.latex?\phi" title="\phi" />. 
@@ -179,4 +181,4 @@ As we saw in the comparison with GMM research, QGMM showed flexible performance 
 - [Fixed DBSCAN isn't using PointSelectionPolicy issue ](https://github.com/mlpack/mlpack/pull/1627)
 
 ## Acknowledgement
-Massive thanks to Sumedh. He gave me great support and guidance for the project. Whenever I got stuck with problems, he presented possible solutions with enough description. While doing this project with him, I got many impressions from his inventive ideas and insightful approaches to the researches and learned a lot from him. Lastly, there are many proficient developers and researchers in mlpack community. It's my pleasure to contribute to this great machine learning library and I'll continue to contribute to mlpack actively. Thanks again Sumedh, and everyone. :)
+Massive thanks Sumedh. He gave me great support and guidance for the project. Whenever I got stuck with problems, he presented possible solutions with enough description. While doing this project with him, I got many impressions from his inventive ideas and insightful approaches to the researches and learned a lot from him. Lastly, there are many proficient developers and researchers in mlpack community. It's my pleasure to contribute to this great machine learning library and I'll continue to contribute to mlpack actively. Thanks again Sumedh, and everyone. :)
