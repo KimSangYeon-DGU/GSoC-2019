@@ -132,10 +132,18 @@ From the above table, we can see the performance of QGMM with initial phi 0 incr
   <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/TC2_follow-up_01.gif" width=256>
 </p>
 
+The above images is the case that the two distributions are overlaid initially. The left is with initial phi 0, and the right is with initial phi 180. From the images, we can see that in left image, the two distributions moved to the same cluster first before moving to each cluster, on the other hand, the two distributions moved to each cluster. Therefore, we checked again that phi has an effect on the training process.
+
 ### 7. Multiple clusters
+In this research, we checked the performance of QGMM in multiple clusters.
+
 
 ## Conclusions
+We looked into the property of QGMM in this project and made some improvements in the training performance.  
+
 
 ## Contributions
+
+
 
 ## Acknowledgement
