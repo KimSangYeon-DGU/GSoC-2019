@@ -70,13 +70,13 @@ The above figures are the training process and the graph of the constraint. The 
 According to the original paper, <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> can be calculated from that
 
 <p align="center">
-  <img src="https://latex.codecogs.com/gif.latex?\dpi{150}&space;cos(\phi)=\frac{1-\alpha_{1}^{2}-\alpha_{2}^{2}}{2\alpha_{1}\alpha_{2}\sum_{i}G_{i,1}G_{i,2}}" title="cos(\phi)=\frac{1-\alpha_{1}^{2}-\alpha_{2}^{2}}{2\alpha_{1}\alpha_{2}\sum_{i}G_{i,1}G_{i,2}}" />
+  <img src="https://latex.codecogs.com/gif.latex?\dpi{110}&space;cos(\phi)=\frac{1-\alpha_{1}^{2}-\alpha_{2}^{2}}{2\alpha_{1}\alpha_{2}\sum_{i}G_{i,1}G_{i,2}}" title="cos(\phi)=\frac{1-\alpha_{1}^{2}-\alpha_{2}^{2}}{2\alpha_{1}\alpha_{2}\sum_{i}G_{i,1}G_{i,2}}" />
 </p>
 
 However, when the initial Gaussians are almost zero, the <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> is too large, exceeding the bound, <img src="https://latex.codecogs.com/gif.latex?\dpi{110}&space;-1\leq&space;cos(\phi)&space;\leq&space;1" title="-1\leq cos(\phi) \leq 1" />, and it results in the unstable training process. Therefore, we changed it to a trainable variable and the results in this final document were made after changing it. As the original paper mentioned, the phi difference is calculated from
 
 <p align="center">
-  <img src="https://latex.codecogs.com/gif.latex?\dpi{150}&space;\phi_{l,k}=\phi_{k}-\phi_{l}" title="\phi_{l,k}=\phi_{k}-\phi_{l}" />
+  <img src="https://latex.codecogs.com/gif.latex?\dpi{110}&space;\phi_{l,k}=\phi_{k}-\phi_{l}" title="\phi_{l,k}=\phi_{k}-\phi_{l}" />
 </p>
 
 Thus, we checked the training results with the different initial values of phi.
@@ -151,11 +151,18 @@ In this research, we checked the performance of QGMM in multiple clusters.
 In the images above, the left is with the sequence of phi, [0, 0, 0, 0, 0] and the right is with the sequence of phi, [45, -45, 45, -45, 45]. For the multiple clusters cases, it's tricky to set the initial sequence of phi to model the data properly.
 
 ## Conclusions
-We looked into the property of QGMM in this project and made some improvements in the training performance.  
+In this project, we found some errors in the original QGMM, tried to correct them, and made some improvements in its performance while we looked into the property of it through the various trials. Before implementing QGMM, we  simply visualized and checked the 3D probability space of QGMM to investigate its impact and come up with methods to normalize the probablity to make the integral of it one.
+  
+Also, we found an error in the derivation of the covariance in the original approach, so we newly defined the objective function with the approxiation constraint for the probability normalization, and checked it works properly. 
+
+While looking into the training states, we found the value of cosine of phi is too large, so we changed phi as a trainable variable. As a result, the training performance became stable than before.
+
+As we saw in the comparison with GMM research, QGMM showed the flexible performance by adjusting the hyperparameters. In other words, we should set the proper hyperparameters to model the data correctly, but sometimes it would be not easy to do. Futhermore, from some several experiments, we found out that phi has significant effect on the training process. In particular, it's hard to set the initial sequence of phi when more than 3 clusters cases. Therefore, the current QGMM needs to come up with how to control phi to generalize its performance.
+
+## [Blog](https://www.mlpack.org/gsocblog/SangyeonKimPage.html)
 
 
 ## Contributions
-
 
 
 ## Acknowledgement
