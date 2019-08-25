@@ -30,7 +30,7 @@ In the original paper, the objective function is that
 </p>
 
 In addition, the objective function means the expectation of the complete-data log likelihood, and we'll call it as log likelihood in this report.
-However, the derivation of the covariance in the original paper has an error because Q shouldn't have an effect on the calculation, so we couldn't use it. Thus, we newly defined the objective function as an indication of the training states.
+However, the derivation of the covariance in the original paper has an error because Q shouldn't have an effect on the calculation, so we couldn't use it. Thus, we newly defined the objective function as an indicator of the training states.
 
 <p align="center">
   <img src="https://latex.codecogs.com/gif.latex?\dpi{150}&space;O(\theta_{k})=-\sum_{i}&space;\sum_{k}[Q_{i}(k)\log{P(p_{i},k|{\theta_{k}})}]&plus;\lambda[\sum_{i}&space;\sum_{k}\{P(p_{i},k|\theta_{k})\}-1]" title="O(\theta_{k})=-\sum_{i} \sum_{k}[Q_{i}(k)\log{P(p_{i},k|{\theta_{k}})}]+\lambda[\sum_{i} \sum_{k}\{P(p_{i},k|\theta_{k})\}-1]" />
@@ -104,11 +104,13 @@ Using the above data sets, we trained QGMM and GMM. Especially, there are two tr
 From the aboves results, we found out the results between QGMM and GMM are totally different. Furthermore, even between QGMMs, the results vary depending on <img src="https://latex.codecogs.com/gif.latex?\phi" title="\phi" />. 
 
 ### 6. Comparison with GMM
-In this research, we did compare QGMM with GMM. As the indicator of the training performance, we use the percentage of the convergence on the clusters of the observations.
+In this research, we compared QGMM with GMM. As the indicator of the training performance, we use the percentage of the convergence on the clusters of the observations. We conducted 100 experiments with different initial means. Besides, we used the augmented Lagrangian multiplier method for the constrained optimization. Like other researches, we didn't use any initial clustering like K-means.
 
 <p align=center>
   <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/Convg1.png" width=400>
 </p>
+
+From the table above, there are 4 and 20 failed cases for QGMM with initial phi 0 and 90 respectively and 6 failed cases for GMM. Especially, among failed cases, there is a case that the training doesn't work, so we ran it with other hyperparameters.
 
 ### 7. Multiple clusters
 
