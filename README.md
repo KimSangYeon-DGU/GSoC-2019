@@ -48,7 +48,7 @@ However, the derivation of the covariance in the original paper has an error bec
   <img src="https://latex.codecogs.com/gif.latex?O(\theta_{k})=\left[-\sum_{i}&space;\sum_{k}&space;Q_{i}(k)\log{P(p_{i},k|\theta_{k}})\right]&plus;\lambda&space;\left[&space;\sum_{i}&space;\sum_{k}\{P(p_{i},k|\theta_{k})\}-1&space;\right]" title="O(\theta_{k})=\left[-\sum_{i} \sum_{k} Q_{i}(k)\log{P(p_{i},k|\theta_{k}})\right]+\lambda \left[ \sum_{i} \sum_{k}\{P(p_{i},k|\theta_{k})\}-1 \right]" />
 </p>
 
-Because Gaussians are unnormalized in QGMM, we defined the new objective function like Lagrangian multiplier for constraint optimization. Therefore, the new objective function is <i>negative log likelihood + lambda * approximation constraint</i> and using an optimizer, we'll minimize it. With the objective function, we conduct several experiments to check if it works properly.
+Because Gaussians are unnormalized in QGMM, we defined the new objective function like Lagrangian multiplier for constraint optimization. Therefore, the new objective function is <b><i>negative log likelihood + <img src="https://latex.codecogs.com/gif.latex?\lambda" title="\lambda" /> * approximation constraint</i></b> and using an optimizer, we'll minimize it. With the objective function, we conduct several experiments to check if it works properly.
 
 <p align="center">
   <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/03_validity_90_1.gif" width=256>
@@ -58,8 +58,8 @@ Because Gaussians are unnormalized in QGMM, we defined the new objective functio
 
 From the above images, we can see the training works properly except for the right one (In the next research, we'll dig into the failed case).
 
-### 3. Lambda impact
-From the validity of the objective function research, we figured out it works properly. In addition, the higher value means the optimization is more constrained. Therefore, in this research, we checked the impact of lambda. Generally, the initial lambda can be calculated by NLL / approximation constraint from the objective function, but when the initial Gaussians are almost zero, we can't calculate NLL. Therefore, we set the initial value of lambda manually.
+### 3. Lambda(<img src="https://latex.codecogs.com/gif.latex?\dpi{150}&space;\lambda" title="\lambda" />) impact
+From the validity of the objective function research, we figured out it works properly. In addition, the higher value means the optimization is more constrained. Therefore, in this research, we checked the impact of <img src="https://latex.codecogs.com/gif.latex?\lambda" title="\lambda" />. Generally, the initial <img src="https://latex.codecogs.com/gif.latex?\lambda" title="\lambda" /> can be calculated by NLL / approximation constraint from the objective function, but when the initial Gaussians are almost zero, we can't calculate NLL. Therefore, we set the initial value of <img src="https://latex.codecogs.com/gif.latex?\lambda" title="\lambda" /> manually.
 
 <p align="center">
   <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/05_impact_90_100.gif" width=256>
@@ -70,9 +70,9 @@ From the validity of the objective function research, we figured out it works pr
   <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/05_impact_90_1000_constraint.png" width=256>
 </p>
 
-The above images are the training process and the graph of the constraint. The left is with lambda 100 and the right is with lambda 1,000. From that, we found out that with lambda 100, the constraint was unstable and there are some cases in which the training works only when using the more-constrained optimization. However, the high lambda is not always desirable because we also found out that the too high lambda rather interferes with the convergence of the objective function.
+The above images are the training process and the graph of the constraint. The left is with <img src="https://latex.codecogs.com/gif.latex?\lambda" title="\lambda" /> 100 and the right is with lambda 1,000. From that, we found out that with <img src="https://latex.codecogs.com/gif.latex?\lambda" title="\lambda" /> 100, the constraint was unstable and there are some cases in which the training works only when using the more-constrained optimization. However, the high <img src="https://latex.codecogs.com/gif.latex?\lambda" title="\lambda" /> is not always desirable because we also found out that the too high <img src="https://latex.codecogs.com/gif.latex?\lambda" title="\lambda" /> rather interferes with the convergence of the objective function.
 
-### 4. Phi modeling
+### 4. Phi(<img src="https://latex.codecogs.com/gif.latex?\dpi{150}&space;\phi" title="\phi" />) modeling
 According to the original paper, <img src="https://latex.codecogs.com/gif.latex?cos(\phi)" title="cos(\phi)" /> can be calculated from that
 
 <p align="center">
