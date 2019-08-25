@@ -159,8 +159,8 @@ While looking into the training states, we found the value of cosine of phi is t
 
 As we saw in the comparison with GMM research, QGMM showed the flexible performance by adjusting the hyperparameters. In other words, we should set the proper hyperparameters to model the data correctly, but sometimes it would be not easy to do. Futhermore, from some several experiments, we found out that phi has significant effect on the training process. In particular, it's hard to set the initial sequence of phi when more than 3 clusters cases. Therefore, the current QGMM needs to come up with how to control phi to generalize its performance.
 
-## [Blog](https://www.mlpack.org/gsocblog/SangyeonKimPage.html)
-
+## [Blog]
+- [mlpack GSoC blog](https://www.mlpack.org/gsocblog/SangyeonKimPage.html)
 
 ## Contributions
 - [Convert DiagonalGMMs into GMMs in `mlpack_gmm_train`](https://github.com/mlpack/mlpack/pull/1860)
