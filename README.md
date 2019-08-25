@@ -104,13 +104,33 @@ Using the above data sets, we trained QGMM and GMM. Especially, there are two tr
 From the aboves results, we found out the results between QGMM and GMM are totally different. Furthermore, even between QGMMs, the results vary depending on <img src="https://latex.codecogs.com/gif.latex?\phi" title="\phi" />. 
 
 ### 6. Comparison with GMM
-In this research, we compared QGMM with GMM. As the indicator of the training performance, we use the percentage of the convergence on the clusters of the observations. We conducted 100 experiments with different initial means. Besides, we used the augmented Lagrangian multiplier method for the constrained optimization. Like other researches, we didn't use any initial clustering like K-means.
+In this research, we compared QGMM with GMM. As the indicator of the training performance, we use the percentage of the convergence on the clusters of the observations. We conducted 100 experiments with different initial means and the initial means were randomly generated between -1 and 1 from the maximum and minimum of x coordinates of the data set, and between -10 and 10 from the maximum and minimum of y coordinates of the data set. Besides, we used the augmented Lagrangian multiplier method for the constrained optimization. Like other researches, we didn't use any initial clustering like K-means.
 
 <p align=center>
   <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/Convg1.png" width=400>
 </p>
 
-From the table above, there are 4 and 20 failed cases for QGMM with initial phi 0 and 90 respectively and 6 failed cases for GMM. Especially, among failed cases, there is a case that the training doesn't work, so we ran it with other hyperparameters.
+From the table above, there are 4 and 20 failed cases for QGMM with initial phi 0 and 90 respectively and 6 failed cases for GMM. Especially, among failed cases, there is a case that the training doesn't work, so we ran it again with other hyperparameters.
+
+<p align="center">
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/TC1_failed_01.gif" width=256>
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/TC1_follow-up_01.gif" width=256>
+</p>
+
+In the images above, the left is one of the failed cases of QGMM with initial phi 0, and the right is followed up by changing its hyperparameter.
+
+We conducted another 100 experiments. In this time, the initial means were randomly generated between -0.5 and 0.5 from the maximum and minimum of x coordinates of the data set, and between -5 and 5 from the maximum and minimum of y coordinates of the data set.
+
+<p align=center>
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/Convg2.png" width=400>
+</p>
+
+From the above table, we can see the performance of QGMM with initial phi 0 increased a bit. We also checked some cases by changing phi.
+
+<p align="center">
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/TC2_overlay_01.gif" width=256>
+  <img src="https://github.com/KimSangYeon-DGU/GSoC-2019/blob/master/images/TC2_follow-up_01.gif" width=256>
+</p>
 
 ### 7. Multiple clusters
 
