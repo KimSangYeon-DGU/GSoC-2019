@@ -42,7 +42,7 @@ In the original paper, the objective function is that
 </p>
 
 In addition, the objective function means the expectation of the complete-data log likelihood, and we'll call it as log likelihood in this report.
-However, the derivation of the covariance in the original paper has an error because Q shouldn't have an effect on the calculation, so we couldn't use it. Thus, we newly defined the objective function as an indicator of the training states.
+However, in the probability equation, because <img src="https://latex.codecogs.com/gif.latex?G_{i,k}" title="G_{i,k}" /> is unnormalized, we can't guarantee the sum of probability is 1. Thus, we newly defined the objective function as an indicator of the training states.
 
 <p align="center">
   <img src="https://latex.codecogs.com/gif.latex?O(\theta_{k})=\left[-\sum_{i}&space;\sum_{k}&space;Q_{i}(k)\log{P(p_{i},k|\theta_{k}})\right]&plus;\lambda&space;\left[&space;\sum_{i}&space;\sum_{k}\{P(p_{i},k|\theta_{k})\}-1&space;\right]" title="O(\theta_{k})=\left[-\sum_{i} \sum_{k} Q_{i}(k)\log{P(p_{i},k|\theta_{k}})\right]+\lambda \left[ \sum_{i} \sum_{k}\{P(p_{i},k|\theta_{k})\}-1 \right]" />
